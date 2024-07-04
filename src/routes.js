@@ -27,7 +27,8 @@ import AppMgmt from "layouts/app_mgmt";
 import LocationMgmt from "layouts/location_mgmt";
 import Settings from "layouts/settings";
 import UserMgmt from "layouts/user_mgmt";
-import AddUser from "layouts/user_mgmt/Add_user";
+import UpdateUser from "layouts/user_mgmt/UpdateUser";
+// import AddUser from "layouts/user_mgmt/Add_user";
 import Notifications from "layouts/notifications";
 import CustomerService from "layouts/customer_service";
 import Profile from "layouts/profile";
@@ -66,6 +67,14 @@ export const superAdminRoutes = [
     icon: <Icon fontSize="small">receipt_long</Icon>,
     route: "/User-Management",
     component: <UserMgmt />,
+  },
+  {
+    // type: "collapse",
+    // name: "Update User",
+    key: "Update-User",
+    // icon: <Icon fontSize="small">receipt_long</Icon>,
+    route: "/update-user",
+    component: <UpdateUser />,
   },
   {
     type: "collapse",
@@ -120,11 +129,11 @@ export const superAdminRoutes = [
     route: "/sign-in",
     component: <SignIn />,
   },
-  {
-    key: "Add-user",
-    route: "/Add-user",
-    component: <AddUser />,
-  },
+  // {
+  //   key: "Add-user",
+  //   route: "/Add-user",
+  //   component: <AddUser />,
+  // },
   // ADMIN
  
   // {

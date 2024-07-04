@@ -54,7 +54,8 @@ function User_mgmt() {
       model: "",
       variant: "",
       registeration_number: "",
-      range: ""
+      range: "",
+      vehicle_img: "",
     };
   };
   useEffect(() => {
@@ -261,8 +262,7 @@ function User_mgmt() {
     // ...more rows
   // ];
   const handleEdit = (row_data) => {
-    // console.log(row_data);
-    // navigate("/dashboard", { state: row_data });
+    navigate("/update-user", { state: row_data });
   };
   const handleDelete = (row_data) => {
     // const payload = { "id": row_data.app_user_pk };
@@ -498,9 +498,9 @@ function User_mgmt() {
     console.log(column);
   }, []);
 
-  const pop = () => {
-    navigate("/Add-user");
-  };
+  // const pop = () => {
+  //   navigate("/Add-user");
+  // };
 
   const handleStateChange = (newState) => {
     setIsDisabled(newState);

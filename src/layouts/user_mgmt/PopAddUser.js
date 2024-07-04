@@ -3,6 +3,7 @@ import MDBox from "components/MDBox";
 import MDInput from "components/MDInput";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
+import dayjs from 'dayjs';
 // import Dialog from "assets/theme/components/dialog";
 import MDTypography from "components/MDTypography";
 import DialogActions from "@mui/material/DialogActions";
@@ -103,6 +104,13 @@ function PopAddUser(props) {
 
     const [values, setValues] = useState(props.value);
     const handleChange = (event) => {
+        const { name, value } = event.target;
+
+    let formattedValue = value;
+    if (name === "date_of_birth") {
+        // Convert the date from yyyy-mm-dd to dd/mm/yyyy
+        formattedValue = dayjs(value).format('DD/MM/YYYY');
+    }
         setValues((prevValues) => ({
             ...prevValues,
             [event.target.name]: event.target.value,
@@ -240,12 +248,15 @@ function PopAddUser(props) {
                             </MDBox>
                             <MDBox p={1}>
                                 <MDInput
-                                    type="number"
+                                    type="text"
                                     label="Phone Number"
                                     value={values.phone_number}
                                     name="phone_number"
                                     // multiline
                                     // rows={5}
+                                    inputProps={{
+                                        pattern: "\\+[1-9]{1}[0-9]{1,2}[0-9]{10}"
+                                    }}
                                     margin="dense"
                                     fullWidth={true}
                                     onChange={handleChange}
@@ -300,7 +311,8 @@ function PopAddUser(props) {
                                 <MDInput
                                     type="date"
                                     label="Date Of Birth"
-                                    value={values.date_of_birth}
+                                    // value={values.date_of_birth}
+                                    value={dayjs(values.date_of_birth, 'DD/MM/YYYY').format('YYYY-MM-DD')}
                                     name="date_of_birth"
                                     // multiline
                                     // rows={5}

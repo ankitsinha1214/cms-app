@@ -39,7 +39,7 @@ function PopAddUserVehicle(props) {
     const [dialogMessage, setDialogMessage] = useState("");
     const [vehicleId, setVehicleId] = useState("");
 
-    const createUser = (make, model, variant, registeration_number, range) => {
+    const createUser = (make, model, variant, registeration_number, range, vehicle_img) => {
         // alert("User Created successfully!!")
         onClose(false);
         const uservehicle = {
@@ -47,7 +47,8 @@ function PopAddUserVehicle(props) {
             "model":model,
             "variant":variant,
             "vehicle_reg":registeration_number,
-            "range":range
+            "range":range,
+            "vehicle_img":vehicle_img
         }
         const arruservehicle = [];
         arruservehicle.push(uservehicle);
@@ -164,9 +165,11 @@ function PopAddUserVehicle(props) {
         const selectedVariantData = variantShow.find(
             (variant) => variant.variant === selectedVariant
         );
+        console.log(selectedVariantData)
         setValues((prevValues) => ({
             ...prevValues,
             variant: selectedVariant,
+            vehicle_img: selectedVariantData.image
         }));
         setVehicleId(selectedVariantData.vehicle_id);
     };
@@ -178,10 +181,10 @@ function PopAddUserVehicle(props) {
         }));
     };
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        createUser(values.make, values.model, values.variant, values.registeration_number, values.range);
-    };
+    // const handleSubmit = (event) => {
+    //     event.preventDefault();
+    //     createUser(values.make, values.model, values.variant, values.registeration_number, values.range);
+    // };
     const reset = (event) => {
         event.preventDefault();
         values.make = "";
@@ -197,8 +200,9 @@ function PopAddUserVehicle(props) {
     const pop = () => {
         if (!values.make || !values.model || !values.variant || values.make === '' || values.model === '' || values.variant === '') return enqueueSnackbar('Please Fill All The Details !!!', { variant: 'error' })
         setIsBackdrop(false);
-        createUser(values.make, values.model, values.variant, values.registeration_number, values.range);
+        createUser(values.make, values.model, values.variant, values.registeration_number, values.range, values.vehicle_img);
     };
+    console.log(values);
     const back = () => {
         setIsBackdrop(false);
         onClose(false);

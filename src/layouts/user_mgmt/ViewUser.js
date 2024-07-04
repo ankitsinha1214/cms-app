@@ -132,6 +132,11 @@ function ViewUser(props) {
                                             <Divider />
                                             {(<DataCard title="Registeration Number" value={props.value.registeration_number} count={3} />)}
                                             {(<DataCard title="Range" value={props.value.range} count={3} />)}
+                                            {/* {(<DataCard title="Variant Image" value='' count={3} />)} */}
+                                            <div>
+                                            <h5>Vehicle Image</h5>
+                                            <img src={props.value.vehicle_img} alt="Variant Image" width={150} height={150} srcset="" />
+                                            </div>
 
                                         </Grid>
                                     </Card>
