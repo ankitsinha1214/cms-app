@@ -22,14 +22,14 @@
 
 // Material Dashboard React layouts
 import Dashboard from "layouts/dashboard";
-import Charger_mgmt from "layouts/charger_mgmt";
-import App_mgmt from "layouts/app_mgmt";
-import Location_mgmt from "layouts/location_mgmt";
+import ChargerMgmt from "layouts/charger_mgmt";
+import AppMgmt from "layouts/app_mgmt";
+import LocationMgmt from "layouts/location_mgmt";
 import Settings from "layouts/settings";
-import User_mgmt from "layouts/user_mgmt";
-import Add_user from "layouts/user_mgmt/Add_user";
+import UserMgmt from "layouts/user_mgmt";
+import AddUser from "layouts/user_mgmt/Add_user";
 import Notifications from "layouts/notifications";
-import Customer_service from "layouts/customer_service";
+import CustomerService from "layouts/customer_service";
 import Profile from "layouts/profile";
 
 // Custom Pages
@@ -57,7 +57,7 @@ export const superAdminRoutes = [
     key: "Charger-Management",
     icon: <Icon fontSize="small">table_view</Icon>,
     route: "/Charger-Management",
-    component: <Charger_mgmt />,
+    component: <ChargerMgmt />,
   },
   {
     type: "collapse",
@@ -65,7 +65,7 @@ export const superAdminRoutes = [
     key: "User-Management",
     icon: <Icon fontSize="small">receipt_long</Icon>,
     route: "/User-Management",
-    component: <User_mgmt />,
+    component: <UserMgmt />,
   },
   {
     type: "collapse",
@@ -73,7 +73,7 @@ export const superAdminRoutes = [
     key: "Location-Management",
     icon: <LocationOnIcon />,
     route: "/Location-Management",
-    component: <Location_mgmt />,
+    component: <LocationMgmt />,
   },
   {
     type: "collapse",
@@ -81,7 +81,7 @@ export const superAdminRoutes = [
     key: "app_mgmt",
     icon: <Icon fontSize="small">receipt_long</Icon>,
     route: "/app_mgmt",
-    component: <App_mgmt />,
+    component: <AppMgmt />,
   },
   {
     type: "collapse",
@@ -97,7 +97,7 @@ export const superAdminRoutes = [
     key: "customer_service",
     icon: <Icon fontSize="small">notifications</Icon>,
     route: "/customer_service",
-    component: <Customer_service />,
+    component: <CustomerService />,
   },
   {
     type: "collapse",
@@ -123,7 +123,7 @@ export const superAdminRoutes = [
   {
     key: "Add-user",
     route: "/Add-user",
-    component: <Add_user />,
+    component: <AddUser />,
   },
   // ADMIN
  
@@ -135,7 +135,7 @@ export const superAdminRoutes = [
   // Tickets
   {
     type: "collapse",
-    type: "divider",
+    // type: "divider",
     name: "Tickets",
     key: "tickets",
     icon: <Icon fontSize="small">confirmation_number</Icon>,
