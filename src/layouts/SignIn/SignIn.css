@@ -1,0 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap');
+
+.allhead{
+    font-family: "Montserrat";
+    font-size : "24px";
+    font-weight :"600";
+     line-height : "38.26px"; 
+     color : "rgba(0, 0, 0, 1)";
+}

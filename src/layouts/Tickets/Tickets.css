@@ -1,0 +1,65 @@
+.tickets_chatDialogHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.tickets_chatCont {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.tickets_chatCont_messages {
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: 10px;
+}
+
+.tickets_chatCont_message {
+    display: block;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    width: 70%;
+    max-width: max-content;
+    word-wrap: break-word;
+    font-size: 16px;
+}
+
+.tickets_chatCont_message.received {
+    background-color: #e5ddd5;
+    color: #000;
+}
+
+.tickets_chatCont_message.sent {
+    margin-left: auto;
+    background-color: #2b84eb;
+    color: #eee;
+}
+
+.tickets_chatCont_replyCont {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: #f5f5f5;
+}
+
+input[type="text"] {
+    flex: 1;
+    padding: 10px;
+    border-radius: 20px;
+    border: none;
+    margin-right: 10px;
+    font-size: 16px;
+}
+
+button {
+    padding: 10px 15px;
+    border-radius: 50%;
+    border: none;
+    background-color: #2d5db5;
+    color: #fff;
+    cursor: pointer;
+    font-size: 18px;
+}

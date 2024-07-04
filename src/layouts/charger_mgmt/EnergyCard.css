@@ -1,0 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap');
+.slick-slide {
+    padding: 1rem;
+  }
+  /* .slick-dots li button {
+    width: 12px;
+    height: 12px;
+    border-radius: 6px;
+    background-color: rgba(0, 0, 0, 0.26);
+  } */
+  .slick-prev,
+.slick-next {
+  display: none!important;
+}

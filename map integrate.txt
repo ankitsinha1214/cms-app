@@ -1,0 +1,89 @@
+import React from "react";
+import { compose, withProps } from "recompose";
+import {
+  withScriptjs,
+  withGoogleMap,
+  GoogleMap,
+  Marker
+} from "react-google-maps";
+import BatteryChargingFullIcon from "@mui/icons-material/BatteryChargingFull";
+const MyMapComponent = compose(
+  withProps({
+    googleMapURL:
+      "https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places",
+    loadingElement: <div style={{ height: `100%` }} />,
+    containerElement: <div style={{ height: `400px` }} />,
+    mapElement: <div style={{ height: `100%` }} />
+  }),
+  withScriptjs,
+  withGoogleMap
+)((props) => (
+  <GoogleMap
+    onClick={(ev) => {
+      console.log("latitide = ", ev.latLng.lat());
+      console.log("longitude = ", ev.latLng.lng());
+    }}
+    defaultZoom={15}
+    defaultCenter={{ lat: 11.9716, lng: 77.5946 }}
+  >
+    {props.isMarkerShown && (
+      <>
+        <Marker
+          key="1"
+          position={{ lat: 12, lng: 78 }}
+          icon={<BatteryChargingFullIcon />}
+          // onClick={props.onMarkerClick}
+        />
+        <Marker
+          key="2"
+          position={{ lat: 11.9716, lng: 77.5946 }}
+          icon={<BatteryChargingFullIcon />}
+          // onClick={props.onMarkerClick}
+        />
+        <Marker
+          key="3"
+          position={{ lat: 14.9716, lng: 77.5946 }}
+          icon={<BatteryChargingFullIcon />}
+          // onClick={props.onMarkerClick}
+        />
+        <Marker
+          key="4"
+          position={{ lat: 15, lng: 77.5946 }}
+          icon={<BatteryChargingFullIcon />}
+          // onClick={props.onMarkerClick}
+        />
+      </>
+    )}
+  </GoogleMap>
+));
+
+class MyFancyComponent extends React.PureComponent {
+  state = {
+    isMarkerShown: false
+  };
+
+  componentDidMount() {
+    this.delayedShowMarker();
+  }
+
+  delayedShowMarker = () => {
+    setTimeout(() => {
+      this.setState({ isMarkerShown: true });
+    }, 3000);
+  };
+
+  handleMarkerClick = () => {
+    this.setState({ isMarkerShown: false });
+    this.delayedShowMarker();
+  };
+
+  render() {
+    return (
+      <MyMapComponent
+        isMarkerShown={this.state.isMarkerShown}
+        onMarkerClick={this.handleMarkerClick}
+      />
+    );
+  }
+}
+export default MyFancyComponent;

@@ -1,0 +1,11 @@
+.deleteModal_cont {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #1A73E8;
+    padding: 10px 20px;
+    border-radius: 50px;
+    color: #ddd;
+    letter-spacing: 1px;
+}
