@@ -37,8 +37,8 @@ function User_mgmt() {
   const { darkMode } = controller;
   const { enqueueSnackbar } = useSnackbar();
   const statusList = [
-    'Red',
-    'Green',
+    'active',
+    'Inactive',
   ];
   const getValues = () => {
     return {
@@ -268,7 +268,7 @@ function User_mgmt() {
     // const payload = { "id": row_data.app_user_pk };
     axios({
       method: "delete",
-      url: process.env.REACT_APP_BASEURL + "users/" + row_data._id,
+      url: process.env.REACT_APP_BASEURL + "users/" + row_data.phoneNumber,
       // data: payload, // JSON payload
     headers: {
       "Content-Type": "application/json", // Set the Content-Type header
@@ -310,10 +310,10 @@ function User_mgmt() {
       fixed: "true",
       Cell: (row) => (
         <div >
-          {(row.row.original.status === "red") ?
-            <CircleIcon style={{ color: "#DA1E28" }} />
-            :
+          {(row.row.original.status === "active") ?
             <CircleIcon style={{ color: "#198038" }} />
+            :
+            <CircleIcon style={{ color: "#DA1E28" }} />
           }
         </div>
       ),

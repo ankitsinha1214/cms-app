@@ -94,7 +94,9 @@ function UpdateUser() {
 
           setStateData(structuredData);
           setStates(Object.keys(structuredData));
-          setCities(structuredData[row_data.state]);
+          if(structuredData[row_data.state]){
+            setCities(structuredData[row_data.state]);
+          }
           // setState_show(response.data.data);
         } else {
           console.log("status is false ");
@@ -173,7 +175,7 @@ function UpdateUser() {
     event.preventDefault();
     setValues(getInitialValues());
   };
-
+  console.log(cities);
   return (
     <DashboardLayout>
       <DashboardNavbar />
