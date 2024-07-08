@@ -67,7 +67,7 @@ function PopAddUserVehicle(props) {
             "lastName": values.last_name,
             "state": values.state,
             "city": values.city,
-            "dob": values.date_of_birth,
+            "dob": parseDate(values.date_of_birth),
             "gender": values.gender,
             "phoneNumber": values.phone_number,
             "email": values.email,
@@ -109,6 +109,19 @@ function PopAddUserVehicle(props) {
             });
     };
     console.log(props.value);
+    const parseDate = (dateString) => {
+        if (!dateString) return "";
+    
+        // Split the date string into parts
+        const [year, month, day] = dateString.split("-");
+    
+        // Pad single-digit day and month with leading zeros
+        const paddedDay = day.padStart(2, "0");
+        const paddedMonth = month.padStart(2, "0");
+    
+        // Return the formatted date string
+        return `${paddedDay}/${paddedMonth}/${year}`;
+      };
     const [values, setValues] = useState(props.value);
     console.log(values);
     const getMake = () => {

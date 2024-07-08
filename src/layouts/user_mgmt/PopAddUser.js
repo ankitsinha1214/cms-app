@@ -106,11 +106,11 @@ function PopAddUser(props) {
     const handleChange = (event) => {
         const { name, value } = event.target;
 
-    let formattedValue = value;
-    if (name === "date_of_birth") {
-        // Convert the date from yyyy-mm-dd to dd/mm/yyyy
-        formattedValue = dayjs(value).format('DD/MM/YYYY');
-    }
+        let formattedValue = value;
+        if (name === "date_of_birth") {
+            // Convert the date from yyyy-mm-dd to dd/mm/yyyy
+            formattedValue = dayjs(value).format('DD/MM/YYYY');
+        }
         setValues((prevValues) => ({
             ...prevValues,
             [event.target.name]: event.target.value,
@@ -145,13 +145,13 @@ function PopAddUser(props) {
                 if (response.data.success === true) {
                     const data = response.data.data[0].India;
                     const structuredData = {};
-            
+
                     data.forEach(stateObj => {
-                      const state = Object.keys(stateObj)[0];
-                      const cities = stateObj[state];
-                      structuredData[state] = cities;
+                        const state = Object.keys(stateObj)[0];
+                        const cities = stateObj[state];
+                        structuredData[state] = cities;
                     });
-            
+
                     setStateData(structuredData);
                     setStates(Object.keys(structuredData));
 
@@ -170,7 +170,7 @@ function PopAddUser(props) {
         setSelectedState(selectedState);
         setCities(stateData[selectedState]);
         values.city = '';
-      };
+    };
     const pop = () => {
         console.log(values);
         if (!values.first_name || !values.last_name || !values.phone_number || !values.email || !values.gender || !values.date_of_birth || !values.state || !values.city) return enqueueSnackbar('Please Fill All The Details !!!', { variant: 'error' })
@@ -281,9 +281,9 @@ function PopAddUser(props) {
                                 <FormControl fullWidth>
                                     <InputLabel id="demo-simple-select-label">Gender</InputLabel>
                                     <Select
-                                    sx={{
-                                        height: 50,
-                                    }}
+                                        sx={{
+                                            height: 50,
+                                        }}
                                         labelId="demo-simple-select-label"
                                         id="demo-simple-select"
                                         value={values.gender}
@@ -307,7 +307,7 @@ function PopAddUser(props) {
                                     onChange={handleChange}
                                 /> */}
                             </MDBox>
-                            <MDBox p={1}>
+                            {/* <MDBox p={1}>
                                 <MDInput
                                     type="date"
                                     label="Date Of Birth"
@@ -320,6 +320,26 @@ function PopAddUser(props) {
                                     fullWidth={true}
                                     onChange={handleChange}
                                 />
+                            </MDBox> */}
+                            <MDBox p={1}>
+                                <FormControl fullWidth variant="outlined" margin="dense">
+                                    <InputLabel
+                                        shrink={true}
+                                        htmlFor="date-of-birth"
+                                    >
+                                        Date Of Birth
+                                    </InputLabel>
+                                    <OutlinedInput
+                                        id="date-of-birth"
+                                        type="date"
+                                        format="DD/MM/YYYY"
+                                        label="Date Of Birth"
+                                        value={values.date_of_birth}
+                                        name="date_of_birth"
+                                        onChange={handleChange}
+                                        notched={true}
+                                    />
+                                </FormControl>
                             </MDBox>
                             <MDBox p={1}>
                                 <FormControl fullWidth>
