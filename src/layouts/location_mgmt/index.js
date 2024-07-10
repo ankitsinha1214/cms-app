@@ -27,6 +27,7 @@ import Paper from '@mui/material/Paper';
 // images
 import mapImage from "assets/images/map.png";
 
+import { useSnackbar } from "notistack";
 // Location Management Page components
 
 import LaunchIcon from "@mui/icons-material/Launch";
@@ -37,10 +38,12 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 function Location_mgmt() {
   const [controller] = useMaterialUIController();
   const { darkMode } = controller;
+  const [isLoading, setIsLoading] = useState(true);
+  const { enqueueSnackbar } = useSnackbar();
   const statusList = [
-    'Red',
-    'Green',
-    'Yellow',
+    'Inactive',
+    'Active',
+    'Pending',
     'Grey'
   ];
   const getValues = () => {
@@ -66,6 +69,36 @@ function Location_mgmt() {
     ) {
       navigate("/sign-in");
     }
+    axios({
+      method: "get",
+      url: process.env.REACT_APP_BASEURL + "charger-locations",
+    })
+      .then((response) => {
+        console.log(response.data.data);
+
+        if (response.data.success === true) {
+          console.log(response.data);
+          const dataWithChargerCount = response.data.data.map(location => {
+            const acCount = location.chargerInfo.filter(charger => charger.type === 'AC').length;
+            const dcCount = location.chargerInfo.filter(charger => charger.type === 'DC').length;
+            const energyDisp = location.chargerInfo.reduce((total, charger) => {
+              // console.log(charger);
+              const energyValue = parseFloat(charger.energyConsumptions.replace(' kWh', ''));
+              return total + energyValue;
+            }, 0).toFixed(1) + ' kWh';
+            return { ...location, energy_disp: energyDisp, chargers: location.chargerInfo.length, c_type: `AC: ${acCount}, DC: ${dcCount}` };
+            // ...location,
+            // ac: location.chargerInfo
+          });
+          setRows(dataWithChargerCount);
+          setIsLoading(false);
+        } else {
+          console.log("status is false ");
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }, []);
   const mapContainerStyle = {
     width: '100%',
@@ -79,75 +112,76 @@ function Location_mgmt() {
   };
   const [isDisabled2, setIsDisabled2] = useState(false);
   const [columns, setColumns] = useState([]);
-  const rows = [
-    {
-      "name": "John Doe",
-      "status": "red",
-      "gender": "Male",
-      "l_type": "Car",
-      "chargers": "2",
-      "c_type": "Camry",
-      "state": "California",
-      "city": "Los Angeles",
-      "energy_disp": "250000 KWH"
-    },
-    {
-      "name": "Jane Smith",
-      "status": "yellow",
-      "gender": "Female",
-      "l_type": "Motorcycle ",
-      "chargers": "3",
-      "c_type": "CBR600",
-      "state": "New York",
-      "city": "New York City",
-      "energy_disp": "150000 KWH"
-    },
-    {
-      "name": "Ankit",
-      "status": "grey",
-      "gender": "Male",
-      "l_type": "Motorcycle ",
-      "chargers": "3",
-      "c_type": "CBR600",
-      "state": "New York",
-      "city": "New York City",
-      "energy_disp": "150000 KWH"
-    },
-    {
-      "name": "Jane Smith",
-      "status": "green",
-      "gender": "Female",
-      "l_type": "Motorcycle ",
-      "chargers": "3",
-      "c_type": "CBR600",
-      "state": "New York",
-      "city": "New York City",
-      "energy_disp": "150000 KWH"
-    },
-    {
-      "name": "Jane Smith",
-      "status": "red",
-      "gender": "Female",
-      "l_type": "Motorcycle ",
-      "chargers": "3",
-      "c_type": "CBR600",
-      "state": "New York",
-      "city": "New York City",
-      "energy_disp": "150000 KWH"
-    },
-    {
-      "name": "Jane Smith",
-      "status": "red",
-      "gender": "Female",
-      "l_type": "Four Wheeler ",
-      "chargers": "3",
-      "c_type": "CBR600",
-      "state": "New York",
-      "city": "New York City",
-      "energy_disp": "150000 KWH"
-    },
-    // ...more rows
-  ];
+  const [rows, setRows] = useState([]);
+  // const rows = [
+  //   {
+  //     "name": "John Doe",
+  //     "status": "red",
+  //     "gender": "Male",
+  //     "l_type": "Car",
+  //     "chargers": "2",
+  //     "c_type": "Camry",
+  //     "state": "California",
+  //     "city": "Los Angeles",
+  //     "energy_disp": "250000 KWH"
+  //   },
+  //   {
+  //     "name": "Jane Smith",
+  //     "status": "yellow",
+  //     "gender": "Female",
+  //     "l_type": "Motorcycle ",
+  //     "chargers": "3",
+  //     "c_type": "CBR600",
+  //     "state": "New York",
+  //     "city": "New York City",
+  //     "energy_disp": "150000 KWH"
+  //   },
+  //   {
+  //     "name": "Ankit",
+  //     "status": "grey",
+  //     "gender": "Male",
+  //     "l_type": "Motorcycle ",
+  //     "chargers": "3",
+  //     "c_type": "CBR600",
+  //     "state": "New York",
+  //     "city": "New York City",
+  //     "energy_disp": "150000 KWH"
+  //   },
+  //   {
+  //     "name": "Jane Smith",
+  //     "status": "green",
+  //     "gender": "Female",
+  //     "l_type": "Motorcycle ",
+  //     "chargers": "3",
+  //     "c_type": "CBR600",
+  //     "state": "New York",
+  //     "city": "New York City",
+  //     "energy_disp": "150000 KWH"
+  //   },
+  //   {
+  //     "name": "Jane Smith",
+  //     "status": "red",
+  //     "gender": "Female",
+  //     "l_type": "Motorcycle ",
+  //     "chargers": "3",
+  //     "c_type": "CBR600",
+  //     "state": "New York",
+  //     "city": "New York City",
+  //     "energy_disp": "150000 KWH"
+  //   },
+  //   {
+  //     "name": "Jane Smith",
+  //     "status": "red",
+  //     "gender": "Female",
+  //     "l_type": "Four Wheeler ",
+  //     "chargers": "3",
+  //     "c_type": "CBR600",
+  //     "state": "New York",
+  //     "city": "New York City",
+  //     "energy_disp": "150000 KWH"
+  //   },
+  //   // ...more rows
+  // ];
   const column = [
     {
       header: "Status",
@@ -158,18 +192,18 @@ function Location_mgmt() {
       },
       muiTableBodyCellProps: {
         align: 'center',
-      },accessorKey: "status",
+      }, accessorKey: "status",
       align: "center",
       fixed: "true",
       Cell: (row) => (
         <div>
-          {(row.row.original.status === "red") ?
+          {(row.row.original.status === "Inactive") ?
             <CircleIcon style={{ color: "#DA1E28" }} />
             :
             (row.row.original.status === "grey") ?
               <CircleIcon style={{ color: "#7B7B7B" }} />
               :
-              (row.row.original.status === "yellow") ?
+              (row.row.original.status === "Pending") ?
                 <CircleIcon style={{ color: "#F1C21B" }} />
                 :
                 <CircleIcon style={{ color: "#198038" }} />
@@ -177,48 +211,62 @@ function Location_mgmt() {
         </div>
       ),
     },
-    { header: "Name", muiTableHeadCellProps: {
+    {
+      header: "Name", muiTableHeadCellProps: {
         align: 'center',
       },
       muiTableBodyCellProps: {
         align: 'center',
-      },accessorKey: "name", align: "center" },
-    { header: "L Type", muiTableHeadCellProps: {
+      }, accessorKey: "locationName", align: "center"
+    },
+    {
+      header: "L Type", muiTableHeadCellProps: {
         align: 'center',
       },
       muiTableBodyCellProps: {
         align: 'center',
-      },accessorKey: "l_type", align: "center" },
-    { header: "City", muiTableHeadCellProps: {
+      }, accessorKey: "locationType", align: "center"
+    },
+    {
+      header: "City", muiTableHeadCellProps: {
         align: 'center',
       },
       muiTableBodyCellProps: {
         align: 'center',
-      },accessorKey: "city", align: "center" },
-    { header: "State", muiTableHeadCellProps: {
+      }, accessorKey: "city", align: "center"
+    },
+    {
+      header: "State", muiTableHeadCellProps: {
         align: 'center',
       },
       muiTableBodyCellProps: {
         align: 'center',
-      },accessorKey: "state", align: "center" },
-    { header: "Chargers", muiTableHeadCellProps: {
+      }, accessorKey: "state", align: "center"
+    },
+    {
+      header: "Chargers", muiTableHeadCellProps: {
         align: 'center',
       },
       muiTableBodyCellProps: {
         align: 'center',
-      },accessorKey: "chargers", align: "center" },
-    { header: "C type", muiTableHeadCellProps: {
+      }, accessorKey: "chargers", align: "center"
+    },
+    {
+      header: "C type", muiTableHeadCellProps: {
         align: 'center',
       },
       muiTableBodyCellProps: {
         align: 'center',
-      },accessorKey: "c_type", align: "center" },
-    { header: "Energy disp", muiTableHeadCellProps: {
+      }, accessorKey: "c_type", align: "center"
+    },
+    {
+      header: "Energy disp", muiTableHeadCellProps: {
         align: 'center',
       },
       muiTableBodyCellProps: {
         align: 'center',
-      },accessorKey: "energy_disp", align: "center" },
+      }, accessorKey: "energy_disp", align: "center"
+    },
     {
       header: "Action",
       enableColumnFilter: false,
@@ -227,7 +275,7 @@ function Location_mgmt() {
       },
       muiTableBodyCellProps: {
         align: 'center',
-      },accessorKey: "action",
+      }, accessorKey: "action",
       align: "center",
       Cell: (row) => (
         <div style={{
@@ -277,27 +325,32 @@ function Location_mgmt() {
     // navigate("/view/user", { state: row_data });
   };
   const handleDelete = (row_data) => {
-    var bodyFormData = new FormData();
-    bodyFormData.append("id", row_data.id);
+    const payload = { "status": "Inactive" };
     axios({
       method: "post",
-      url: process.env.REACT_APP_BASEURL + "jbackend/deleteservice",
-      data: bodyFormData
+      url: process.env.REACT_APP_BASEURL + "charger-locations/" + row_data._id,
+      data: payload, // JSON payload
+    // headers: {
+    //   "Content-Type": "application/json", 
+    // },
     })
       .then((response) => {
-        console.log(response);
-
-        if (response.data.status === true) {
-          console.log(response);
+        if (response.data.success === true) {
+          // console.log(response);
           // setIsBackdrop(false);
           // setDialogMessage(response.data.message);
           // setIsDialog(true);
+          // alert(response.data.message);
+          enqueueSnackbar(response.data.message, { variant: 'success' });
+          window.location.reload();
         } else {
           console.log("status is false ");
+          enqueueSnackbar(response.data.message, { variant: 'error' });
         }
       })
       .catch((error) => {
         console.log(error);
+        enqueueSnackbar(error.data.message, { variant: 'error' });
       });
   };
   const Item = styled(Paper)(({ theme }) => ({
@@ -313,10 +366,10 @@ function Location_mgmt() {
   };
   const handleChange = (event) => {
     setValues((prevValues) => ({
-        ...prevValues,
-        [event.target.name]: event.target.value,
+      ...prevValues,
+      [event.target.name]: event.target.value,
     }));
-};
+  };
   return (
     <DashboardLayout>
       <PopAddBasic
@@ -331,18 +384,18 @@ function Location_mgmt() {
       <Box sx={{ flexGrow: 1 }} mt={2}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <Item style={{ fontFamily: "Montserrat", fontSize: "18px", fontWeight: "600", lineHeight: "21.94px", display: "flex",justifyContent: "space-between", alignItems: "center"}}>
+            <Item style={{ fontFamily: "Montserrat", fontSize: "18px", fontWeight: "600", lineHeight: "21.94px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <Box style={{ display: "flex", alignItems: "center" }}>
-              <AccessTimeIcon></AccessTimeIcon>
-              <span style={{ paddingLeft: "0.5rem" }}>
-                Incomplete locations
-              </span>
+                <AccessTimeIcon></AccessTimeIcon>
+                <span style={{ paddingLeft: "0.5rem" }}>
+                  Incomplete locations
+                </span>
               </Box>
               <Box style={{ display: "flex", alignItems: "center" }}>
-              <span >45</span>
-              <IconButton aria-label="delete">
-                <ArrowForwardIosIcon />
-              </IconButton>
+                <span >45</span>
+                <IconButton aria-label="delete">
+                  <ArrowForwardIosIcon />
+                </IconButton>
               </Box>
             </Item>
           </Grid>
@@ -469,74 +522,79 @@ function Location_mgmt() {
               initialState={{ showColumnFilters: true }}
               muiTableProps={{
                 sx: darkMode ?
-                { backgroundColor: "#202940", color: "#ffffff",
-                '& td': {
-                  fontFamily:"Montserrat",
-            fontSize : "14px",
-            fontWeight:"500",
-             lineHeight : "17.07px",
-             color: "#ffffff"
-                  // backgroundColor: '#f5f5f5',
-                }, } :
-                {
-                  '& td': {
-                    fontFamily:"Montserrat",
-              fontSize : "14px",
-              fontWeight:"500",
-               lineHeight : "17.07px",
-                    backgroundColor: '#f5f5f5',
+                  {
+                    backgroundColor: "#202940", color: "#ffffff",
+                    '& td': {
+                      fontFamily: "Montserrat",
+                      fontSize: "14px",
+                      fontWeight: "500",
+                      lineHeight: "17.07px",
+                      color: "#ffffff"
+                      // backgroundColor: '#f5f5f5',
+                    },
+                  } :
+                  {
+                    '& td': {
+                      fontFamily: "Montserrat",
+                      fontSize: "14px",
+                      fontWeight: "500",
+                      lineHeight: "17.07px",
+                      backgroundColor: '#f5f5f5',
+                    },
                   },
-                },
               }}
               muiTopToolbarProps={{
                 sx: darkMode ?
-                {  color: "#ffffff",
-                '& svg': {
-                  fontFamily:"Montserrat",
-            fontSize : "14px",
-            fontWeight:"500",
-             lineHeight : "17.07px",
-             color: "#ffffff"
-                  // backgroundColor: '#f5f5f5',
-                },
-              }:{
-                backgroundColor: '#f5f5f5',
-              }
+                  {
+                    color: "#ffffff",
+                    '& svg': {
+                      fontFamily: "Montserrat",
+                      fontSize: "14px",
+                      fontWeight: "500",
+                      lineHeight: "17.07px",
+                      color: "#ffffff"
+                      // backgroundColor: '#f5f5f5',
+                    },
+                  } : {
+                    backgroundColor: '#f5f5f5',
+                  }
               }}
               muiTableHeadCellProps={{
                 sx: darkMode ?
-                {  color: "#ffffff",
-                '& svg': {
-                  fontFamily:"Montserrat",
-            fontSize : "14px",
-            fontWeight:"500",
-             lineHeight : "17.07px",
-             color: "#ffffff"
-                  // backgroundColor: '#f5f5f5',
-                },
-              }:{
-                backgroundColor: '#f5f5f5',
-              }
+                  {
+                    color: "#ffffff",
+                    '& svg': {
+                      fontFamily: "Montserrat",
+                      fontSize: "14px",
+                      fontWeight: "500",
+                      lineHeight: "17.07px",
+                      color: "#ffffff"
+                      // backgroundColor: '#f5f5f5',
+                    },
+                  } : {
+                    backgroundColor: '#f5f5f5',
+                  }
               }}
               muiBottomToolbarProps={{
                 sx: darkMode ?
-                {  color: "#ffffff",
-                '& p,button,div': {
-                  fontFamily:"Montserrat",
-            // fontSize : "14px",
-            fontWeight:"500",
-             lineHeight : "17.07px",
-             color: "#ffffff"
-                  // backgroundColor: '#f5f5f5',
-                },
-              }:{
-                backgroundColor: '#f5f5f5',
-              }
+                  {
+                    color: "#ffffff",
+                    '& p,button,div': {
+                      fontFamily: "Montserrat",
+                      // fontSize : "14px",
+                      fontWeight: "500",
+                      lineHeight: "17.07px",
+                      color: "#ffffff"
+                      // backgroundColor: '#f5f5f5',
+                    },
+                  } : {
+                    backgroundColor: '#f5f5f5',
+                  }
               }}
               muiTableBodyCellProps={{
                 sx: {
                   borderBottom: '2px solid #e0e0e0', //add a border between columns
-                  
+
                 },
               }}
             />
