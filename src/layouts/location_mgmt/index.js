@@ -6,11 +6,12 @@ import PopAddBasic from "./PopAddBasic";
 import MDBox from "components/MDBox";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Loader from "components/custom/Loader";
 // Material Dashboard 2 React examples
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import MDButton from "components/MDButton";
-import { GoogleMap, Marker } from '@react-google-maps/api';
+// import { GoogleMap, Marker } from '@react-google-maps/api';
 import { Card } from "@mui/material";
 import DataTable from "examples/Tables/DataTable";
 import MDTypography from "components/MDTypography";
@@ -35,16 +36,31 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import CircleIcon from '@mui/icons-material/Circle';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
+// ola maps
+// import { DeckGL } from "@deck.gl/react";
+// import { Map } from "react-map-gl";
+// import maplibregl from "maplibre-gl";
+// import "maplibre-gl/dist/maplibre-gl.css";
+// import mapboxgl from "mapbox-gl";
+// import "mapbox-gl/dist/mapbox-gl.css";
+
+
 function Location_mgmt() {
   const [controller] = useMaterialUIController();
   const { darkMode } = controller;
   const [isLoading, setIsLoading] = useState(true);
   const { enqueueSnackbar } = useSnackbar();
+  const [viewState, setViewState] = useState({
+    longitude: 0,
+    latitude: 0,
+    zoom: 1,
+  });
+  const mapboxApiKey = 'BkQdGUmSHFrZj1ph0zOioSjRYyWt64VSJlRZFrKb';
   const statusList = [
     'Inactive',
     'Active',
     'Pending',
-    'Grey'
+    'Waitlisted'
   ];
   const getValues = () => {
     return {
@@ -112,6 +128,7 @@ function Location_mgmt() {
   };
   const [isDisabled2, setIsDisabled2] = useState(false);
   const [columns, setColumns] = useState([]);
+  const [expandedRows, setExpandedRows] = useState([]);
   const [rows, setRows] = useState([]);
   // const rows = [
   //   {
@@ -200,11 +217,14 @@ function Location_mgmt() {
           {(row.row.original.status === "Inactive") ?
             <CircleIcon style={{ color: "#DA1E28" }} />
             :
-            (row.row.original.status === "grey") ?
+            (row.row.original.status === "Waitlisted") ?
               <CircleIcon style={{ color: "#7B7B7B" }} />
               :
               (row.row.original.status === "Pending") ?
                 <CircleIcon style={{ color: "#F1C21B" }} />
+                :
+                (row.row.original.status === "Active") ?
+                <CircleIcon style={{ color: "#198038" }} />
                 :
                 <CircleIcon style={{ color: "#198038" }} />
           }
@@ -283,6 +303,14 @@ function Location_mgmt() {
           right: '0',
           zIndex: '111',
         }}>
+          {/* <MDButton
+            onClick={() => handleExpandRow(row.row.original)}
+            variant="gradient"
+            color="info"
+            iconOnly
+          >
+            <ArrowForwardIosIcon />
+          </MDButton> */}
           <MDButton
             onClick={(e) => handleEdit(row.row.original)}
             variant="gradient"
@@ -330,9 +358,9 @@ function Location_mgmt() {
       method: "post",
       url: process.env.REACT_APP_BASEURL + "charger-locations/" + row_data._id,
       data: payload, // JSON payload
-    // headers: {
-    //   "Content-Type": "application/json", 
-    // },
+      // headers: {
+      //   "Content-Type": "application/json", 
+      // },
     })
       .then((response) => {
         if (response.data.success === true) {
@@ -370,6 +398,28 @@ function Location_mgmt() {
       [event.target.name]: event.target.value,
     }));
   };
+
+  const SubRow = ({ row }) => {
+    console.log(row); // Logging the row data to the console
+  
+    return (
+      <Card elevation={3} variant="outlined" sx={{ p: 2 }}>
+        <MDTypography variant="subtitle1" fontWeight="bold" mb={1}>
+          Charger Info:
+        </MDTypography>
+        <Grid container spacing={1}>
+          {row.original.chargerInfo.map((charger, index) => (
+            <Grid item xs={12} key={index}>
+              <MDTypography variant="body2">
+                ID: {charger.id}, Type: {charger.type}, Energy Consumption: {charger.energyCons}
+              </MDTypography>
+            </Grid>
+          ))}
+        </Grid>
+      </Card>
+    );
+  };
+  
   return (
     <DashboardLayout>
       <PopAddBasic
@@ -490,7 +540,24 @@ function Location_mgmt() {
           >
             <Marker position={{ lat: 51.5074, lng: -0.1278 }} />
           </GoogleMap> */}
-          <MDBox width="96%" minHeight="40vh"
+          {/* want to use here maps */}
+          {/* <Grid container spacing={6}>
+            <Grid item xs={12} md={12} lg={12}>
+              <DeckGL
+                initialViewState={viewState}
+                controller={true}
+                onViewStateChange={({ viewState }) => setViewState(viewState)}
+              >
+                <Map
+                  mapLib={mapboxgl}
+                  mapStyle="mapbox://styles/mapbox/streets-v11"
+                  mapboxAccessToken={mapboxApiKey}
+                />
+              </DeckGL>
+            </Grid>
+          </Grid> */}
+
+          {/* <MDBox width="96%" minHeight="40vh"
             sx={{
               backgroundImage: ({ functions: { linearGradient, rgba }, palette: { gradients } }) =>
                 mapImage && ` url(${mapImage})`,
@@ -498,7 +565,7 @@ function Location_mgmt() {
               backgroundPosition: "center",
               backgroundRepeat: "no-repeat",
             }}
-          />
+          /> */}
         </MDBox>
         <MDBox mt={8}>
           <Card>
@@ -516,9 +583,14 @@ function Location_mgmt() {
                 </MDButton>
               </Grid>
             </MDBox>
-            <MaterialReactTable
+            {isLoading ? (
+                  <Loader />
+                ) : (<MaterialReactTable
               columns={columns}
               data={rows}
+              enableExpanding={true}
+              getSubRows={(originalRow) => originalRow.chargerInfo}
+              SubComponent={({ row }) => <SubRow row={row} />}
               initialState={{ showColumnFilters: true }}
               muiTableProps={{
                 sx: darkMode ?
@@ -597,7 +669,7 @@ function Location_mgmt() {
 
                 },
               }}
-            />
+            />)}
           </Card>
         </MDBox>
       </MDBox>
