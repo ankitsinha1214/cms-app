@@ -378,7 +378,7 @@ function Location_mgmt() {
     console.log(column);
   }, []);
   const handleEdit = (row_data) => {
-    // navigate("/view/user", { state: row_data });
+    navigate("/location/view", { state: row_data });
   };
   const handleDelete = (row_data) => {
     const payload = { "status": "Inactive" };

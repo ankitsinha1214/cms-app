@@ -25,6 +25,7 @@
 
 // export default MapComponent;
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 import LocationAvailable from "../../../assets/images/location_available.png"; 
 import LocationInuse from "../../../assets/images/location_in_use.png"; 
@@ -58,6 +59,7 @@ const useCurrentLocation = () => {
 };
 
 const MapComponent = ({ locations }) => {
+    const navigate = useNavigate();
   const { location: currentLocation, error } = useCurrentLocation();
   const [center, setCenter] = useState({ lat: 0, lng: 0 });
   const [isMapLoaded, setIsMapLoaded] = useState(false);
@@ -86,7 +88,9 @@ console.log(locations)
   if (!currentLocation.lat || !currentLocation.lng) {
     return <div>Map Loading...</div>;
   }
-
+  const pop = (row_data) => {
+    navigate("/location/view", { state: row_data });
+  };
   return (
     <LoadScript googleMapsApiKey={API_KEY} loadingElement={<div />}>
       <GoogleMap 
@@ -100,6 +104,7 @@ console.log(locations)
             key={index} 
             position={{ lat: loc?.direction?.latitude, lng: loc?.direction?.longitude }} 
             title={loc?.name} 
+            onClick={(e) => pop(loc)}
             icon={(loc?.availCount > 0) ? {
               url: LocationAvailable, 
               scaledSize: new window.google.maps.Size(25, 25), 

@@ -42,6 +42,7 @@ import Tickets from "layouts/Tickets/Tickets";
 import Icon from "@mui/material/Icon";
 import HomeIcon from '@mui/icons-material/Home';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
+import ViewLocation from "layouts/location_mgmt/ViewLocation";
 
 export const superAdminRoutes = [
   {
@@ -77,11 +78,19 @@ export const superAdminRoutes = [
     component: <UpdateUser />,
   },
   {
+    // type: "collapse",
+    // name: "Update User",
+    key: "Location-View",
+    // icon: <Icon fontSize="small">receipt_long</Icon>,
+    route: "/location/view",
+    component: <ViewLocation />,
+  },
+  {
     type: "collapse",
     name: "Location Mgmt",
-    key: "Location-Management",
+    key: "location",
     icon: <LocationOnIcon />,
-    route: "/Location-Management",
+    route: "/location",
     component: <LocationMgmt />,
   },
   {
