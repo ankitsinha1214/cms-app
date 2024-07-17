@@ -27,6 +27,7 @@ import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 // images
 import mapImage from "assets/images/map.png";
+import MapComponent from "./components/MapComponent";
 
 import { useSnackbar } from "notistack";
 // Location Management Page components
@@ -50,12 +51,13 @@ function Location_mgmt() {
   const { darkMode } = controller;
   const [isLoading, setIsLoading] = useState(true);
   const { enqueueSnackbar } = useSnackbar();
+  const [locations, setLocations] = useState([]);
   const [viewState, setViewState] = useState({
     longitude: 0,
     latitude: 0,
     zoom: 1,
   });
-  const mapboxApiKey = 'BkQdGUmSHFrZj1ph0zOioSjRYyWt64VSJlRZFrKb';
+  // const mapboxApiKey = 'BkQdGUmSHFrZj1ph0zOioSjRYyWt64VSJlRZFrKb';
   const statusList = [
     'Inactive',
     'Active',
@@ -94,7 +96,19 @@ function Location_mgmt() {
 
         if (response.data.success === true) {
           console.log(response.data);
+          const element = [];
           const dataWithChargerCount = response.data.data.map(location => {
+            const availCount = location.chargerInfo.filter(charger => charger.status === 'Available').length;
+            const inuseCount = location.chargerInfo.filter(charger => charger.status === 'Inuse').length;
+            const inactiveCount = location.chargerInfo.filter(charger => charger.status === 'Inactive').length;
+            const ele = {
+              name: location.locationName,
+              direction: location.direction,
+              availCount: availCount,
+              inuseCount: inuseCount,
+              inactiveCount: inactiveCount
+            };
+            element.push(ele);
             const acCount = location.chargerInfo.filter(charger => charger.type === 'AC').length;
             const dcCount = location.chargerInfo.filter(charger => charger.type === 'DC').length;
             const energyDisp = location.chargerInfo.reduce((total, charger) => {
@@ -102,10 +116,21 @@ function Location_mgmt() {
               const energyValue = parseFloat(charger.energyConsumptions.replace(' kWh', ''));
               return total + energyValue;
             }, 0).toFixed(1) + ' kWh';
-            return { ...location, energy_disp: energyDisp, chargers: location.chargerInfo.length, c_type: `AC: ${acCount}, DC: ${dcCount}` };
+            const chargerInfoRep = location.chargerInfo.map(charger => ({
+              locationType: charger.powerOutput,
+              chargers: charger.subtype,
+              locationName: charger.name,
+              energy_disp: charger.energyConsumptions,
+              status: charger.status === "Available"? "Active" : charger.status === "Inuse" ? "Pending" : "Inactive",
+              c_type: charger.type,
+            }));
+            return { ...location, energy_disp: energyDisp, chargers: location.chargerInfo.length, c_type: `AC: ${acCount}, DC: ${dcCount}`, chargerInfoRep: chargerInfoRep };
             // ...location,
             // ac: location.chargerInfo
           });
+          // console.log(element);
+          setLocations(element);
+          console.log(dataWithChargerCount);
           setRows(dataWithChargerCount);
           setIsLoading(false);
         } else {
@@ -123,13 +148,14 @@ function Location_mgmt() {
 
   const [values, setValues] = useState(getValues);
   const center = {
-    lat: 51.5074, // Latitude of the center point
-    lng: -0.1278, // Longitude of the center point
+    lat: 12.927923, // Latitude of the center point
+    lng: 77.627106, // Longitude of the center point
   };
   const [isDisabled2, setIsDisabled2] = useState(false);
   const [columns, setColumns] = useState([]);
   const [expandedRows, setExpandedRows] = useState([]);
   const [rows, setRows] = useState([]);
+  // console.log(rows);
   // const rows = [
   //   {
   //     "name": "John Doe",
@@ -298,6 +324,7 @@ function Location_mgmt() {
       }, accessorKey: "action",
       align: "center",
       Cell: (row) => (
+        row.row.depth === 0 ? (
         <div style={{
           position: 'sticky',
           right: '0',
@@ -332,6 +359,7 @@ function Location_mgmt() {
             <DeleteIcon />
           </MDButton>
         </div>
+        ) : null
       ),
     },
   ];
@@ -566,6 +594,7 @@ function Location_mgmt() {
               backgroundRepeat: "no-repeat",
             }}
           /> */}
+          <MapComponent locations={locations}/>
         </MDBox>
         <MDBox mt={8}>
           <Card>
@@ -589,7 +618,7 @@ function Location_mgmt() {
               columns={columns}
               data={rows}
               enableExpanding={true}
-              getSubRows={(originalRow) => originalRow.chargerInfo}
+              getSubRows={(originalRow) => originalRow.chargerInfoRep}
               SubComponent={({ row }) => <SubRow row={row} />}
               initialState={{ showColumnFilters: true }}
               muiTableProps={{
