@@ -26,7 +26,8 @@
 // export default MapComponent;
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
+import Button from "@mui/material/Button";
+import { GoogleMap, LoadScript, Marker, InfoWindow } from "@react-google-maps/api";
 import LocationAvailable from "../../../assets/images/location_available.png"; 
 import LocationInuse from "../../../assets/images/location_in_use.png"; 
 import LocationInactive from "../../../assets/images/location_inactive.png"; 
@@ -63,6 +64,7 @@ const MapComponent = ({ locations }) => {
   const { location: currentLocation, error } = useCurrentLocation();
   const [center, setCenter] = useState({ lat: 0, lng: 0 });
   const [isMapLoaded, setIsMapLoaded] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState(null);
 console.log(locations)
   useEffect(() => {
     if (currentLocation.lat && currentLocation.lng) {
@@ -79,6 +81,10 @@ console.log(locations)
 
   const handleMapLoad = () => {
     setIsMapLoaded(true);
+  };
+
+  const handleMarkerClick = (location) => {
+    setSelectedLocation(location);
   };
 
   if (error) {
@@ -104,7 +110,7 @@ console.log(locations)
             key={index} 
             position={{ lat: loc?.direction?.latitude, lng: loc?.direction?.longitude }} 
             title={loc?.name} 
-            onClick={(e) => pop(loc)}
+            onClick={(e) => handleMarkerClick(loc)}
             icon={(loc?.availCount > 0) ? {
               url: LocationAvailable, 
               scaledSize: new window.google.maps.Size(25, 25), 
@@ -117,6 +123,19 @@ console.log(locations)
             }}
           />
         ))}
+        {selectedLocation && (
+          <InfoWindow
+            position={{ lat: selectedLocation?.direction?.latitude, lng: selectedLocation?.direction?.longitude }}
+            onCloseClick={() => setSelectedLocation(null)}
+          >
+            <div style={{display:"flex",flexDirection:"column",alignItems:"center"}}>
+              <h4>{selectedLocation?.name}</h4>
+              <p>{selectedLocation?.data?.address}</p>
+              <Button variant="text" onClick={() => pop(selectedLocation)}>View Location</Button>
+              {/* <button onClick={() => pop(selectedLocation)}></button> */}
+            </div>
+          </InfoWindow>
+        )}
         {isMapLoaded && (
           <Marker 
             position={center}

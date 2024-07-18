@@ -4,6 +4,7 @@ import { green } from '@mui/material/colors';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
+import { useLocation } from 'react-router-dom';
 
 const data = {
   locationName: 'MCC - Mysore road',
@@ -48,6 +49,8 @@ const data = {
 };
 
 const ViewLocation = () => {
+  const location = useLocation();
+  console.log(location.state);
   return (
     <DashboardLayout>
       <DashboardNavbar />

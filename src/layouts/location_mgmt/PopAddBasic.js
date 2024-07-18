@@ -1,4 +1,5 @@
 import MDBox from "components/MDBox";
+import axios from "axios";
 import MDInput from "components/MDInput";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
@@ -19,6 +20,10 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useMaterialUIController } from "context";
 import themeDark from "assets/theme-dark";
 import theme from "assets/theme";
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import OutlinedInput from "@mui/material/OutlinedInput";
+import Select from '@mui/material/Select';
 import IconButton from '@mui/material/IconButton';
 function PopAddBasic(props) {
     // const data = useSelector((s) => s);
@@ -30,15 +35,19 @@ function PopAddBasic(props) {
     const [isBackdrop, setIsBackdrop] = useState(false);
     const { onClose } = props;
 
+    const [stateData, setStateData] = useState({});
+    const [states, setStates] = useState([]);
+    const [selectedState, setSelectedState] = useState("");
+    const [cities, setCities] = useState([]);
     const navigate = useNavigate();
     const [dialogMessage, setDialogMessage] = useState("");
 
     const { enqueueSnackbar } = useSnackbar();
     // const getValues = () => {
     //   return {
-    //     first_name: "",
-    //     last_name: "",
-    //     phone_number: "",
+    //     locationName: "",
+    //     locationType: "",
+    //     address: "",
     //     email: "",
     //     gender: "",
     //     date_of_birth: "",
@@ -53,14 +62,14 @@ function PopAddBasic(props) {
     //   };
     // };
 
-    const createUser = (first_name, last_name, phone_number, email, gender, clas, state, city, paidup_capital, activity_code, activity_description, registered_office_address) => {
+    const createUser = (locationName, locationType, address, state, city, paidup_capital, activity_code, activity_description, registered_office_address) => {
         const axios = require("axios");
         alert("All input are correct")
         // var bodyFormData = new FormData();
         // bodyFormData.append("user", localStorage.getItem("userId"));
-        // bodyFormData.append("first_name", first_name);
-        // bodyFormData.append("last_name", last_name);
-        // bodyFormData.append("phone_number", phone_number);
+        // bodyFormData.append("locationName", locationName);
+        // bodyFormData.append("locationType", locationType);
+        // bodyFormData.append("address", address);
         // bodyFormData.append("state", state);
         // bodyFormData.append("roc", roc);
         // bodyFormData.append("company_status", company_status);
@@ -104,16 +113,13 @@ function PopAddBasic(props) {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        createUser(values.first_name, values.last_name, values.phone_number, values.email, values.gender, values.date_of_birth, values.state, values.city, values.paidup_capital, values.activity_code, values.activity_description, values.registered_office_address);
+        createUser(values.locationName, values.locationType, values.address, values.state, values.city, values.paidup_capital, values.activity_code, values.activity_description, values.registered_office_address);
     };
     const reset = (event) => {
         event.preventDefault();
-        values.first_name = "";
-        values.last_name = "";
-        values.phone_number = "";
-        values.email = "";
-        values.gender = "";
-        values.date_of_birth = "";
+        values.locationName = "";
+        values.locationType = "";
+        values.address = "";
         values.state = "";
         values.city = "";
         setValues(props.value);
@@ -122,13 +128,50 @@ function PopAddBasic(props) {
         onClose(false);
     };
     const pop = () => {
-        if (!values.first_name || !values.last_name || !values.phone_number || !values.email || !values.gender || !values.date_of_birth || !values.state || !values.city) return enqueueSnackbar('Please Fill All The Details !!!', { variant: 'error' })
+        if (!values.locationName || !values.locationType || !values.address || !values.state || !values.city) return enqueueSnackbar('Please Fill All The Details !!!', { variant: 'error' })
         setIsBackdrop(false);
         onClose(false);
         setIsDisabled(!isDisabled)
         // setIsDialog(true);
     };
+    const getState = () => {
+        axios({
+            method: "get",
+            url: process.env.REACT_APP_BASEURL + "charger-locations/all-location",
+        })
+            .then((response) => {
+                if (response.data.success === true) {
+                    const data = response.data.data;
+                    const structuredData = {};
+                    console.log(data);
+                    data.forEach(stateObj => {
+                        const state = Object.keys(stateObj)[0];
+                        const cities = stateObj[state];
+                        structuredData[state] = cities;
+                    });
 
+                    setStateData(structuredData);
+                    setStates(Object.keys(structuredData));
+
+                    // setState_show(response.data.data);
+                } else {
+                    console.log("status is false ");
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
+    const handleStateChange = (event) => {
+        const selectedState = event.target.value;
+        values.state = selectedState;
+        setSelectedState(selectedState);
+        setCities(stateData[selectedState]);
+        values.city = '';
+    };
+    useEffect(() => {
+        getState();
+    }, []);
     return (
         <>
             <PopAddLocation
@@ -140,7 +183,7 @@ function PopAddBasic(props) {
             <MDBackdrop isBackdrop={isBackdrop} />
             <Dialog open={props.isDialog} onClose={handleClose} fullWidth maxWidth="md" >
                 <DialogTitle style={darkMode ? { backgroundColor: "#202940", color: "#ffffff" ,display : "flex", alignItems : "center", justifyContent : "space-between"} : {theme,display : "flex", alignItems : "center", justifyContent : "space-between"}}>
-                    Personal information
+                    Basic Information
                     <IconButton aria-label="delete" onClick={handleClose} style={darkMode ? {color: "#ffffff"} : theme}>
                         <CloseIcon />
                     </IconButton>
@@ -171,9 +214,9 @@ function PopAddBasic(props) {
                             <MDBox p={1}>
                                 <MDInput
                                     type="text"
-                                    label="First Name"
-                                    value={values.first_name}
-                                    name="first_name"
+                                    label="Location Name"
+                                    value={values.locationName}
+                                    name="locationName"
                                     margin="dense"
                                     fullWidth={true}
                                     onChange={handleChange}
@@ -183,9 +226,9 @@ function PopAddBasic(props) {
                             <MDBox p={1}>
                                 <MDInput
                                     type="text"
-                                    label="Last Name"
-                                    value={values.last_name}
-                                    name="last_name"
+                                    label="Location Type"
+                                    value={values.locationType}
+                                    name="locationType"
                                     // multiline
                                     // rows={5}
                                     margin="dense"
@@ -196,82 +239,69 @@ function PopAddBasic(props) {
                             <MDBox p={1}>
                                 <MDInput
                                     type="number"
-                                    label="Phone Number"
-                                    value={values.phone_number}
-                                    name="phone_number"
-                                    // multiline
-                                    // rows={5}
+                                    label="Address"
+                                    value={values.address}
+                                    name="address"
+                                    multiline
+                                    rows={4}
                                     margin="dense"
                                     fullWidth={true}
                                     onChange={handleChange}
                                 />
                             </MDBox>
                             <MDBox p={1}>
-                                <MDInput
-                                    type="email"
-                                    label="E-mail ID"
-                                    value={values.email}
-                                    name="email"
-                                    // multiline
-                                    // rows={5}
-                                    placeholder="username@gmail.com"
-                                    pattern=".+@+.+.com"
-                                    margin="dense"
-                                    fullWidth={true}
-                                    onChange={handleChange}
-                                />
+                                <FormControl fullWidth>
+                                    <InputLabel id="demo-multiple-name-label">State</InputLabel>
+                                    <Select
+                                        sx={{
+                                            height: 50,
+                                        }}
+                                        labelId="demo-multiple-name-label"
+                                        id="demo-multiple-name"
+                                        placeholder="Select State"
+                                        value={values.state}
+                                        name="state"
+                                        onChange={handleStateChange}
+                                        input={<OutlinedInput label="State" />}
+                                    >
+                                        {states.map((state, index) => (
+                                            <MenuItem
+                                                key={index}
+                                                value={state}
+                                            //   style={getStyles(name.name, values.service, theme)}
+                                            >
+                                                {state}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
                             </MDBox>
                             <MDBox p={1}>
-                                <MDInput
-                                    type="text"
-                                    label="Gender"
-                                    value={values.gender}
-                                    name="gender"
-                                    // multiline
-                                    // rows={5}
-                                    margin="dense"
-                                    fullWidth={true}
-                                    onChange={handleChange}
-                                />
-                            </MDBox>
-                            <MDBox p={1}>
-                                <MDInput
-                                    type="date"
-                                    label="Date Of Birth"
-                                    value={values.date_of_birth}
-                                    name="date_of_birth"
-                                    // multiline
-                                    // rows={5}
-                                    margin="dense"
-                                    fullWidth={true}
-                                    onChange={handleChange}
-                                />
-                            </MDBox>
-                            <MDBox p={1}>
-                                <MDInput
-                                    type="text"
-                                    label="State"
-                                    value={values.state}
-                                    name="state"
-                                    // multiline
-                                    // rows={5}
-                                    margin="dense"
-                                    fullWidth={true}
-                                    onChange={handleChange}
-                                />
-                            </MDBox>
-                            <MDBox p={1}>
-                                <MDInput
-                                    type="text"
-                                    label="City"
-                                    value={values.city}
-                                    name="city"
-                                    // multiline
-                                    // rows={5}
-                                    margin="dense"
-                                    fullWidth={true}
-                                    onChange={handleChange}
-                                />
+                                <FormControl fullWidth>
+                                    <InputLabel id="demo-multiple-name-label">City</InputLabel>
+                                    <Select
+                                        sx={{
+                                            height: 50,
+                                        }}
+                                        labelId="demo-multiple-name-label"
+                                        id="demo-multiple-name"
+                                        placeholder="Select City"
+                                        value={values.city}
+                                        name="city"
+                                        onChange={handleChange}
+                                        input={<OutlinedInput label="City" />}
+                                    >
+                                        {cities.map((city, index) => (
+                                            <MenuItem
+                                                key={index}
+                                                value={city}
+                                            //   style={getStyles(name.name, values.service, theme)}
+                                            >
+                                                {city}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
                             </MDBox>
                         </MDBox>
                     </MDBox>

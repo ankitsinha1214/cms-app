@@ -66,19 +66,12 @@ function Location_mgmt() {
   ];
   const getValues = () => {
     return {
-      first_name: "",
-      last_name: "",
-      phone_number: "",
-      email: "",
-      gender: "",
-      date_of_birth: "",
+      locationName: "",
+      locationType: "",
+      address: "",
       state: "",
       city: "",
-      make: "",
-      model: "",
-      variant: "",
-      registeration_number: "",
-      range: ""
+      status: ""
     };
   };
   useEffect(() => {
@@ -106,7 +99,8 @@ function Location_mgmt() {
               direction: location.direction,
               availCount: availCount,
               inuseCount: inuseCount,
-              inactiveCount: inactiveCount
+              inactiveCount: inactiveCount,
+              data: location
             };
             element.push(ele);
             const acCount = location.chargerInfo.filter(charger => charger.type === 'AC').length;
@@ -134,6 +128,8 @@ function Location_mgmt() {
           setRows(dataWithChargerCount);
           setIsLoading(false);
         } else {
+          enqueueSnackbar(response.data.message, { variant: 'error' });
+          setIsLoading(false);
           console.log("status is false ");
         }
       })
