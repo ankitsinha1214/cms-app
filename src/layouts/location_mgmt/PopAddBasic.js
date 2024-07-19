@@ -25,9 +25,18 @@ import MenuItem from '@mui/material/MenuItem';
 import OutlinedInput from "@mui/material/OutlinedInput";
 import Select from '@mui/material/Select';
 import IconButton from '@mui/material/IconButton';
+import { Country, State, City } from 'country-state-city';
+
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel'
+import FormLabel from '@mui/material/FormLabel';
+
 function PopAddBasic(props) {
     // const data = useSelector((s) => s);
     // console.log(data);
+    // console.log(State.getStatesOfCountry('IN'))
+    // console.log(State.getAllStates())
     const [controller] = useMaterialUIController();
     const { darkMode } = controller;
     const [isDisabled, setIsDisabled] = useState(false);
@@ -36,7 +45,8 @@ function PopAddBasic(props) {
     const { onClose } = props;
 
     const [stateData, setStateData] = useState({});
-    const [states, setStates] = useState([]);
+    const [states, setStates] = useState(State.getStatesOfCountry('IN'));
+    // const [states, setStates] = useState([]);
     const [selectedState, setSelectedState] = useState("");
     const [cities, setCities] = useState([]);
     const navigate = useNavigate();
@@ -62,7 +72,7 @@ function PopAddBasic(props) {
     //   };
     // };
 
-    const createUser = (locationName, locationType, address, state, city, paidup_capital, activity_code, activity_description, registered_office_address) => {
+    const createUser = (locationName, locationType, address, state, city,status, paidup_capital, activity_code, activity_description, registered_office_address) => {
         const axios = require("axios");
         alert("All input are correct")
         // var bodyFormData = new FormData();
@@ -113,7 +123,7 @@ function PopAddBasic(props) {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        createUser(values.locationName, values.locationType, values.address, values.state, values.city, values.paidup_capital, values.activity_code, values.activity_description, values.registered_office_address);
+        createUser(values.locationName, values.locationType, values.address, values.state, values.city,values.status, values.paidup_capital, values.activity_code, values.activity_description, values.registered_office_address);
     };
     const reset = (event) => {
         event.preventDefault();
@@ -122,56 +132,61 @@ function PopAddBasic(props) {
         values.address = "";
         values.state = "";
         values.city = "";
+        values.status = "";
         setValues(props.value);
     }
     const handleClose = () => {
         onClose(false);
     };
+    console.log(values)
     const pop = () => {
-        if (!values.locationName || !values.locationType || !values.address || !values.state || !values.city) return enqueueSnackbar('Please Fill All The Details !!!', { variant: 'error' })
+        if (!values.locationName || !values.locationType || !values.address || !values.state || !values.city || !values.status) return enqueueSnackbar('Please Fill All The Details !!!', { variant: 'error' })
         setIsBackdrop(false);
         onClose(false);
         setIsDisabled(!isDisabled)
         // setIsDialog(true);
     };
-    const getState = () => {
-        axios({
-            method: "get",
-            url: process.env.REACT_APP_BASEURL + "charger-locations/all-location",
-        })
-            .then((response) => {
-                if (response.data.success === true) {
-                    const data = response.data.data;
-                    const structuredData = {};
-                    console.log(data);
-                    data.forEach(stateObj => {
-                        const state = Object.keys(stateObj)[0];
-                        const cities = stateObj[state];
-                        structuredData[state] = cities;
-                    });
+    // const getState = () => {
+    //     axios({
+    //         method: "get",
+    //         url: process.env.REACT_APP_BASEURL + "charger-locations/all-location",
+    //     })
+    //         .then((response) => {
+    //             if (response.data.success === true) {
+    //                 const data = response.data.data;
+    //                 const structuredData = {};
+    //                 console.log(data);
+    //                 data.forEach(stateObj => {
+    //                     const state = Object.keys(stateObj)[0];
+    //                     const cities = stateObj[state];
+    //                     structuredData[state] = cities;
+    //                 });
 
-                    setStateData(structuredData);
-                    setStates(Object.keys(structuredData));
+    //                 setStateData(structuredData);
+    //                 setStates(Object.keys(structuredData));
 
-                    // setState_show(response.data.data);
-                } else {
-                    console.log("status is false ");
-                }
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-    };
+    //                 // setState_show(response.data.data);
+    //             } else {
+    //                 console.log("status is false ");
+    //             }
+    //         })
+    //         .catch((error) => {
+    //             console.log(error);
+    //         });
+    // };
     const handleStateChange = (event) => {
         const selectedState = event.target.value;
-        values.state = selectedState;
-        setSelectedState(selectedState);
-        setCities(stateData[selectedState]);
-        values.city = '';
+        setValues((prevValues) => ({
+            ...prevValues,
+            state: selectedState,
+            city: '',
+        }));
+        const stateIsoCode = states.find(state => state.name === selectedState)?.isoCode;
+        setCities(City.getCitiesOfState('IN', stateIsoCode));
     };
-    useEffect(() => {
-        getState();
-    }, []);
+    // useEffect(() => {
+    //     getState();
+    // }, []);
     return (
         <>
             <PopAddLocation
@@ -182,9 +197,9 @@ function PopAddBasic(props) {
             />
             <MDBackdrop isBackdrop={isBackdrop} />
             <Dialog open={props.isDialog} onClose={handleClose} fullWidth maxWidth="md" >
-                <DialogTitle style={darkMode ? { backgroundColor: "#202940", color: "#ffffff" ,display : "flex", alignItems : "center", justifyContent : "space-between"} : {theme,display : "flex", alignItems : "center", justifyContent : "space-between"}}>
+                <DialogTitle style={darkMode ? { backgroundColor: "#202940", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "space-between" } : { theme, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                     Basic Information
-                    <IconButton aria-label="delete" onClick={handleClose} style={darkMode ? {color: "#ffffff"} : theme}>
+                    <IconButton aria-label="delete" onClick={handleClose} style={darkMode ? { color: "#ffffff" } : theme}>
                         <CloseIcon />
                     </IconButton>
                 </DialogTitle>
@@ -224,17 +239,46 @@ function PopAddBasic(props) {
                             </MDBox>
 
                             <MDBox p={1}>
-                                <MDInput
-                                    type="text"
-                                    label="Location Type"
-                                    value={values.locationType}
-                                    name="locationType"
-                                    // multiline
-                                    // rows={5}
-                                    margin="dense"
-                                    fullWidth={true}
-                                    onChange={handleChange}
-                                />
+                                <FormControl fullWidth>
+                                    <InputLabel id="location-type-label">Location Type</InputLabel>
+                                    <Select
+                                        sx={{
+                                            height: 50,
+                                        }}
+                                        labelId="location-type-label"
+                                        id="location-type-select"
+                                        value={values.locationType}
+                                        name="locationType"
+                                        onChange={handleChange}
+                                        input={<OutlinedInput label="Location Type" />}
+                                    >
+                                        <MenuItem value="Petrol Pumps">Petrol Pumps</MenuItem>
+                                        <MenuItem value="Malls">Malls</MenuItem>
+                                        <MenuItem value="Highways">Highways</MenuItem>
+                                        <MenuItem value="Resorts">Resorts</MenuItem>
+                                        <MenuItem value="Airports">Airports</MenuItem>
+                                        <MenuItem value="Hotels">Hotels</MenuItem>
+                                        <MenuItem value="Parking Garages">Parking Garages</MenuItem>
+                                        <MenuItem value="Office Complexes">Office Complexes</MenuItem>
+                                        <MenuItem value="Supermarkets">Supermarkets</MenuItem>
+                                        <MenuItem value="Train Stations">Train Stations</MenuItem>
+                                        <MenuItem value="Restaurants">Restaurants</MenuItem>
+                                        <MenuItem value="Residential Areas">Residential Areas</MenuItem>
+                                        <MenuItem value="Parks and Recreational Areas">Parks and Recreational Areas</MenuItem>
+                                        <MenuItem value="University Campuses">University Campuses</MenuItem>
+                                        <MenuItem value="Convention Centers">Convention Centers</MenuItem>
+                                        <MenuItem value="Stadiums and Sports Arenas">Stadiums and Sports Arenas</MenuItem>
+                                        <MenuItem value="Movie Theaters">Movie Theaters</MenuItem>
+                                        <MenuItem value="Hospitals">Hospitals</MenuItem>
+                                        <MenuItem value="Government Buildings">Government Buildings</MenuItem>
+                                        <MenuItem value="Libraries">Libraries</MenuItem>
+                                        <MenuItem value="Community Centers">Community Centers</MenuItem>
+                                        <MenuItem value="Beach Parking Lots">Beach Parking Lots</MenuItem>
+                                        <MenuItem value="Tourist Attractions">Tourist Attractions</MenuItem>
+                                        <MenuItem value="Car Dealerships">Car Dealerships</MenuItem>
+                                        <MenuItem value="Metro Stations">Metro Stations</MenuItem>
+                                    </Select>
+                                </FormControl>
                             </MDBox>
                             <MDBox p={1}>
                                 <MDInput
@@ -267,10 +311,10 @@ function PopAddBasic(props) {
                                         {states.map((state, index) => (
                                             <MenuItem
                                                 key={index}
-                                                value={state}
+                                                value={state.name}
                                             //   style={getStyles(name.name, values.service, theme)}
                                             >
-                                                {state}
+                                                {state.name}
                                             </MenuItem>
                                         ))}
                                     </Select>
@@ -294,19 +338,37 @@ function PopAddBasic(props) {
                                         {cities.map((city, index) => (
                                             <MenuItem
                                                 key={index}
-                                                value={city}
+                                                value={city.name}
                                             //   style={getStyles(name.name, values.service, theme)}
                                             >
-                                                {city}
+                                                {city.name}
                                             </MenuItem>
                                         ))}
                                     </Select>
                                 </FormControl>
                             </MDBox>
+                            <MDBox p={1}>
+                                <FormControl>
+                                    <FormLabel id="demo-row-radio-buttons-group-label">Status</FormLabel>
+                                    <RadioGroup
+                                        row
+                                        aria-labelledby="demo-row-radio-buttons-group-label"
+                                        // name="row-radio-buttons-group"
+                                        value={values.status}
+                                        name="status"
+                                        onChange={handleChange}
+                                    >
+                                        <FormControlLabel value="Active" control={<Radio />} label="Active" />
+                                        <FormControlLabel value="Inactive" control={<Radio />} label="Inactive" />
+                                        <FormControlLabel value="Pending" control={<Radio />} label="Pending" />
+                                        <FormControlLabel value="Waitlisted" control={<Radio />} label="Waitlisted" />
+                                    </RadioGroup>
+                                </FormControl>
+                            </MDBox>
                         </MDBox>
                     </MDBox>
                 </DialogContent>
-                <DialogActions style={darkMode ? { backgroundColor: "#202940",justifyContent : "space-evenly", color: "#ffffff" } : {theme,justifyContent : "space-evenly"}}>
+                <DialogActions style={darkMode ? { backgroundColor: "#202940", justifyContent: "space-evenly", color: "#ffffff" } : { theme, justifyContent: "space-evenly" }}>
                     {/* <Button onClick={handleSubmit} autoFocus>
                         Upload File
                     </Button> */}
