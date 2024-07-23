@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";
-
+import { GoogleMapsProvider } from './context/GoogleMapsProvider';
 // Material Dashboard 2 React Context Provider
 import { MaterialUIControllerProvider } from "context";
 // Notistack
@@ -16,7 +16,9 @@ ReactDOM.render(
     <BrowserRouter>
       <SnackbarProvider maxSnack={3} autoHideDuration={5000} preventDuplicate={true} >
         <MaterialUIControllerProvider>
+        <GoogleMapsProvider>
           <App />
+          </GoogleMapsProvider>
         </MaterialUIControllerProvider>
       </SnackbarProvider>
     </BrowserRouter>

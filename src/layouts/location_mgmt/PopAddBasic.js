@@ -3,6 +3,7 @@ import axios from "axios";
 import MDInput from "components/MDInput";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
+import { Grid } from '@mui/material';
 // import Dialog from "assets/theme/components/dialog";
 import MDTypography from "components/MDTypography";
 import DialogActions from "@mui/material/DialogActions";
@@ -31,87 +32,30 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel'
 import FormLabel from '@mui/material/FormLabel';
+import LocationPicker from "./components/LocationPicker";
+import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
+import { Space, Switch } from 'antd';
 
 function PopAddBasic(props) {
-    // const data = useSelector((s) => s);
-    // console.log(data);
-    // console.log(State.getStatesOfCountry('IN'))
-    // console.log(State.getAllStates())
     const [controller] = useMaterialUIController();
     const { darkMode } = controller;
     const [isDisabled, setIsDisabled] = useState(false);
     const [fileName, setFileName] = useState("");
     const [isBackdrop, setIsBackdrop] = useState(false);
     const { onClose } = props;
-
-    const [stateData, setStateData] = useState({});
     const [states, setStates] = useState(State.getStatesOfCountry('IN'));
-    // const [states, setStates] = useState([]);
-    const [selectedState, setSelectedState] = useState("");
     const [cities, setCities] = useState([]);
     const navigate = useNavigate();
     const [dialogMessage, setDialogMessage] = useState("");
+    const currentLocation = JSON.parse(localStorage.getItem("Currentlocation"));
+    const initialLocation = { lat: currentLocation.lat, lng: currentLocation.lng } || {};
 
     const { enqueueSnackbar } = useSnackbar();
-    // const getValues = () => {
-    //   return {
-    //     locationName: "",
-    //     locationType: "",
-    //     address: "",
-    //     email: "",
-    //     gender: "",
-    //     date_of_birth: "",
-    //     state: "",
-    //     city: "",
-    //     paidup_capital: "",
-    //     activity_code: "",
-    //     activity_description: "",
-    //     registered_office_address: "",
-    //     roc: "",
-    //     company_status: ""
-    //   };
-    // };
 
-    const createUser = (locationName, locationType, address, state, city,status, paidup_capital, activity_code, activity_description, registered_office_address) => {
-        const axios = require("axios");
-        alert("All input are correct")
-        // var bodyFormData = new FormData();
-        // bodyFormData.append("user", localStorage.getItem("userId"));
-        // bodyFormData.append("locationName", locationName);
-        // bodyFormData.append("locationType", locationType);
-        // bodyFormData.append("address", address);
-        // bodyFormData.append("state", state);
-        // bodyFormData.append("roc", roc);
-        // bodyFormData.append("company_status", company_status);
-        // bodyFormData.append("gender", gender);
-        // bodyFormData.append("date_of_birth", clas);
-        // bodyFormData.append("state", state);
-        // bodyFormData.append("city", city);
-        // bodyFormData.append("paidup_capital", paidup_capital);
-        // bodyFormData.append("activity_code", activity_code);
-        // bodyFormData.append("activity_description", activity_description);
-        // bodyFormData.append("registered_office_address", registered_office_address);
-        // bodyFormData.append("email", email);
-        // setIsBackdrop(true);
-        // axios({
-        //   method: "post",
-        //   url: BASE_URL + "jbackend/createuser",
-        //   data: bodyFormData,
-        // })
-        //   .then((response) => {
-        //     console.log(response.data.message);
-        //     setLLP_data(response.data);
-        //     setIsBackdrop(false);
-        //     setDialogMessage(response.data.message);
-        //     setIsDialog(true);
-        //   })
-        //   .catch((error) => {
-        //     console.log(error);
-        //     setIsBackdrop(false);
-        //     setDialogMessage(error);
-        //     setIsDialog(true);
-        //   });
-    };
+    // const createUser = (locationName, locationType, address, state, city,status, paidup_capital, activity_code, activity_description, registered_office_address) => {
+    //     const axios = require("axios");
+    //     alert("All input are correct");
+    // };
 
     const [values, setValues] = useState(props.value);
     const handleChange = (event) => {
@@ -120,11 +64,40 @@ function PopAddBasic(props) {
             [event.target.name]: event.target.value,
         }));
     };
-
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        createUser(values.locationName, values.locationType, values.address, values.state, values.city,values.status, values.paidup_capital, values.activity_code, values.activity_description, values.registered_office_address);
+    const handleFreePaidChange = (event) => {
+        setValues((prevValues) => {
+            return {
+                ...prevValues,
+                ["freepaid"]: {
+                    ...prevValues["freepaid"],
+                    ["parking"]: event,
+                },
+            };
+        });
     };
+    const handleFreePaidChangeCharging = (event) => {
+        setValues((prevValues) => {
+            return {
+                ...prevValues,
+                ["freepaid"]: {
+                    ...prevValues["freepaid"],
+                    ["charging"]: event,
+                },
+            };
+        });
+    };
+    
+
+    const handleLocationChange = (location) => {
+        setValues((prevValues) => ({
+            ...prevValues,
+            direction: location,
+        }));
+    };
+    // const handleSubmit = (event) => {
+    //     event.preventDefault();
+    //     createUser(values.locationName, values.locationType, values.address, values.state, values.city,values.status, values.paidup_capital, values.activity_code, values.activity_description, values.registered_office_address);
+    // };
     const reset = (event) => {
         event.preventDefault();
         values.locationName = "";
@@ -133,6 +106,10 @@ function PopAddBasic(props) {
         values.state = "";
         values.city = "";
         values.status = "";
+        values.freepaid = {
+            "parking": true,
+            "charging": true
+        };
         setValues(props.value);
     }
     const handleClose = () => {
@@ -141,6 +118,7 @@ function PopAddBasic(props) {
     console.log(values)
     const pop = () => {
         if (!values.locationName || !values.locationType || !values.address || !values.state || !values.city || !values.status) return enqueueSnackbar('Please Fill All The Details !!!', { variant: 'error' })
+        if (!values.direction.latitude || !values.direction.longitude) return enqueueSnackbar('Please Enter the location correctly !!!', { variant: 'error' })
         setIsBackdrop(false);
         onClose(false);
         setIsDisabled(!isDisabled)
@@ -364,6 +342,40 @@ function PopAddBasic(props) {
                                         <FormControlLabel value="Waitlisted" control={<Radio />} label="Waitlisted" />
                                     </RadioGroup>
                                 </FormControl>
+                            </MDBox>
+                            <Grid container>
+                                <Grid item xs={6}>
+                                    <MDBox p={1}>
+                                        <FormLabel>Free Parking</FormLabel><br />
+                                        <Switch
+                                            checked={values.freepaid.parking}
+                                            // name="parking"
+                                            checkedChildren={<CheckOutlined />}
+                                            unCheckedChildren={<CloseOutlined />}
+                                            onChange={handleFreePaidChange}
+                                        />
+                                    </MDBox>
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <MDBox p={1}>
+                                        <FormLabel>Free Charging</FormLabel><br />
+                                        <Switch
+                                            checked={values.freepaid.charging}
+                                            // name="charging"
+                                            checkedChildren={<CheckOutlined />}
+                                            unCheckedChildren={<CloseOutlined />}
+                                            onChange={handleFreePaidChangeCharging}
+                                        />
+                                    </MDBox>
+                                </Grid>
+                            </Grid>
+
+
+                            <MDBox p={1}>
+                                <LocationPicker
+                                    initialLocation={initialLocation}
+                                    onLocationChange={handleLocationChange}
+                                />
                             </MDBox>
                         </MDBox>
                     </MDBox>

@@ -1,10 +1,22 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Container, Grid, Typography, Paper, Avatar, IconButton, Card, CardContent, CardMedia } from '@mui/material';
 import { green } from '@mui/material/colors';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
+import reportsLineChartData from "./components/reportsLineChartData";
+import ReportsLineChart from "examples/Charts/LineCharts/ReportsLineChart/New";
+
 import { useLocation } from 'react-router-dom';
+import {
+  CheckCircleOutlined,
+  ClockCircleOutlined,
+  CloseCircleOutlined,
+  ExclamationCircleOutlined,
+  MinusCircleOutlined,
+  SyncOutlined,
+} from '@ant-design/icons';
+import { Flex, Tag } from 'antd';
 
 const data = {
   locationName: 'MCC - Mysore road',
@@ -49,137 +61,179 @@ const data = {
 };
 
 const ViewLocation = () => {
+  const { energyCons } = reportsLineChartData;
   const location = useLocation();
   console.log(location.state);
+  const [content, setContent] = useState([]);
+  useEffect(() => {
+    setContent(location.state);
+  }, []);
   return (
     <DashboardLayout>
       <DashboardNavbar />
-    <Container maxWidth="lg">
-      <Box sx={{ my: 4 }}>
-        <Grid container spacing={3}>
-          {/* Header Section */}
-          <Grid item xs={12} sm={8}>
-            <Typography variant="h4" component="h1" gutterBottom>
-              {data.locationName}
-            </Typography>
-            <Typography variant="subtitle1">
-              {data.address}
-            </Typography>
-            <Typography variant="body2">
-              {data.type} | {data.accessibility}
-            </Typography>
-          </Grid>
-          <Grid item xs={12} sm={4} display="flex" justifyContent="flex-end">
-            <IconButton color="primary">
-              <LocationOnIcon />
-            </IconButton>
-          </Grid>
+      <Container maxWidth="lg" style={{ backgroundColor: "#F0F0F0" }}>
+        <Box sx={{ my: 4 }}>
+          <Grid container spacing={3}>
+            {/* Header Section */}
+            <Grid item xs={12} sm={8}>
+              {/* <Flex gap="4px 0" wrap> */}
+              {content?.status === "Active" ?
+                <Tag icon={<CheckCircleOutlined />} color="success">
+                  Live
+                </Tag>
+                : content?.status === "Pending" ?
+                  <Tag icon={<SyncOutlined spin />} color="warning">
+                    Pending
+                  </Tag>
+                  : content?.status === "Inactive" ?
+                    <Tag icon={<CloseCircleOutlined />} color="error">
+                      Inactive
+                    </Tag>
+                    : content?.status === "Waitlisted" ?
+                      <Tag icon={<ClockCircleOutlined />} color="default">
+                        waiting
+                      </Tag> :
+                      <Tag icon={<MinusCircleOutlined />} color="default">
+                        {content?.status}
+                      </Tag>
+              }
+              {/* <Tag icon={<ExclamationCircleOutlined />} color="warning">
+                  warning
+                </Tag> */}
+              {/* {JSON.stringify(data)} */}
+              {/* </Flex> */}
+              <Typography variant="h4" component="h1" gutterBottom>
+                {content?.locationName}
+              </Typography>
+              <Typography variant="subtitle1">
+                {content?.city}, {content?.state}
+              </Typography>
+              <Typography variant="body2">
+                {content?.locationType} | {data.accessibility}
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sm={4} display="flex" justifyContent="flex-end">
+              <IconButton color="primary">
+                <LocationOnIcon />
+              </IconButton>
+            </Grid>
 
-          {/* Statistics Section */}
-          <Grid item xs={12} md={6}>
-            <Paper elevation={3} sx={{ p: 2 }}>
-              <Grid container spacing={2}>
-                <Grid item xs={6}>
-                  <Typography variant="h6">{data.stats.total}</Typography>
-                  <Typography variant="body2">Total</Typography>
+            {/* Statistics Section */}
+            <Grid item xs={12} md={6}>
+              <Paper elevation={3} sx={{ p: 2 }}>
+                <Grid container spacing={2}>
+                  <Grid item xs={6}>
+                    <Typography variant="h6">{data.stats.total}</Typography>
+                    <Typography variant="body2">Total</Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography variant="h6">{data.stats.ac}</Typography>
+                    <Typography variant="body2">AC</Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography variant="h6">{data.stats.dc}</Typography>
+                    <Typography variant="body2">DC</Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography variant="h6">{data.stats.twoWheelerDC}</Typography>
+                    <Typography variant="body2">2wDC</Typography>
+                  </Grid>
                 </Grid>
-                <Grid item xs={6}>
-                  <Typography variant="h6">{data.stats.ac}</Typography>
-                  <Typography variant="body2">AC</Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography variant="h6">{data.stats.dc}</Typography>
-                  <Typography variant="body2">DC</Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography variant="h6">{data.stats.twoWheelerDC}</Typography>
-                  <Typography variant="body2">2wDC</Typography>
-                </Grid>
-              </Grid>
-            </Paper>
-          </Grid>
+              </Paper>
+            </Grid>
 
-          {/* Additional Stats */}
-          <Grid item xs={12} md={6}>
-            <Paper elevation={3} sx={{ p: 2 }}>
-              <Grid container spacing={2}>
-                <Grid item xs={6}>
-                  <Typography variant="h6">{data.stats.energyDispersed}</Typography>
-                  <Typography variant="body2">Energy dispersed (kwh)</Typography>
+            {/* Additional Stats */}
+            <Grid item xs={12} md={6}>
+              <Paper elevation={3} sx={{ p: 2 }}>
+                <Grid container spacing={2}>
+                  <Grid item xs={6}>
+                    <Typography variant="h6">{data.stats.energyDispersed}</Typography>
+                    <Typography variant="body2">Energy dispersed (kwh)</Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography variant="h6">{data.stats.visits}</Typography>
+                    <Typography variant="body2">Visits / Transactions</Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography variant="h6">{data.stats.occupancyRate}%</Typography>
+                    <Typography variant="body2">Occupancy rate</Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography variant="h6">{data.stats.kmsPowered}</Typography>
+                    <Typography variant="body2">KMS powered (km)</Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography variant="h6">{data.stats.co2Saved}</Typography>
+                    <Typography variant="body2">CO2 saved (kg)</Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography variant="h6">{data.stats.uptimeRate}%</Typography>
+                    <Typography variant="body2">Uptime rate</Typography>
+                  </Grid>
                 </Grid>
-                <Grid item xs={6}>
-                  <Typography variant="h6">{data.stats.visits}</Typography>
-                  <Typography variant="body2">Visits / Transactions</Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography variant="h6">{data.stats.occupancyRate}%</Typography>
-                  <Typography variant="body2">Occupancy rate</Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography variant="h6">{data.stats.kmsPowered}</Typography>
-                  <Typography variant="body2">KMS powered (km)</Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography variant="h6">{data.stats.co2Saved}</Typography>
-                  <Typography variant="body2">CO2 saved (kg)</Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography variant="h6">{data.stats.uptimeRate}%</Typography>
-                  <Typography variant="body2">Uptime rate</Typography>
-                </Grid>
-              </Grid>
-            </Paper>
-          </Grid>
+              </Paper>
+            </Grid>
 
-          {/* Contact Section */}
-          <Grid item xs={12}>
-            <Paper elevation={3} sx={{ p: 2 }}>
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="h6">Contact Information</Typography>
-                  <Typography variant="body2">Phone: {data.contact.phone}</Typography>
+            {/* Contact Section */}
+            <Grid item xs={12}>
+              <Paper elevation={3} sx={{ p: 2 }}>
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="h6">Contact Information</Typography>
+                    <Typography variant="body2">Phone: {data.contact.phone}</Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="h6">SPOC</Typography>
+                    <Typography variant="body2">Name: {data.contact.spoc.name}</Typography>
+                    <Typography variant="body2">Phone: {data.contact.spoc.phone}</Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="h6">Accounts</Typography>
+                    <Typography variant="body2">Name: {data.contact.accounts.name}</Typography>
+                    <Typography variant="body2">Phone: {data.contact.accounts.phone}</Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="h6">Maintenance</Typography>
+                    <Typography variant="body2">Name: {data.contact.maintenance.name}</Typography>
+                    <Typography variant="body2">Phone: {data.contact.maintenance.phone}</Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="h6">GM</Typography>
+                    <Typography variant="body2">Name: {data.contact.gm.name}</Typography>
+                    <Typography variant="body2">Phone: {data.contact.gm.phone}</Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="h6">Site Engineer</Typography>
+                    <Typography variant="body2">Name: {data.contact.siteEngineer.name}</Typography>
+                    <Typography variant="body2">Phone: {data.contact.siteEngineer.phone}</Typography>
+                  </Grid>
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="h6">SPOC</Typography>
-                  <Typography variant="body2">Name: {data.contact.spoc.name}</Typography>
-                  <Typography variant="body2">Phone: {data.contact.spoc.phone}</Typography>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="h6">Accounts</Typography>
-                  <Typography variant="body2">Name: {data.contact.accounts.name}</Typography>
-                  <Typography variant="body2">Phone: {data.contact.accounts.phone}</Typography>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="h6">Maintenance</Typography>
-                  <Typography variant="body2">Name: {data.contact.maintenance.name}</Typography>
-                  <Typography variant="body2">Phone: {data.contact.maintenance.phone}</Typography>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="h6">GM</Typography>
-                  <Typography variant="body2">Name: {data.contact.gm.name}</Typography>
-                  <Typography variant="body2">Phone: {data.contact.gm.phone}</Typography>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="h6">Site Engineer</Typography>
-                  <Typography variant="body2">Name: {data.contact.siteEngineer.name}</Typography>
-                  <Typography variant="body2">Phone: {data.contact.siteEngineer.phone}</Typography>
-                </Grid>
-              </Grid>
-            </Paper>
-          </Grid>
+              </Paper>
+            </Grid>
 
-          {/* Placeholder for Energy Consumed Graph */}
-          <Grid item xs={12}>
-            <Paper elevation={3} sx={{ p: 2 }}>
-              <Typography variant="h6">Energy Consumed</Typography>
-              <Box sx={{ height: 300 }}>
-                {/* Insert your graph component here */}
-              </Box>
-            </Paper>
+            {/* Placeholder for Energy Consumed Graph */}
+            <Grid item xs={12} md={12} lg={8}>
+              <Paper elevation={3} sx={{ p: 2 }}>
+                {/* <Typography variant="h6">Energy Consumed</Typography> */}
+                <Box sx={{ height: 300 }}>
+                  {/* Insert your graph component here */}
+                  <Grid item xs={12}>
+                    <Box mb={3}>
+                      <ReportsLineChart
+                        color="warning"
+                        title="Energy Consumed"
+                        // description="Last Campaign Performance"
+                        // date="just updated"
+                        chart={energyCons}
+                      />
+                    </Box>
+                  </Grid>
+                </Box>
+              </Paper>
+            </Grid>
           </Grid>
-        </Grid>
-      </Box>
-    </Container>
+        </Box>
+      </Container>
     </DashboardLayout>
   );
 };

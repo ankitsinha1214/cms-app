@@ -71,7 +71,13 @@ function Location_mgmt() {
       address: "",
       state: "",
       city: "",
-      status: ""
+      status: "",
+      freepaid: {
+        "parking": true, 
+        "charging": true
+      },
+      direction: {},
+      chargerInfo: [{}]
     };
   };
   useEffect(() => {
@@ -152,75 +158,7 @@ function Location_mgmt() {
   const [expandedRows, setExpandedRows] = useState([]);
   const [rows, setRows] = useState([]);
   // console.log(rows);
-  // const rows = [
-  //   {
-  //     "name": "John Doe",
-  //     "status": "red",
-  //     "gender": "Male",
-  //     "l_type": "Car",
-  //     "chargers": "2",
-  //     "c_type": "Camry",
-  //     "state": "California",
-  //     "city": "Los Angeles",
-  //     "energy_disp": "250000 KWH"
-  //   },
-  //   {
-  //     "name": "Jane Smith",
-  //     "status": "yellow",
-  //     "gender": "Female",
-  //     "l_type": "Motorcycle ",
-  //     "chargers": "3",
-  //     "c_type": "CBR600",
-  //     "state": "New York",
-  //     "city": "New York City",
-  //     "energy_disp": "150000 KWH"
-  //   },
-  //   {
-  //     "name": "Ankit",
-  //     "status": "grey",
-  //     "gender": "Male",
-  //     "l_type": "Motorcycle ",
-  //     "chargers": "3",
-  //     "c_type": "CBR600",
-  //     "state": "New York",
-  //     "city": "New York City",
-  //     "energy_disp": "150000 KWH"
-  //   },
-  //   {
-  //     "name": "Jane Smith",
-  //     "status": "green",
-  //     "gender": "Female",
-  //     "l_type": "Motorcycle ",
-  //     "chargers": "3",
-  //     "c_type": "CBR600",
-  //     "state": "New York",
-  //     "city": "New York City",
-  //     "energy_disp": "150000 KWH"
-  //   },
-  //   {
-  //     "name": "Jane Smith",
-  //     "status": "red",
-  //     "gender": "Female",
-  //     "l_type": "Motorcycle ",
-  //     "chargers": "3",
-  //     "c_type": "CBR600",
-  //     "state": "New York",
-  //     "city": "New York City",
-  //     "energy_disp": "150000 KWH"
-  //   },
-  //   {
-  //     "name": "Jane Smith",
-  //     "status": "red",
-  //     "gender": "Female",
-  //     "l_type": "Four Wheeler ",
-  //     "chargers": "3",
-  //     "c_type": "CBR600",
-  //     "state": "New York",
-  //     "city": "New York City",
-  //     "energy_disp": "150000 KWH"
-  //   },
-  //   // ...more rows
-  // ];
+
   const column = [
     {
       header: "Status",
@@ -326,14 +264,6 @@ function Location_mgmt() {
           right: '0',
           zIndex: '111',
         }}>
-          {/* <MDButton
-            onClick={() => handleExpandRow(row.row.original)}
-            variant="gradient"
-            color="info"
-            iconOnly
-          >
-            <ArrowForwardIosIcon />
-          </MDButton> */}
           <MDButton
             onClick={(e) => handleEdit(row.row.original)}
             variant="gradient"
