@@ -1,11 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Container, Grid, Typography, Paper, Avatar, IconButton, Card, CardContent, CardMedia } from '@mui/material';
+import { Box, Container, Grid, Typography, Paper, Avatar, IconButton, Card, CardContent, CardMedia, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import { green } from '@mui/material/colors';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import reportsLineChartData from "./components/reportsLineChartData";
 import ReportsLineChart from "examples/Charts/LineCharts/ReportsLineChart/New";
+import first from "../../assets/images/demoLocation/1.png";
+import first2 from "../../assets/images/demoLocation/2.png";
+import first3 from "../../assets/images/demoLocation/3.png";
+import first4 from "../../assets/images/demoLocation/4.png";
+import first5 from "../../assets/images/demoLocation/5.png";
+import first6 from "../../assets/images/demoLocation/6.png";
+
 
 import { useLocation } from 'react-router-dom';
 import {
@@ -64,10 +72,21 @@ const ViewLocation = () => {
   const { energyCons } = reportsLineChartData;
   const location = useLocation();
   console.log(location.state);
+  const additionalImages = [first2, first3, first4, first5, first6];
   const [content, setContent] = useState([]);
   useEffect(() => {
     setContent(location.state);
   }, []);
+  const renderContactDetails = (contact) => (
+    Object.keys(contact).map((key) => (
+      key !== 'phone' && (
+        <Box key={key} display="flex" justifyContent="space-between" my={1}>
+          <Typography variant="body2" fontWeight="bold">{key.charAt(0).toUpperCase() + key.slice(1)}:</Typography>
+          <Typography variant="body2">{contact[key].name} - {contact[key].phone}</Typography>
+        </Box>
+      )
+    ))
+  );
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -75,7 +94,7 @@ const ViewLocation = () => {
         <Box sx={{ my: 4 }}>
           <Grid container spacing={3}>
             {/* Header Section */}
-            <Grid item xs={12} sm={8}>
+            <Grid item xs={12} sm={7}>
               {/* <Flex gap="4px 0" wrap> */}
               {content?.status === "Active" ?
                 <Tag icon={<CheckCircleOutlined />} color="success">
@@ -111,15 +130,10 @@ const ViewLocation = () => {
               <Typography variant="body2">
                 {content?.locationType} | {data.accessibility}
               </Typography>
-            </Grid>
-            <Grid item xs={12} sm={4} display="flex" justifyContent="flex-end">
-              <IconButton color="primary">
-                <LocationOnIcon />
-              </IconButton>
-            </Grid>
-
-            {/* Statistics Section */}
-            <Grid item xs={12} md={6}>
+               {/* Statistics Section */}
+            <Grid item xs={12} 
+            // md={6}
+            >
               <Paper elevation={3} sx={{ p: 2 }}>
                 <Grid container spacing={2}>
                   <Grid item xs={6}>
@@ -141,9 +155,138 @@ const ViewLocation = () => {
                 </Grid>
               </Paper>
             </Grid>
+            </Grid>
+            {/* placement of image */}
+            <Grid item xs={12} sm={5} display="flex" justifyContent="flex-end">
+              {/* <IconButton color="primary">
+                <LocationOnIcon />
+              </IconButton> */}
+              <Grid container spacing={3}>
+                <Grid item xs={12}>
+                  <Card>
+                    <CardMedia
+                      component="img"
+                      height="200"
+                      image={first}
+                      alt="main image"
+                      style={{ width: '100%', margin: 0, borderRadius: 0, objectFit: "fill" }}
+                    />
+                    <CardContent style={{ padding: 0 }}>
+                      <Grid container spacing={0.2}>
+                        {/* Additional images */}
+                        {additionalImages.map((image, index) => (
+                          <Grid item xs={2.4} key={index}>
+                            <CardMedia
+                              component="img"
+                              height="100"
+                              image={image}
+                              alt={`image ${index + 1}`}
+                              style={{ width: '100%', margin: 0, borderRadius: 0, objectFit: "fill" }}
+                            />
+                          </Grid>
+                        ))}
+                      </Grid>
+                    </CardContent>
+                    {/* Address and Phone Number */}
+                    <Box padding={4}>
+                      <Grid container spacing={1} >
+                        <Grid item xs={12}>
+                          <Typography variant="h6">Hours</Typography>
+                          <Typography mb={2}>{content?.address}</Typography>
+                          <Typography variant="h6">Phone no</Typography>
+                          <Typography mb={3}>{data.contact.phone}</Typography>
+                        </Grid>
+                        {/* Facilities */}
+                        <Grid item xs={12} mb={2}>
+                          <Typography variant="h6" mb={1.5}>Facilities</Typography>
+                          <Grid container spacing={2}>
+                            {[1, 2, 3, 4, 5].map((_, index) => (
+                              <Grid item xs={4} sm={2} key={index}> {/* Responsive grid items */}
+                                <Avatar sx={{ bgcolor: green[500], width: 40, height: 40 }}>
+                                  <LocationOnIcon />
+                                </Avatar>
+                              </Grid>
+                            ))}
+                          </Grid>
+                        </Grid>
+                      </Grid>
+                    </Box>
+                    {/* Personal Information */}
+                    <Grid item xs={12}>
+                      <Accordion>
+                        <AccordionSummary
+                          expandIcon={<ExpandMoreIcon />}
+                          aria-controls="panel1a-content"
+                          id="panel1a-header"
+                          sx={{ backgroundColor: "#E4F4D9" }}
+                        >
+                          <Typography variant="h6">Personal Information</Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                          <Box my={2}>
+                            <Box display="flex" justifyContent="space-between" my={1}>
+                              <Typography variant="body2" fontWeight="bold">First Name:</Typography>
+                              <Typography variant="body2">Visswanath</Typography>
+                            </Box>
+                            <Box display="flex" justifyContent="space-between" my={1}>
+                              <Typography variant="body2" fontWeight="bold">Last Name:</Typography>
+                              <Typography variant="body2">Baskaran</Typography>
+                            </Box>
+                            <Box display="flex" justifyContent="space-between" my={1}>
+                              <Typography variant="body2" fontWeight="bold">Phone No:</Typography>
+                              <Typography variant="body2">XXXXXX5035</Typography>
+                            </Box>
+                            <Box display="flex" justifyContent="space-between" my={1}>
+                              <Typography variant="body2" fontWeight="bold">Email ID:</Typography>
+                              <Typography variant="body2">vissxxxx02@gmail.com</Typography>
+                            </Box>
+                            <Box display="flex" justifyContent="space-between" my={1}>
+                              <Typography variant="body2" fontWeight="bold">Gender:</Typography>
+                              <Typography variant="body2">Male</Typography>
+                            </Box>
+                            <Box display="flex" justifyContent="space-between" my={1}>
+                              <Typography variant="body2" fontWeight="bold">Date of Birth:</Typography>
+                              <Typography variant="body2">04-06-1999</Typography>
+                            </Box>
+                            <Box display="flex" justifyContent="space-between" my={1}>
+                              <Typography variant="body2" fontWeight="bold">State:</Typography>
+                              <Typography variant="body2">Karnataka</Typography>
+                            </Box>
+                            <Box display="flex" justifyContent="space-between" my={1}>
+                              <Typography variant="body2" fontWeight="bold">City:</Typography>
+                              <Typography variant="body2">Bangalore</Typography>
+                            </Box>
+                          </Box>
+                        </AccordionDetails>
+                      </Accordion>
+                    </Grid>
+
+                    {/* Contact Information */}
+                    <Grid item xs={12} mt={0}>
+                      <Accordion>
+                        <AccordionSummary
+                          expandIcon={<ExpandMoreIcon />}
+                          aria-controls="panel2a-content"
+                          id="panel2a-header"
+                          sx={{ backgroundColor: "#E4F4D9" }}
+                        >
+                          <Typography variant="h6">Contact Information</Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                          {renderContactDetails(data.contact)}
+                        </AccordionDetails>
+                      </Accordion>
+                    </Grid>
+                  </Card>
+                </Grid>
+              </Grid>
+            </Grid>
+
 
             {/* Additional Stats */}
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} 
+            // md={6}
+            >
               <Paper elevation={3} sx={{ p: 2 }}>
                 <Grid container spacing={2}>
                   <Grid item xs={6}>
@@ -220,7 +363,7 @@ const ViewLocation = () => {
                   <Grid item xs={12}>
                     <Box mb={3}>
                       <ReportsLineChart
-                        color="warning"
+                        color="success"
                         title="Energy Consumed"
                         // description="Last Campaign Performance"
                         // date="just updated"
