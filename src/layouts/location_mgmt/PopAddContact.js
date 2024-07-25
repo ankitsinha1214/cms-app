@@ -142,7 +142,7 @@ function PopAddContact(props) {
                     <IconButton aria-label="delete" onClick={back} style={darkMode ? {color: "#ffffff"} : theme}>
                         <ArrowBackIcon />
                     </IconButton>
-                    Vehicle information
+                    Contact information
                     <IconButton aria-label="delete" onClick={handleClose} style={darkMode ? {color: "#ffffff"} : theme}>
                         <CloseIcon />
                     </IconButton>

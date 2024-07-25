@@ -372,10 +372,13 @@ function PopAddBasic(props) {
 
 
                             <MDBox p={1}>
-                                <LocationPicker
+                                {
+                                    initialLocation &&
+                                    <LocationPicker
                                     initialLocation={initialLocation}
                                     onLocationChange={handleLocationChange}
-                                />
+                                    />
+                                }
                             </MDBox>
                         </MDBox>
                     </MDBox>

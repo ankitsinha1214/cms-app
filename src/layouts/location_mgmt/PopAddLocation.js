@@ -14,11 +14,13 @@ import MDBackdrop from "components/MDBackdrop";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
+import { Checkbox, Col, Row } from 'antd';
 import { useSnackbar } from "notistack";
 import PopAddContact from "./PopAddContact";
 import { useMaterialUIController } from "context";
 import themeDark from "assets/theme-dark";
 import theme from "assets/theme";
+import services from './components/Services';
 import { CloseOutlined } from '@ant-design/icons';
 import { Button as AntButton, Card, Form, Input, InputNumber, Space, Radio, Select, Typography } from 'antd';
 const { Option } = Select;
@@ -39,19 +41,20 @@ function PopAddLocation(props) {
         // other form fields
     });
 
-
-    const createUser = (chargerInfo, model, variant, registeration_number, range) => {
+    const onChange = (checkedValues) => {
+        // console.log('checked = ', checkedValues);
+        // setCheckedValues(values);
+        setValues((prevValues) => ({
+            ...prevValues,
+            facilities: checkedValues,
+        }));
+      };
+    const createUser = (chargerInfo, facilities) => {
         const axios = require("axios");
         // alert("User Created successfully!!")
         onClose(false);
         values.first_name = props.value.first_name;
         values.last_name = props.value.last_name;
-        values.phone_number = props.value.phone_number;
-        values.email = props.value.email;
-        values.gender = props.value.gender;
-        values.date_of_birth = props.value.date_of_birth;
-        values.state = props.value.state;
-        values.city = props.value.city;
         setIsDisabled(!isDisabled)
         // var bodyFormData = new FormData();
         // bodyFormData.append("user", localStorage.getItem("userId"));
@@ -102,25 +105,22 @@ function PopAddLocation(props) {
     };
 
     const handleSelectChange = (value, fieldName) => {
-        console.log(value)
-        console.log(fieldName)
         setValues((prevValues) => ({
             ...prevValues,
             [fieldName]: value,
         }));
     };
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        createUser(values.chargerInfo, values.model, values.variant, values.registeration_number, values.range);
-    };
+    // const handleSubmit = (event) => {
+    //     event.preventDefault();
+    //     createUser(values.chargerInfo);
+    // };
+    console.log(formValues);
     const reset = (event) => {
         event.preventDefault();
         values.chargerInfo = [{}];
-        values.model = "";
-        values.variant = "";
-        values.registeration_number = "";
-        values.range = "";
+        setFormValues(props.value);
+        form.resetFields();
         setValues(props.value);
     }
     const handleClose = () => {
@@ -128,9 +128,9 @@ function PopAddLocation(props) {
     };
     console.log(form.getFieldValue('chargerInfo'));
     const pop = () => {
-        if (!values.chargerInfo || !values.model || !values.variant || !values.registeration_number) return enqueueSnackbar('Please Fill All The Details !!!', { variant: 'error' })
-            setIsBackdrop(false);
-        createUser(values.chargerInfo, values.model, values.variant, values.registeration_number, values.range);
+        if (!values.chargerInfo || !values.facilities) return enqueueSnackbar('Please Fill All The Details !!!', { variant: 'error' })
+        setIsBackdrop(false);
+        createUser(values.chargerInfo, values.facilities);
     };
     const back = () => {
         setIsBackdrop(false);
@@ -143,21 +143,11 @@ function PopAddLocation(props) {
             chargerInfo: formValues.chargerInfo,
         }));
     }, [formValues]);
-    
+
+    console.log(props.value);
     console.log(values);
     useEffect(() => {
         values.chargerInfo = form.getFieldValue('chargerInfo');
-        // const updateSubtype = () => {
-        //     const chargerInfo = form.getFieldValue('chargerInfo') || [];
-        //     const updatedChargerInfo = chargerInfo.map((info) => {
-        //         if (info.type === "AC" && info.subtype === "CC-T6") {
-        //             return { ...info, subtype: "CCS" };
-        //         }
-        //         return info;
-        //     });
-        //     form.setFieldsValue({ chargerInfo: updatedChargerInfo });
-        // };
-        // updateSubtype();
     }, [form.getFieldValue('chargerInfo')]);
 
 
@@ -178,26 +168,6 @@ function PopAddLocation(props) {
 
         form.setFieldsValue({ chargerInfo: updatedChargerInfo });
     };
-
-
-    // const handleTypeChange = (key, e) => {
-    //     const value  = e.target.value;
-    //     const subtypeOptions = form.getFieldValue(['chargerInfo', key, 'subtype']);
-    //     console.log(key)
-    //     console.log(value)
-    //     console.log(subtypeOptions)
-    //     // if (value === "AC" && subtypeOptions === "CC-T6") {
-    //     if (value === "AC") {
-    //         form.setFieldValue(['chargerInfo', key, 'subtype'], false);
-    //     }
-    //     else{
-    //         form.setFieldValue(['chargerInfo', key, 'subtype'], true);
-    //     }
-    //     // if (value === "DC" && (subtypeOptions === "Type2" || subtypeOptions === "Ather")) {
-    //     //     form.setFieldValue(['chargerInfo', key, 'subtype'], false);
-    //     // }
-    // };
-
     return (
         <>
             <PopAddContact
@@ -211,7 +181,7 @@ function PopAddLocation(props) {
                     <IconButton aria-label="delete" onClick={back} style={darkMode ? { color: "#ffffff" } : theme}>
                         <ArrowBackIcon />
                     </IconButton>
-                    Vehicle information
+                    Charger information
                     <IconButton aria-label="delete" onClick={handleClose} style={darkMode ? { color: "#ffffff" } : theme}>
                         <CloseIcon />
                     </IconButton>
@@ -268,33 +238,33 @@ function PopAddLocation(props) {
                                                         }
                                                     >
                                                         <Form.Item label="Name" name={[field.name, 'name']}
-                                                        rules={[
-                                                            {
-                                                                required: true,
-                                                                message: 'Please Enter a value',
-                                                            },
-                                                        ]}
+                                                            rules={[
+                                                                {
+                                                                    required: true,
+                                                                    message: 'Please Enter a value',
+                                                                },
+                                                            ]}
                                                         >
                                                             <Input variant="filled" />
                                                         </Form.Item>
                                                         <Form.Item label="Power Output" name={[field.name, 'powerOutput']} labelCol={{ xs: 24, sm: 12, md: 8 }}
-                                                        rules={[
-                                                            {
-                                                                required: true,
-                                                                message: 'Please Enter a value',
-                                                            },
-                                                        ]}
+                                                            rules={[
+                                                                {
+                                                                    required: true,
+                                                                    message: 'Please Enter a value',
+                                                                },
+                                                            ]}
                                                         >
                                                             <InputNumber addonAfter="w" variant="filled" />
                                                         </Form.Item>
                                                         <Form.Item label="Enery Consumptions" name={[field.name, 'energyConsumptions']} labelCol={{ xs: 24, sm: 12, md: 8 }}
-                                                       rules={[
-                                                        {
-                                                            required: true,
-                                                            message: 'Please Enter a value',
-                                                        },
-                                                    ]}
-                                                       >
+                                                            rules={[
+                                                                {
+                                                                    required: true,
+                                                                    message: 'Please Enter a value',
+                                                                },
+                                                            ]}
+                                                        >
                                                             <InputNumber addonAfter="kWh" variant="filled" />
                                                         </Form.Item>
                                                         <Form.Item label="Charger Type" name={[field.name, 'type']} labelCol={{ xs: 24, sm: 12, md: 8 }} rules={[
@@ -303,16 +273,12 @@ function PopAddLocation(props) {
                                                                 message: 'Select something!',
                                                             },
                                                         ]}
-                                                            // initialValue="AC"
+                                                        // initialValue="AC"
                                                         >
                                                             <Radio.Group onChange={(e) => handleTypeChange(field.name, e)}>
                                                                 <Radio value="AC"> AC </Radio>
                                                                 <Radio value="DC"> DC </Radio>
                                                             </Radio.Group>
-                                                            {/* <Select placeholder="select your charger type">
-                                                                <Option value="AC">AC</Option>
-                                                                <Option value="DC">DC</Option>
-                                                            </Select> */}
                                                         </Form.Item>
                                                         {form.getFieldValue(['chargerInfo', field.name, 'type']) && (<Form.Item label="Connector Type" name={[field.name, 'subtype']} labelCol={{ xs: 24, sm: 12, md: 8 }} rules={[
                                                             {
@@ -328,46 +294,7 @@ function PopAddLocation(props) {
                                                                 <Radio value="Type2" disabled={form.getFieldValue(['chargerInfo', field.name, 'type']) === "DC"}> Type2 </Radio>
                                                                 <Radio value="Ather" disabled={form.getFieldValue(['chargerInfo', field.name, 'type']) === "DC"}> Ather </Radio>
                                                             </Radio.Group>
-                                                            {/* <Radio.Group> */}
-                                                            {/* <Radio value="CC-T6" disabled={form.getFieldValue(['chargerInfo', field.name, 'type'])}> CC-T6 </Radio>
-                                                                <Radio value="Type2" disabled={!form.getFieldValue(['chargerInfo', field.name, 'type'])}> Type2 </Radio>
-                                                                <Radio value="Ather" disabled={!form.getFieldValue(['chargerInfo', field.name, 'type'])}> Ather </Radio> */}
-                                                            {/* </Radio.Group> */}
                                                         </Form.Item>)}
-
-                                                        {/* Nest Form.List */}
-                                                        {/* <Form.Item label="List">
-                                                            <Form.List name={[field.name, 'list']}>
-                                                                {(subFields, subOpt) => (
-                                                                    <div
-                                                                        style={{
-                                                                            display: 'flex',
-                                                                            flexDirection: 'column',
-                                                                            rowGap: 16,
-                                                                        }}
-                                                                    >
-                                                                        {subFields.map((subField) => (
-                                                                            <Space key={subField.key}>
-                                                                                <Form.Item noStyle name={[subField.name, 'first']}>
-                                                                                    <Input placeholder="first" />
-                                                                                </Form.Item>
-                                                                                <Form.Item noStyle name={[subField.name, 'second']}>
-                                                                                    <Input placeholder="second" />
-                                                                                </Form.Item>
-                                                                                <CloseOutlined
-                                                                                    onClick={() => {
-                                                                                        subOpt.remove(subField.name);
-                                                                                    }}
-                                                                                />
-                                                                            </Space>
-                                                                        ))}
-                                                                        <AntButton type="dashed" onClick={() => subOpt.add()} block>
-                                                                            + Add Sub Item
-                                                                        </AntButton>
-                                                                    </div>
-                                                                )}
-                                                            </Form.List>
-                                                        </Form.Item> */}
                                                     </Card>
                                                 ))}
 
@@ -382,6 +309,8 @@ function PopAddLocation(props) {
                                         {() => (
                                             <Typography>
                                                 <pre>{JSON.stringify(form.getFieldsValue(), null, 2)}</pre>
+                                                <pre>{JSON.stringify(values.chargerInfo, null, 2)}</pre>
+                                                <pre>{JSON.stringify(values.facilities, null, 2)}</pre>
                                             </Typography>
                                         )}
                                     </Form.Item>
@@ -389,30 +318,21 @@ function PopAddLocation(props) {
                             </MDBox>
 
                             <MDBox p={1}>
-                                <MDInput
-                                    type="text"
-                                    label="Model"
-                                    value={values.model}
-                                    name="model"
-                                    // multiline
-                                    // rows={5}
-                                    margin="dense"
-                                    fullWidth={true}
-                                    onChange={handleChange}
-                                />
-                            </MDBox>
-                            <MDBox p={1}>
-                                <MDInput
-                                    type="number"
-                                    label="Variant"
-                                    value={values.variant}
-                                    name="variant"
-                                    // multiline
-                                    // rows={5}
-                                    margin="dense"
-                                    fullWidth={true}
-                                    onChange={handleChange}
-                                />
+                                <Checkbox.Group
+                                    style={{
+                                        width: '100%',
+                                    }}
+                                    onChange={onChange}
+                                    value={values.facilities}
+                                >
+                                    <Row gutter={16}>
+                                    {services.map((service, index) => (
+                                        <Col key={index} xs={24} sm={12} md={8}>
+                                            <Checkbox value={service}>{service.name}</Checkbox>
+                                        </Col>
+                                        ))}
+                                    </Row>
+                                </Checkbox.Group>
                             </MDBox>
                         </MDBox>
                     </MDBox>

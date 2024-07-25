@@ -77,7 +77,8 @@ function Location_mgmt() {
         "charging": true
       },
       direction: {},
-      chargerInfo: [{}]
+      chargerInfo: [{}],
+      facilities: []
     };
   };
   useEffect(() => {
