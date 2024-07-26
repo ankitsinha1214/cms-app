@@ -115,7 +115,7 @@ function PopAddBasic(props) {
     const handleClose = () => {
         onClose(false);
     };
-    console.log(values)
+    console.log(values);
     const pop = () => {
         if (!values.locationName || !values.locationType || !values.address || !values.state || !values.city || !values.status) return enqueueSnackbar('Please Fill All The Details !!!', { variant: 'error' })
         if (!values.direction.latitude || !values.direction.longitude) return enqueueSnackbar('Please Enter the location correctly !!!', { variant: 'error' })
@@ -165,6 +165,9 @@ function PopAddBasic(props) {
     // useEffect(() => {
     //     getState();
     // }, []);
+    const handlePopStateChange = (newState) => {
+        setIsDisabled(newState);
+      };
     return (
         <>
             <PopAddLocation
@@ -172,6 +175,7 @@ function PopAddBasic(props) {
                 onClose={setIsDisabled}
                 value={values}
                 onStateChange={props.onStateChange}
+                onStateChange1={handlePopStateChange}
             />
             <MDBackdrop isBackdrop={isBackdrop} />
             <Dialog open={props.isDialog} onClose={handleClose} fullWidth maxWidth="md" >

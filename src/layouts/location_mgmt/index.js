@@ -92,10 +92,10 @@ function Location_mgmt() {
       url: process.env.REACT_APP_BASEURL + "charger-locations",
     })
       .then((response) => {
-        console.log(response.data.data);
+        // console.log(response.data.data);
 
         if (response.data.success === true) {
-          console.log(response.data);
+          // console.log(response.data);
           const element = [];
           const dataWithChargerCount = response.data.data.map(location => {
             const availCount = location.chargerInfo.filter(charger => charger.status === 'Available').length;
@@ -131,13 +131,13 @@ function Location_mgmt() {
           });
           // console.log(element);
           setLocations(element);
-          console.log(dataWithChargerCount);
+          // console.log(dataWithChargerCount);
           setRows(dataWithChargerCount);
           setIsLoading(false);
         } else {
           enqueueSnackbar(response.data.message, { variant: 'error' });
           setIsLoading(false);
-          console.log("status is false ");
+          // console.log("status is false ");
         }
       })
       .catch((error) => {
@@ -150,6 +150,7 @@ function Location_mgmt() {
   };
 
   const [values, setValues] = useState(getValues);
+  console.log(values);
   const center = {
     lat: 12.927923, // Latitude of the center point
     lng: 77.627106, // Longitude of the center point
@@ -300,9 +301,9 @@ function Location_mgmt() {
     ) {
       navigate("/sign-in");
     }
-    console.log('hello');
-    console.log(rows);
-    console.log(column);
+    // console.log('hello');
+    // console.log(rows);
+    // console.log(column);
   }, []);
   const handleEdit = (row_data) => {
     navigate("/location/view", { state: row_data });
@@ -327,12 +328,12 @@ function Location_mgmt() {
           enqueueSnackbar(response.data.message, { variant: 'success' });
           window.location.reload();
         } else {
-          console.log("status is false ");
+          // console.log("status is false ");
           enqueueSnackbar(response.data.message, { variant: 'error' });
         }
       })
       .catch((error) => {
-        console.log(error);
+        // console.log(error);
         enqueueSnackbar(error.data.message, { variant: 'error' });
       });
   };
@@ -355,7 +356,7 @@ function Location_mgmt() {
   };
 
   const SubRow = ({ row }) => {
-    console.log(row); // Logging the row data to the console
+    // console.log(row); 
   
     return (
       <Card elevation={3} variant="outlined" sx={{ p: 2 }}>

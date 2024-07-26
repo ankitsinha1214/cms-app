@@ -37,7 +37,8 @@ function PopAddLocation(props) {
     const navigate = useNavigate();
     const [dialogMessage, setDialogMessage] = useState("");
     const [formValues, setFormValues] = useState({
-        chargerInfo: props.value.chargerInfo || [{}],
+        chargerInfo: [{}],
+        // chargerInfo: props.value.chargerInfo || [{}],
         // other form fields
     });
 
@@ -48,14 +49,14 @@ function PopAddLocation(props) {
             ...prevValues,
             facilities: checkedValues,
         }));
-      };
+    };
     const createUser = (chargerInfo, facilities) => {
-        const axios = require("axios");
+        // const axios = require("axios");
         // alert("User Created successfully!!")
-        onClose(false);
-        values.first_name = props.value.first_name;
-        values.last_name = props.value.last_name;
-        setIsDisabled(!isDisabled)
+        // onClose(false);
+        // values.first_name = props.value.first_name;
+        // values.last_name = props.value.last_name;
+        // setIsDisabled(!isDisabled)
         // var bodyFormData = new FormData();
         // bodyFormData.append("user", localStorage.getItem("userId"));
         // bodyFormData.append("chargerInfo", chargerInfo);
@@ -118,19 +119,37 @@ function PopAddLocation(props) {
     console.log(formValues);
     const reset = (event) => {
         event.preventDefault();
-        values.chargerInfo = [{}];
-        setFormValues(props.value);
+        // values.chargerInfo = [{}];
         form.resetFields();
+        setFormValues([{}]);
         setValues(props.value);
     }
     const handleClose = () => {
         onClose(false);
     };
-    console.log(form.getFieldValue('chargerInfo'));
+    // console.log(form.getFieldValue('chargerInfo'));
     const pop = () => {
-        if (!values.chargerInfo || !values.facilities) return enqueueSnackbar('Please Fill All The Details !!!', { variant: 'error' })
+        // Filter out null values from chargerInfo
+        values.chargerInfo = form.getFieldValue('chargerInfo');
+        const validChargerInfo = (values.chargerInfo || []).filter(charger => charger != null);
+        console.log(validChargerInfo)
+        // Check if there is at least one valid charger entry
+        if (validChargerInfo.length === 0) {
+            return enqueueSnackbar('Please add at least one charger!', { variant: 'error' });
+        }
+        // Validate each valid charger entry
+        for (const charger of validChargerInfo) {
+            if (!charger.name || !charger.powerOutput || !charger.energyConsumptions || !charger.type || !charger.subtype) {
+                return enqueueSnackbar('Please fill all the details for each charger!', { variant: 'error' });
+            }
+        }
+        if (!values.facilities || !values.facilities.length) {
+            return enqueueSnackbar('At least one facility is required!', { variant: 'error' });
+        }
         setIsBackdrop(false);
-        createUser(values.chargerInfo, values.facilities);
+        onClose(false);
+        setIsDisabled(!isDisabled)
+        // createUser(values.chargerInfo, values.facilities);
     };
     const back = () => {
         setIsBackdrop(false);
@@ -146,9 +165,9 @@ function PopAddLocation(props) {
 
     console.log(props.value);
     console.log(values);
-    useEffect(() => {
-        values.chargerInfo = form.getFieldValue('chargerInfo');
-    }, [form.getFieldValue('chargerInfo')]);
+    // useEffect(() => {
+    //     values.chargerInfo = form.getFieldValue('chargerInfo');
+    // }, [form.getFieldValue('chargerInfo')]);
 
 
     const handleTypeChange = (key, e) => {
@@ -174,6 +193,7 @@ function PopAddLocation(props) {
                 isDialog={isDisabled}
                 onClose={setIsDisabled}
                 value={values}
+                onStateChange={props.onStateChange1}
             />
             <MDBackdrop isBackdrop={isBackdrop} />
             <Dialog open={props.isDialog} onClose={handleClose} fullWidth maxWidth="md">
@@ -206,14 +226,14 @@ function PopAddLocation(props) {
                                         maxWidth: 600,
                                     }}
                                     autoComplete="off"
-                                    // initialValues={{
-                                    //     chargerInfo: values.chargerInfo,
-                                    //     // chargerInfo: [{}],
-                                    // }}
+                                    initialValues={{
+                                        chargerInfo: [{}],
+                                        // chargerInfo: [{}],
+                                    }}
                                     onValuesChange={(changedValues, allValues) => {
                                         setFormValues(allValues);
                                     }}
-                                    initialValues={formValues}
+                                    // initialValues={formValues}
                                 >
                                     <Form.List name="chargerInfo">
                                         {(fields, { add, remove }) => (
@@ -305,15 +325,16 @@ function PopAddLocation(props) {
                                         )}
                                     </Form.List>
 
-                                    <Form.Item noStyle shouldUpdate>
+                                    {/* <Form.Item noStyle shouldUpdate>
                                         {() => (
                                             <Typography>
                                                 <pre>{JSON.stringify(form.getFieldsValue(), null, 2)}</pre>
+                                                <pre>{JSON.stringify(formValues, null, 2)}</pre>
                                                 <pre>{JSON.stringify(values.chargerInfo, null, 2)}</pre>
                                                 <pre>{JSON.stringify(values.facilities, null, 2)}</pre>
                                             </Typography>
                                         )}
-                                    </Form.Item>
+                                    </Form.Item> */}
                                 </Form>
                             </MDBox>
 
@@ -326,10 +347,10 @@ function PopAddLocation(props) {
                                     value={values.facilities}
                                 >
                                     <Row gutter={16}>
-                                    {services.map((service, index) => (
-                                        <Col key={index} xs={24} sm={12} md={8}>
-                                            <Checkbox value={service}>{service.name}</Checkbox>
-                                        </Col>
+                                        {services.map((service, index) => (
+                                            <Col key={index} xs={24} sm={12} md={8}>
+                                                <Checkbox value={service}>{service.name}</Checkbox>
+                                            </Col>
                                         ))}
                                     </Row>
                                 </Checkbox.Group>

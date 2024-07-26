@@ -131,11 +131,11 @@ function PopAddContact(props) {
 
     return (
         <>
-        <Completion
+        {/* <Completion
                 isDialog={isDisabled}
                 onClose={setIsDisabled}
                 value={values}
-            />
+            /> */}
             <MDBackdrop isBackdrop={isBackdrop} />
             <Dialog open={props.isDialog} onClose={handleClose} fullWidth maxWidth="md">
                 <DialogTitle style={darkMode ? { backgroundColor: "#202940", color: "#ffffff" ,display : "flex", alignItems : "center", justifyContent : "space-between"} : {theme,display : "flex", alignItems : "center", justifyContent : "space-between"}}>
