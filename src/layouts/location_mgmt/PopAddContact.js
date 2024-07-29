@@ -94,6 +94,8 @@ function PopAddContact(props) {
     };
 
     const [values, setValues] = useState(props.value);
+    console.log(values);
+    console.log(props.value);
 
     const handleChange = (event) => {
         setValues((prevValues) => ({
@@ -101,6 +103,30 @@ function PopAddContact(props) {
             [event.target.name]: event.target.value,
         }));
     };
+
+    const handleSalesManagerChange = (event) => {
+        const { name, value } = event.target;
+        // Handle nested object updates
+        setValues((prevValues) => ({
+          ...prevValues,
+          salesManager: {
+            ...prevValues.salesManager,
+            [name.split('.')[1]]: value
+          }
+        }));
+      };
+      
+    const handleDealerChange = (event) => {
+        const { name, value } = event.target;
+        // Handle nested object updates
+        setValues((prevValues) => ({
+          ...prevValues,
+          dealer: {
+            ...prevValues.dealer,
+            [name.split('.')[1]]: value
+          }
+        }));
+      };
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -156,65 +182,85 @@ function PopAddContact(props) {
                             <MDBox p={1}>
                                 <MDInput
                                     type="text"
-                                    label="Make"
-                                    value={values.make}
-                                    name="make"
+                                    label="Sales Manager Name"
+                                    value={values.salesManager.name}
+                                    name="salesManager.name"
                                     margin="dense"
                                     fullWidth={true}
-                                    onChange={handleChange}
+                                    onChange={handleSalesManagerChange}
                                 />
                             </MDBox>
 
                             <MDBox p={1}>
                                 <MDInput
-                                    type="text"
-                                    label="Model"
-                                    value={values.model}
-                                    name="model"
+                                    type="email"
+                                    label="Sales Manager Email"
+                                    value={values.salesManager.email}
+                                    name="salesManager.email"
                                     // multiline
                                     // rows={5}
                                     margin="dense"
+                                    pattern=".+@+.+.com"
                                     fullWidth={true}
-                                    onChange={handleChange}
+                                    onChange={handleSalesManagerChange}
                                 />
                             </MDBox>
                             <MDBox p={1}>
                                 <MDInput
                                     type="number"
-                                    label="Variant"
-                                    value={values.variant}
-                                    name="variant"
+                                    label="Sales Manager Phone"
+                                    value={values.salesManager.phoneNumber}
+                                    name="salesManager.phoneNumber"
                                     // multiline
                                     // rows={5}
+                                    inputProps={{
+                                        pattern: "\\+[1-9]{1}[0-9]{1,2}[0-9]{10}"
+                                    }}
                                     margin="dense"
                                     fullWidth={true}
-                                    onChange={handleChange}
+                                    onChange={handleSalesManagerChange}
                                 />
                             </MDBox>
                             <MDBox p={1}>
                                 <MDInput
                                     type="text"
-                                    label="Registeration number"
-                                    value={values.registeration_number}
-                                    name="registeration_number"
+                                    label="Dealer Name"
+                                    value={values.dealer.name}
+                                    name="dealer.name"
+                                    margin="dense"
+                                    fullWidth={true}
+                                    onChange={handleDealerChange}
+                                />
+                            </MDBox>
+
+                            <MDBox p={1}>
+                                <MDInput
+                                    type="email"
+                                    label="Dealer Email"
+                                    value={values.dealer.email}
+                                    name="dealer.email"
                                     // multiline
                                     // rows={5}
                                     margin="dense"
+                                    pattern=".+@+.+.com"
                                     fullWidth={true}
-                                    onChange={handleChange}
+                                    onChange={handleDealerChange}
                                 />
                             </MDBox>
                             <MDBox p={1}>
                                 <MDInput
-                                    type="text"
-                                    label="Range"
-                                    value={values.range}
-                                    name="range"
+                                    type="number"
+                                    label="Dealer Phone"
+                                    value={values.dealer.phoneNumber}
+                                    name="dealer.phoneNumber"
                                     // multiline
                                     // rows={5}
+                                    inputProps={{
+                                        pattern: "\\+[1-9]{1}[0-9]{1,2}[0-9]{10}"
+                                    }}
                                     margin="dense"
                                     fullWidth={true}
-                                    onChange={handleChange}
+                                    onChange={handleDealerChange}
                                 />
                             </MDBox>
                         </MDBox>

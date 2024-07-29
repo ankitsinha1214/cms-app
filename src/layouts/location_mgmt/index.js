@@ -78,7 +78,9 @@ function Location_mgmt() {
       },
       direction: {},
       chargerInfo: [{}],
-      facilities: []
+      facilities: [],
+      salesManager: {name: '', phoneNumber: '', email: ''},
+      dealer: {name: '', phoneNumber: '', email: ''}
     };
   };
   useEffect(() => {

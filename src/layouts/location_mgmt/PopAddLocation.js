@@ -28,7 +28,6 @@ const { Option } = Select;
 function PopAddLocation(props) {
     const [form] = Form.useForm();
     const [isDisabled, setIsDisabled] = useState(false);
-    const [isAc, setIsAc] = useState(true);
     const [isBackdrop, setIsBackdrop] = useState(false);
     const { onClose } = props;
     const [controller] = useMaterialUIController();
@@ -38,8 +37,6 @@ function PopAddLocation(props) {
     const [dialogMessage, setDialogMessage] = useState("");
     const [formValues, setFormValues] = useState({
         chargerInfo: [{}],
-        // chargerInfo: props.value.chargerInfo || [{}],
-        // other form fields
     });
 
     const onChange = (checkedValues) => {
@@ -98,19 +95,12 @@ function PopAddLocation(props) {
 
     const [values, setValues] = useState(props.value);
 
-    const handleChange = (event) => {
-        setValues((prevValues) => ({
-            ...prevValues,
-            [event.target.name]: event.target.value,
-        }));
-    };
-
-    const handleSelectChange = (value, fieldName) => {
-        setValues((prevValues) => ({
-            ...prevValues,
-            [fieldName]: value,
-        }));
-    };
+    // const handleChange = (event) => {
+    //     setValues((prevValues) => ({
+    //         ...prevValues,
+    //         [event.target.name]: event.target.value,
+    //     }));
+    // };
 
     // const handleSubmit = (event) => {
     //     event.preventDefault();
@@ -133,6 +123,7 @@ function PopAddLocation(props) {
         values.chargerInfo = form.getFieldValue('chargerInfo');
         const validChargerInfo = (values.chargerInfo || []).filter(charger => charger != null);
         console.log(validChargerInfo)
+        values.chargerInfo = validChargerInfo;
         // Check if there is at least one valid charger entry
         if (validChargerInfo.length === 0) {
             return enqueueSnackbar('Please add at least one charger!', { variant: 'error' });
@@ -165,13 +156,9 @@ function PopAddLocation(props) {
 
     console.log(props.value);
     console.log(values);
-    // useEffect(() => {
-    //     values.chargerInfo = form.getFieldValue('chargerInfo');
-    // }, [form.getFieldValue('chargerInfo')]);
 
 
     const handleTypeChange = (key, e) => {
-        // console.log(form.getFieldValue(['chargerInfo', key, 'type']) === "AC")
         const value = e.target.value;
         const chargerInfo = form.getFieldValue('chargerInfo') || [];
         const updatedChargerInfo = chargerInfo.map((info, index) => {
