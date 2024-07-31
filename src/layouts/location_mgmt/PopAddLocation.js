@@ -3,6 +3,7 @@ import MDInput from "components/MDInput";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import MDTypography from "components/MDTypography";
+import FormLabel from '@mui/material/FormLabel';
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -153,6 +154,9 @@ function PopAddLocation(props) {
             chargerInfo: formValues.chargerInfo,
         }));
     }, [formValues]);
+    useEffect(() => {
+        setValues(props.value);
+    }, [props.value]);
 
     console.log(props.value);
     console.log(values);
@@ -324,7 +328,9 @@ function PopAddLocation(props) {
                                     </Form.Item> */}
                                 </Form>
                             </MDBox>
-
+                            <MDBox p={1}>
+                                <FormLabel >Facilities</FormLabel>
+                            </MDBox>
                             <MDBox p={1}>
                                 <Checkbox.Group
                                     style={{

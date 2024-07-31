@@ -12,6 +12,7 @@ const useCurrentLocation = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+  localStorage.setItem("maploaded", "false");
     if (!navigator.geolocation) {
       setError("Geolocation is not supported by your browser");
     } else {
@@ -54,6 +55,7 @@ const MapComponent = ({ locations }) => {
   const API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
 
   const handleMapLoad = () => {
+    localStorage.setItem("maploaded", "true");
     setIsMapLoaded(true);
   };
 

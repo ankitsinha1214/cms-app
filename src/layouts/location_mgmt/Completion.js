@@ -59,14 +59,14 @@ function Completion(props) {
                         <img src={complete} alt="Location Created successfully!!" />
                         </MDBox>
                 </DialogContent>
-                <DialogActions style={darkMode ? { backgroundColor: "#202940",justifyContent : "space-evenly", color: "#ffffff" } : {theme,justifyContent : "space-evenly"}}>
+                {/* <DialogActions style={darkMode ? { backgroundColor: "#202940",justifyContent : "space-evenly", color: "#ffffff" } : {theme,justifyContent : "space-evenly"}}>
                     <MDButton variant="gradient" color="info"
                         // onClick={handleSubmit}
                         onClick={pop}
                     >
                         VIEW
                     </MDButton>
-                </DialogActions>
+                </DialogActions> */}
             </Dialog>
         </>
     );

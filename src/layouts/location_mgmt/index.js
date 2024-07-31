@@ -79,8 +79,11 @@ function Location_mgmt() {
       direction: {},
       chargerInfo: [{}],
       facilities: [],
+      workingDays: "Everyday",
+      workingHours: "8am-10pm",
       salesManager: {name: '', phoneNumber: '', email: ''},
-      dealer: {name: '', phoneNumber: '', email: ''}
+      dealer: {name: '', phoneNumber: '', email: ''},
+      locationImage: []
     };
   };
   useEffect(() => {
@@ -158,6 +161,7 @@ function Location_mgmt() {
     lng: 77.627106, // Longitude of the center point
   };
   const [isDisabled2, setIsDisabled2] = useState(false);
+  const [mapDisabled, setMapDisabled] = useState(true);
   const [columns, setColumns] = useState([]);
   const [expandedRows, setExpandedRows] = useState([]);
   const [rows, setRows] = useState([]);
@@ -378,6 +382,11 @@ function Location_mgmt() {
     );
   };
   
+  useEffect(() => {
+    if(localStorage.getItem("maploaded") === "true"){
+      setMapDisabled(false);
+    }
+  }, [localStorage.getItem("maploaded")]);
   return (
     <DashboardLayout>
       <PopAddBasic
@@ -537,6 +546,7 @@ function Location_mgmt() {
                   onClick={() => setIsDisabled2(!isDisabled2)}
                   variant="outlined"
                   color="white"
+                  disabled={mapDisabled}
                 >
                   Add Locations
                 </MDButton>

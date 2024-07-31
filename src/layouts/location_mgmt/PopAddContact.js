@@ -1,5 +1,6 @@
 import MDBox from "components/MDBox";
 import MDInput from "components/MDInput";
+import axios from "axios";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import MDTypography from "components/MDTypography";
@@ -48,55 +49,80 @@ function PopAddContact(props) {
     //   };
     // };
 
-    const createUser = (make, model, variant, registeration_number,range) => {
-        const axios = require("axios");
+    // const createUser = (make, model, variant, registeration_number,range) => {
+    const createUser = (salesManager, dealer) => {
         // alert("User Created successfully!!")
         onClose(false);
 
-        setIsDisabled(!isDisabled)
-        // var bodyFormData = new FormData();
+        // setIsDisabled(!isDisabled)
+        const bodyFormData = new FormData();
         // bodyFormData.append("user", localStorage.getItem("userId"));
-        // bodyFormData.append("make", make);
-        // bodyFormData.append("model", model);
-        // bodyFormData.append("variant", variant);
-        // bodyFormData.append("state", state);
-        // bodyFormData.append("roc", roc);
-        // bodyFormData.append("company_status", company_status);
-        // bodyFormData.append("gender", gender);
-        // bodyFormData.append("date_of_birth", clas);
-        // bodyFormData.append("state", state);
-        // bodyFormData.append("city", city);
-        // bodyFormData.append("paidup_capital", paidup_capital);
-        // bodyFormData.append("activity_code", activity_code);
-        // bodyFormData.append("activity_description", activity_description);
-        // bodyFormData.append("registered_office_address", registered_office_address);
-        // bodyFormData.append("registeration_number", registeration_number);
-        // bodyFormData.append("range", range);
+        // bodyFormData.append("locationImage", props.value.locationImage);
+        (props.value?.locationImage || []).forEach((file, index) => {
+            console.log(file)
+            bodyFormData.append('locationImage', file?.originFileObj);
+        });
+        bodyFormData.append("locationName", props.value.locationName);
+        bodyFormData.append("locationType", props.value.locationType);
+        bodyFormData.append("state", props.value.state);
+        bodyFormData.append("city", props.value.city);
+        bodyFormData.append("address", props.value.address);
+        bodyFormData.append("status", props.value.status);
+        bodyFormData.append("workingDays", props.value.workingDays);
+        bodyFormData.append("workingHours", props.value.workingHours);
+        // bodyFormData.append("direction", props.value.direction);
+        // bodyFormData.append("freepaid", props.value.freepaid);
+        // bodyFormData.append("salesManager", props.value.salesManager);
+        // bodyFormData.append("dealer", props.value.dealer);
+        // bodyFormData.append("facilities", props.value.facilities);
+        // bodyFormData.append("chargerInfo", props.value.chargerInfo);
+        bodyFormData.append("direction", JSON.stringify(props.value.direction));
+        bodyFormData.append("freepaid", JSON.stringify(props.value.freepaid));
+        bodyFormData.append("salesManager", JSON.stringify(salesManager));
+        bodyFormData.append("dealer", JSON.stringify(dealer));
+        bodyFormData.append("facilities", JSON.stringify(props.value.facilities));
+        bodyFormData.append("chargerInfo", JSON.stringify(props.value.chargerInfo));
         // setIsBackdrop(true);
-        // axios({
-        //   method: "post",
-        //   url: BASE_URL + "jbackend/createuser",
-        //   data: bodyFormData,
-        // })
-        //   .then((response) => {
-        //     console.log(response.data.message);
-        //     setLLP_data(response.data);
-        //     setIsBackdrop(false);
-        //     setDialogMessage(response.data.message);
-        //     setIsDialog(true);
-        //   })
-        //   .catch((error) => {
-        //     console.log(error);
-        //     setIsBackdrop(false);
-        //     setDialogMessage(error);
-        //     setIsDialog(true);
-        //   });
+        axios({
+            method: "post",
+            url: process.env.REACT_APP_BASEURL + "charger-locations",
+            data: bodyFormData,
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        })
+            .then((response) => {
+                console.log(response.data.message);
+                if (response.data.success === true) {
+                    console.log(response);
+                    // setIsBackdrop(false);
+                    // setDialogMessage(response.data.message);
+                    // setIsDialog(true);
+                    //   alert(response.data.message);
+                    setIsDisabled(!isDisabled);
+                } else {
+                    // console.log("status is false ");
+                    // alert("Status is false");
+                    enqueueSnackbar(response.data.message, { variant: 'error' })
+                    // window.location.reload();
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+                enqueueSnackbar(error.response.data.message, { variant: 'error' })
+                // setIsDisabled(!isDisabled);
+                // setIsBackdrop(false);
+                // setDialogMessage(error);
+                // setIsDialog(true);
+            });
     };
 
     const [values, setValues] = useState(props.value);
     console.log(values);
     console.log(props.value);
-
+    useEffect(() => {
+        setValues(props.value);
+    }, [props.value]);
     const handleChange = (event) => {
         setValues((prevValues) => ({
             ...prevValues,
@@ -108,46 +134,43 @@ function PopAddContact(props) {
         const { name, value } = event.target;
         // Handle nested object updates
         setValues((prevValues) => ({
-          ...prevValues,
-          salesManager: {
-            ...prevValues.salesManager,
-            [name.split('.')[1]]: value
-          }
+            ...prevValues,
+            salesManager: {
+                ...prevValues.salesManager,
+                [name.split('.')[1]]: value
+            }
         }));
-      };
-      
+    };
+
     const handleDealerChange = (event) => {
         const { name, value } = event.target;
         // Handle nested object updates
         setValues((prevValues) => ({
-          ...prevValues,
-          dealer: {
-            ...prevValues.dealer,
-            [name.split('.')[1]]: value
-          }
+            ...prevValues,
+            dealer: {
+                ...prevValues.dealer,
+                [name.split('.')[1]]: value
+            }
         }));
-      };
+    };
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        createUser(values.make, values.model, values.variant, values.registeration_number,values.range);
+        createUser(values.make, values.model, values.variant, values.registeration_number, values.range);
     };
     const reset = (event) => {
         event.preventDefault();
-        values.make = "";
-        values.model = "";
-        values.variant = "";
-        values.registeration_number = "";
-        values.range = "";
+        values.salesManager = { name: '', phoneNumber: '', email: '' };
+        values.dealer = { name: '', phoneNumber: '', email: '' };
         setValues(props.value);
     }
     const handleClose = () => {
         onClose(false);
     };
     const pop = () => {
-        if (!values.make || !values.model || !values.variant || !values.registeration_number ) return enqueueSnackbar('Please Fill All The Details !!!', { variant: 'error' })
-        setIsBackdrop(false);
-        createUser(values.make, values.model, values.variant, values.registeration_number,values.range); 
+        if (!values.salesManager.name || !values.salesManager.phoneNumber || !values.salesManager.email || !values.dealer.name || !values.dealer.phoneNumber || !values.dealer.email) return enqueueSnackbar('Please Fill All The Details !!!', { variant: 'error' })
+        // setIsBackdrop(false);
+        createUser(values.salesManager, values.dealer);
     };
     const back = () => {
         setIsBackdrop(false);
@@ -157,19 +180,19 @@ function PopAddContact(props) {
 
     return (
         <>
-        {/* <Completion
+            <Completion
                 isDialog={isDisabled}
                 onClose={setIsDisabled}
                 value={values}
-            /> */}
+            />
             <MDBackdrop isBackdrop={isBackdrop} />
             <Dialog open={props.isDialog} onClose={handleClose} fullWidth maxWidth="md">
-                <DialogTitle style={darkMode ? { backgroundColor: "#202940", color: "#ffffff" ,display : "flex", alignItems : "center", justifyContent : "space-between"} : {theme,display : "flex", alignItems : "center", justifyContent : "space-between"}}>
-                    <IconButton aria-label="delete" onClick={back} style={darkMode ? {color: "#ffffff"} : theme}>
+                <DialogTitle style={darkMode ? { backgroundColor: "#202940", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "space-between" } : { theme, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <IconButton aria-label="delete" onClick={back} style={darkMode ? { color: "#ffffff" } : theme}>
                         <ArrowBackIcon />
                     </IconButton>
                     Contact information
-                    <IconButton aria-label="delete" onClick={handleClose} style={darkMode ? {color: "#ffffff"} : theme}>
+                    <IconButton aria-label="delete" onClick={handleClose} style={darkMode ? { color: "#ffffff" } : theme}>
                         <CloseIcon />
                     </IconButton>
                 </DialogTitle>
@@ -266,7 +289,7 @@ function PopAddContact(props) {
                         </MDBox>
                     </MDBox>
                 </DialogContent>
-                <DialogActions  style={darkMode ? { backgroundColor: "#202940",justifyContent : "space-evenly", color: "#ffffff" } : {theme,justifyContent : "space-evenly"}}>
+                <DialogActions style={darkMode ? { backgroundColor: "#202940", justifyContent: "space-evenly", color: "#ffffff" } : { theme, justifyContent: "space-evenly" }}>
                     {/* <Button onClick={handleSubmit} autoFocus>
                         Upload File
                     </Button> */}

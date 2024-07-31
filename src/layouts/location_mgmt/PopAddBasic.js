@@ -35,8 +35,89 @@ import FormLabel from '@mui/material/FormLabel';
 import LocationPicker from "./components/LocationPicker";
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import { Space, Switch } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
+import { Image, Upload } from 'antd';
 
+const getBase64 = (file) =>
+    new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = (error) => reject(error);
+    });
 function PopAddBasic(props) {
+    const [previewOpen, setPreviewOpen] = useState(false);
+    const [previewImage, setPreviewImage] = useState('');
+    const [fileList, setFileList] = useState([
+        // {
+        //     uid: '-1',
+        //     name: 'image.png',
+        //     status: 'done',
+        //     url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
+        // },
+        // {
+        //     uid: '-2',
+        //     name: 'image.png',
+        //     status: 'done',
+        //     url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
+        // },
+        // {
+        //     uid: '-3',
+        //     name: 'image.png',
+        //     status: 'done',
+        //     url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
+        // },
+        // {
+        //     uid: '-4',
+        //     name: 'image.png',
+        //     status: 'done',
+        //     url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
+        // },
+        // {
+        //     uid: '-xxx',
+        //     percent: 50,
+        //     name: 'image.png',
+        //     status: 'uploading',
+        //     url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
+        // },
+        // {
+        //     uid: '-5',
+        //     name: 'image.png',
+        //     status: 'error',
+        // },
+    ]);
+    const handlePreview = async (file) => {
+        if (!file.url && !file.preview) {
+            file.preview = await getBase64(file.originFileObj);
+        }
+        // if (file.url) {
+        //     window.open(file.url, '_blank');
+        // } else {
+        //     window.open(file.preview, '_blank');
+        // }
+        setPreviewImage(file.url || file.preview);
+        setPreviewOpen(true);
+    };
+    const uploadButton = (
+        <button
+            style={{
+                border: 0,
+                background: 'none',
+                color: 'grey'
+            }}
+            type="button"
+        >
+            <PlusOutlined />
+            <div
+                style={{
+                    marginTop: 8,
+                }}
+            >
+                Upload
+            </div>
+        </button>
+    );
+    const handleUploadChange = ({ fileList: newFileList }) => setFileList(newFileList);
     const [controller] = useMaterialUIController();
     const { darkMode } = controller;
     const [isDisabled, setIsDisabled] = useState(false);
@@ -48,7 +129,7 @@ function PopAddBasic(props) {
     const navigate = useNavigate();
     const [dialogMessage, setDialogMessage] = useState("");
     const currentLocation = JSON.parse(localStorage.getItem("Currentlocation"));
-    const initialLocation = { lat: currentLocation.lat, lng: currentLocation.lng } || {};
+    const initialLocation = { lat: currentLocation?.lat, lng: currentLocation?.lng } || {};
 
     const { enqueueSnackbar } = useSnackbar();
 
@@ -56,7 +137,7 @@ function PopAddBasic(props) {
     //     const axios = require("axios");
     //     alert("All input are correct");
     // };
-
+    console.log(fileList)
     const [values, setValues] = useState(props.value);
     const handleChange = (event) => {
         setValues((prevValues) => ({
@@ -86,7 +167,7 @@ function PopAddBasic(props) {
             };
         });
     };
-    
+
 
     const handleLocationChange = (location) => {
         setValues((prevValues) => ({
@@ -110,18 +191,30 @@ function PopAddBasic(props) {
             "parking": true,
             "charging": true
         };
+        setFileList([]);
         setValues(props.value);
     }
     const handleClose = () => {
         onClose(false);
     };
     console.log(values);
+    const isValidImage = (file) => {
+        // Check if the file type starts with 'image'
+        return file.type.startsWith('image/');
+    };
     const pop = () => {
+        // Check if fileList has at least one file and if that file is an image
+        const hasImages = Array.from(fileList).some(file => isValidImage(file));
+        if (!hasImages) {
+            // Show error notification if no images are found
+            return enqueueSnackbar('Please upload at least one location image!', { variant: 'error' });
+        }
         if (!values.locationName || !values.locationType || !values.address || !values.state || !values.city || !values.status) return enqueueSnackbar('Please Fill All The Details !!!', { variant: 'error' })
         if (!values.direction.latitude || !values.direction.longitude) return enqueueSnackbar('Please Enter the location correctly !!!', { variant: 'error' })
         setIsBackdrop(false);
         onClose(false);
-        setIsDisabled(!isDisabled)
+        setIsDisabled(!isDisabled);
+        values.locationImage = fileList;
         // setIsDialog(true);
     };
     // const getState = () => {
@@ -167,7 +260,7 @@ function PopAddBasic(props) {
     // }, []);
     const handlePopStateChange = (newState) => {
         setIsDisabled(newState);
-      };
+    };
     return (
         <>
             <PopAddLocation
@@ -379,10 +472,41 @@ function PopAddBasic(props) {
                                 {
                                     initialLocation &&
                                     <LocationPicker
-                                    initialLocation={initialLocation}
-                                    onLocationChange={handleLocationChange}
+                                        initialLocation={initialLocation}
+                                        onLocationChange={handleLocationChange}
                                     />
                                 }
+                            </MDBox>
+                            <MDBox p={1}>
+                                <FormLabel >Location Image</FormLabel>
+
+                            </MDBox>
+
+                            <MDBox p={1}>
+                                <Upload
+                                    // action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
+                                    customRequest={({ file, onSuccess }) => setTimeout(() => onSuccess("ok"), 0)}
+                                    listType="picture-card"
+                                    fileList={fileList}
+                                    onPreview={handlePreview}
+                                    onChange={handleUploadChange}
+                                >
+                                    {fileList.length >= 6 ? null : uploadButton}
+                                </Upload>
+                                {previewImage && (
+                                    <Image
+                                        wrapperStyle={{
+                                            display: 'none',
+                                            zIndex: 1050,
+                                        }}
+                                        preview={{
+                                            visible: previewOpen,
+                                            onVisibleChange: (visible) => setPreviewOpen(visible),
+                                            afterOpenChange: (visible) => !visible && setPreviewImage(''),
+                                        }}
+                                        src={previewImage}
+                                    />
+                                )}
                             </MDBox>
                         </MDBox>
                     </MDBox>
