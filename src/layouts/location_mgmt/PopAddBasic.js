@@ -46,6 +46,7 @@ const getBase64 = (file) =>
         reader.onerror = (error) => reject(error);
     });
 function PopAddBasic(props) {
+    const [isDialogOpen, setIsDialogOpen] = useState(props.isDialog);
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
     const [fileList, setFileList] = useState([
@@ -87,6 +88,8 @@ function PopAddBasic(props) {
         // },
     ]);
     const handlePreview = async (file) => {
+        setIsBackdrop(false);
+        setIsDialogOpen(false);
         if (!file.url && !file.preview) {
             file.preview = await getBase64(file.originFileObj);
         }
@@ -255,14 +258,41 @@ function PopAddBasic(props) {
         const stateIsoCode = states.find(state => state.name === selectedState)?.isoCode;
         setCities(City.getCitiesOfState('IN', stateIsoCode));
     };
-    // useEffect(() => {
-    //     getState();
-    // }, []);
+    useEffect(() => {
+        setIsDialogOpen(props.isDialog);
+    }, [props.isDialog]);
     const handlePopStateChange = (newState) => {
         setIsDisabled(newState);
     };
+    const handlePreviewClose = () => {
+        setPreviewImage('');
+        setPreviewOpen(false);
+        // props.isDialog = true;
+        setIsDialogOpen(true); 
+    };
     return (
         <>
+            {previewImage && (
+                <Image
+                    wrapperStyle={{
+                        display: 'none',
+                        // zIndex: 1050,
+                    }}
+                    preview={{
+                        visible: previewOpen,
+                        onVisibleChange: (visible) => {
+                            setPreviewOpen(visible);
+                            if (!visible) handlePreviewClose(); // Handle dialog reopening when preview closes
+                        },
+                        afterOpenChange: (visible) => {
+                            if (!visible) handlePreviewClose();
+                        },
+                        // onVisibleChange: (visible) => setPreviewOpen(visible),
+                        // afterOpenChange: (visible) => !visible && setPreviewImage(''),
+                    }}
+                    src={previewImage}
+                />
+            )}
             <PopAddLocation
                 isDialog={isDisabled}
                 onClose={setIsDisabled}
@@ -271,7 +301,8 @@ function PopAddBasic(props) {
                 onStateChange1={handlePopStateChange}
             />
             <MDBackdrop isBackdrop={isBackdrop} />
-            <Dialog open={props.isDialog} onClose={handleClose} fullWidth maxWidth="md" >
+            {/* <Dialog open={props.isDialog} onClose={handleClose} fullWidth maxWidth="md" > */}
+            <Dialog open={isDialogOpen} onClose={handleClose} fullWidth maxWidth="md" >
                 <DialogTitle style={darkMode ? { backgroundColor: "#202940", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "space-between" } : { theme, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                     Basic Information
                     <IconButton aria-label="delete" onClick={handleClose} style={darkMode ? { color: "#ffffff" } : theme}>
@@ -493,20 +524,7 @@ function PopAddBasic(props) {
                                 >
                                     {fileList.length >= 6 ? null : uploadButton}
                                 </Upload>
-                                {previewImage && (
-                                    <Image
-                                        wrapperStyle={{
-                                            display: 'none',
-                                            zIndex: 1050,
-                                        }}
-                                        preview={{
-                                            visible: previewOpen,
-                                            onVisibleChange: (visible) => setPreviewOpen(visible),
-                                            afterOpenChange: (visible) => !visible && setPreviewImage(''),
-                                        }}
-                                        src={previewImage}
-                                    />
-                                )}
+
                             </MDBox>
                         </MDBox>
                     </MDBox>

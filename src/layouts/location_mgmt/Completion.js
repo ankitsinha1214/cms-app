@@ -35,6 +35,7 @@ function Completion(props) {
 
     const handleClose = () => {
         onClose(false);
+        window.location.reload();
     };
     const pop = () => {
         setIsBackdrop(false);
