@@ -1,4 +1,8 @@
 import MDBox from "components/MDBox";
+// import { DemoItem } from '@mui/x-date-pickers/internals/demo';
+// import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+// import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+// import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import axios from "axios";
 import MDInput from "components/MDInput";
 import Button from "@mui/material/Button";
@@ -37,6 +41,9 @@ import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import { Space, Switch } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { Image, Upload } from 'antd';
+import { Flex, TimePicker } from 'antd';
+import './Somecss.css';
+const { RangePicker } = TimePicker;
 
 const getBase64 = (file) =>
     new Promise((resolve, reject) => {
@@ -178,6 +185,20 @@ function PopAddBasic(props) {
             direction: location,
         }));
     };
+    const handleRangeChange = (values1) => {
+        // `values` is an array of moment objects
+        // setRange(values);
+    
+        if (values1) {
+          const [start, end] = values1;
+          const workingHr = start.format('ha') + '-' + end.format('ha');
+          console.log('Time : ', workingHr);
+          setValues((prevValues) => ({
+            ...prevValues,
+            workingHours: workingHr,
+        }));
+        }
+      };
     // const handleSubmit = (event) => {
     //     event.preventDefault();
     //     createUser(values.locationName, values.locationType, values.address, values.state, values.city,values.status, values.paidup_capital, values.activity_code, values.activity_description, values.registered_office_address);
@@ -268,7 +289,7 @@ function PopAddBasic(props) {
         setPreviewImage('');
         setPreviewOpen(false);
         // props.isDialog = true;
-        setIsDialogOpen(true); 
+        setIsDialogOpen(true);
     };
     return (
         <>
@@ -470,6 +491,54 @@ function PopAddBasic(props) {
                                         <FormControlLabel value="Waitlisted" control={<Radio />} label="Waitlisted" />
                                     </RadioGroup>
                                 </FormControl>
+                            </MDBox>
+                            <MDBox p={1}>
+                            <FormControl fullWidth>
+                                    <InputLabel id="demo-multiple-name-label">Working Days</InputLabel>
+                                    <Select
+                                        sx={{
+                                            height: 50,
+                                        }}
+                                        labelId="demo-multiple-name-label"
+                                        id="demo-multiple-name"
+                                        placeholder="Select Working Days"
+                                        value={values.workingDays}
+                                        name="workingDays"
+                                        onChange={handleChange}
+                                        input={<OutlinedInput label="Working Days" />}
+                                    >
+                                            <MenuItem
+                                                value={"Everyday"}
+                                            //   style={getStyles(name.name, values.service, theme)}
+                                            >
+                                                Everyday
+                                            </MenuItem>
+                                            <MenuItem
+                                                value={"Monday-Saturday"}
+                                            //   style={getStyles(name.name, values.service, theme)}
+                                            >
+                                                Monday-Saturday
+                                            </MenuItem>
+                                            <MenuItem
+                                                value={"Monday-Friday"}
+                                            //   style={getStyles(name.name, values.service, theme)}
+                                            >
+                                                Monday-Friday
+                                            </MenuItem>
+                                            <MenuItem
+                                                value={"Monday-Thrusday"}
+                                            //   style={getStyles(name.name, values.service, theme)}
+                                            >
+                                                Monday-Thrusday
+                                            </MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </MDBox>
+                            <MDBox p={1}>
+                                <FormLabel>Working Days</FormLabel>
+                                    <Flex gap={8}>
+                                        <RangePicker use12Hours format="h a" placeholder={['Start Time', 'End Time']} changeOnScroll needConfirm={false} onChange={handleRangeChange} />
+                                    </Flex>
                             </MDBox>
                             <Grid container>
                                 <Grid item xs={6}>

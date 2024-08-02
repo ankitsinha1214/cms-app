@@ -80,7 +80,7 @@ function Location_mgmt() {
       chargerInfo: [{}],
       facilities: [],
       workingDays: "Everyday",
-      workingHours: "8am-10pm",
+      workingHours: "",
       salesManager: {name: '', phoneNumber: '', email: ''},
       dealer: {name: '', phoneNumber: '', email: ''},
       locationImage: []
