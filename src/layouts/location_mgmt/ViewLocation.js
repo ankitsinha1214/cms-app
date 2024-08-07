@@ -13,7 +13,7 @@ import first3 from "../../assets/images/demoLocation/3.png";
 import first4 from "../../assets/images/demoLocation/4.png";
 import first5 from "../../assets/images/demoLocation/5.png";
 import first6 from "../../assets/images/demoLocation/6.png";
-
+import { Divider } from 'antd';
 
 import { useLocation } from 'react-router-dom';
 import {
@@ -130,29 +130,129 @@ const ViewLocation = () => {
               <Typography variant="body2">
                 {content?.locationType} | {data.accessibility}
               </Typography>
-               {/* Statistics Section */}
-            <Grid item xs={12} 
+              {/* Statistics Section */}
+              <Grid item xs={12}
+              // md={6}
+              style={{marginTop: "2rem"}}
+              >
+                <Paper elevation={3} sx={{ p: 2 }}>
+                  <Grid container spacing={2}>
+                    <Grid item xs={2.5} style={{ textAlign: 'center' }}>
+                      <Typography variant="h6">{data.stats.total}</Typography>
+                      <Typography variant="body2">Total</Typography>
+                    </Grid>
+                    <Grid item xs={2 / 3} >
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          height: '100%', // Ensure the Box takes full height of the Grid item
+                        }}
+                      >
+                        <Divider type="vertical" style={{
+                          borderColor: '#D9D9D9', height: '50%',
+                        }} />
+                      </Box>
+                    </Grid>
+                    <Grid item xs={2.5} style={{ textAlign: 'center' }}>
+                      <Typography variant="h6">{data.stats.ac}</Typography>
+                      <Typography variant="body2">AC</Typography>
+                    </Grid>
+                    <Grid item xs={2 / 3} >
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          height: '100%', // Ensure the Box takes full height of the Grid item
+                        }}
+                      >
+                        <Divider type="vertical" style={{
+                          borderColor: '#D9D9D9', height: '50%',
+                        }} />
+                      </Box>
+                    </Grid>
+                    <Grid item xs={2.5} style={{ textAlign: 'center' }}>
+                      <Typography variant="h6">{data.stats.dc}</Typography>
+                      <Typography variant="body2">DC</Typography>
+                    </Grid>
+                    <Grid item xs={2 / 3} >
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          height: '100%', // Ensure the Box takes full height of the Grid item
+                        }}
+                      >
+                        <Divider type="vertical" style={{
+                          borderColor: '#D9D9D9', height: '50%',
+                        }} />
+                      </Box>
+                    </Grid>
+                    <Grid item xs={2.5} style={{ textAlign: 'center' }}>
+                      <Typography variant="h6">{data.stats.twoWheelerDC}</Typography>
+                      <Typography variant="body2">2wDC</Typography>
+                    </Grid>
+                  </Grid>
+                </Paper>
+              </Grid>
+              <Divider dashed
+                style={{
+                  borderColor: '#D9D9D9',
+                }}
+              />
+              {/* Additional Stats */}
+            <Grid item 
+            xs={12}
+            // xs={12} md={8} lg={6}
             // md={6}
             >
               <Paper elevation={3} sx={{ p: 2 }}>
                 <Grid container spacing={2}>
                   <Grid item xs={6}>
-                    <Typography variant="h6">{data.stats.total}</Typography>
-                    <Typography variant="body2">Total</Typography>
+                    <Typography variant="h6">{data.stats.energyDispersed}</Typography>
+                    <Typography variant="body2">Energy dispersed (kwh)</Typography>
                   </Grid>
                   <Grid item xs={6}>
-                    <Typography variant="h6">{data.stats.ac}</Typography>
-                    <Typography variant="body2">AC</Typography>
+                    <Typography variant="h6">{data.stats.visits}</Typography>
+                    <Typography variant="body2">Visits / Transactions</Typography>
                   </Grid>
                   <Grid item xs={6}>
-                    <Typography variant="h6">{data.stats.dc}</Typography>
-                    <Typography variant="body2">DC</Typography>
+                    <Typography variant="h6">{data.stats.occupancyRate}%</Typography>
+                    <Typography variant="body2">Occupancy rate</Typography>
                   </Grid>
                   <Grid item xs={6}>
-                    <Typography variant="h6">{data.stats.twoWheelerDC}</Typography>
-                    <Typography variant="body2">2wDC</Typography>
+                    <Typography variant="h6">{data.stats.kmsPowered}</Typography>
+                    <Typography variant="body2">KMS powered (km)</Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography variant="h6">{data.stats.co2Saved}</Typography>
+                    <Typography variant="body2">CO2 saved (kg)</Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography variant="h6">{data.stats.uptimeRate}%</Typography>
+                    <Typography variant="body2">Uptime rate</Typography>
                   </Grid>
                 </Grid>
+              </Paper>
+            </Grid>
+               {/* Placeholder for Energy Consumed Graph */}
+               <Grid item xs={12} sx={{my: 4}}>
+              <Paper elevation={3} sx={{ p: 2 }}>
+                {/* <Typography variant="h6">Energy Consumed</Typography> */}
+                <Box sx={{ height: 300 }}>
+                  {/* Insert your graph component here */}
+                  <Grid item xs={12}>
+                    <Box mb={3}>
+                      <ReportsLineChart
+                        color="success"
+                        title="Energy Consumed"
+                        // description="Last Campaign Performance"
+                        // date="just updated"
+                        chart={energyCons}
+                      />
+                    </Box>
+                  </Grid>
+                </Box>
               </Paper>
             </Grid>
             </Grid>
@@ -282,43 +382,8 @@ const ViewLocation = () => {
               </Grid>
             </Grid>
 
-
-            {/* Additional Stats */}
-            <Grid item xs={12} 
-            // md={6}
-            >
-              <Paper elevation={3} sx={{ p: 2 }}>
-                <Grid container spacing={2}>
-                  <Grid item xs={6}>
-                    <Typography variant="h6">{data.stats.energyDispersed}</Typography>
-                    <Typography variant="body2">Energy dispersed (kwh)</Typography>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Typography variant="h6">{data.stats.visits}</Typography>
-                    <Typography variant="body2">Visits / Transactions</Typography>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Typography variant="h6">{data.stats.occupancyRate}%</Typography>
-                    <Typography variant="body2">Occupancy rate</Typography>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Typography variant="h6">{data.stats.kmsPowered}</Typography>
-                    <Typography variant="body2">KMS powered (km)</Typography>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Typography variant="h6">{data.stats.co2Saved}</Typography>
-                    <Typography variant="body2">CO2 saved (kg)</Typography>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Typography variant="h6">{data.stats.uptimeRate}%</Typography>
-                    <Typography variant="body2">Uptime rate</Typography>
-                  </Grid>
-                </Grid>
-              </Paper>
-            </Grid>
-
             {/* Contact Section */}
-            <Grid item xs={12}>
+            {/* <Grid item xs={12}>
               <Paper elevation={3} sx={{ p: 2 }}>
                 <Grid container spacing={2}>
                   <Grid item xs={12} sm={6}>
@@ -352,28 +417,9 @@ const ViewLocation = () => {
                   </Grid>
                 </Grid>
               </Paper>
-            </Grid>
+            </Grid> */}
 
-            {/* Placeholder for Energy Consumed Graph */}
-            <Grid item xs={12} md={12} lg={8}>
-              <Paper elevation={3} sx={{ p: 2 }}>
-                {/* <Typography variant="h6">Energy Consumed</Typography> */}
-                <Box sx={{ height: 300 }}>
-                  {/* Insert your graph component here */}
-                  <Grid item xs={12}>
-                    <Box mb={3}>
-                      <ReportsLineChart
-                        color="success"
-                        title="Energy Consumed"
-                        // description="Last Campaign Performance"
-                        // date="just updated"
-                        chart={energyCons}
-                      />
-                    </Box>
-                  </Grid>
-                </Box>
-              </Paper>
-            </Grid>
+
           </Grid>
         </Box>
       </Container>
