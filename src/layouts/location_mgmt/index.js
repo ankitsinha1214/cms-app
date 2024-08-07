@@ -13,7 +13,6 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import MDButton from "components/MDButton";
 // import { GoogleMap, Marker } from '@react-google-maps/api';
 import { Card } from "@mui/material";
-import DataTable from "examples/Tables/DataTable";
 import MDTypography from "components/MDTypography";
 import { MaterialReactTable } from 'material-react-table';
 import theme from "assets/theme";

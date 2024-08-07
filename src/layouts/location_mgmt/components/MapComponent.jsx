@@ -108,7 +108,7 @@ const MapComponent = ({ locations }) => {
           <div style={{display:"flex",flexDirection:"column",alignItems:"center"}}>
             <h4>{selectedLocation?.name}</h4>
             <p>{selectedLocation?.data?.address}</p>
-            <Button variant="text" onClick={() => pop(selectedLocation)}>View Location</Button>
+            <Button variant="text" onClick={() => pop(selectedLocation?.data)}>View Location</Button>
           </div>
         </InfoWindow>
       )}

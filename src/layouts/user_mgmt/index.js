@@ -18,10 +18,6 @@ import ComplexStatisticsCard from "examples/Cards/StatisticsCards/ComplexStatist
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import PopAddUser from "./PopAddUser";
-// import Footer from "examples/Footer";
-// import DataTable from "examples/Tables/DataTable";
-// import MasterCard from "examples/Cards/MasterCard";
-// import DefaultInfoCard from "examples/Cards/InfoCards/DefaultInfoCard";
 
 import LaunchIcon from "@mui/icons-material/Launch";
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -88,179 +84,6 @@ function User_mgmt() {
   const [columns, setColumns] = useState([]);
   const [values, setValues] = useState(getValues);
   const rows = dataRec;
-  // [
-    // {
-    //   status: "red",
-    //   name: "John Doe",
-    //   gender: "Male",
-    //   vehicle_type: "Car",
-    //   make: "Toyota",
-    //   model: "Camry",
-    //   state: "California",
-    //   city: "Los Angeles",
-    //   energy_cons: "250000 KWH"
-    // },
-    // {
-    //   "name": "Jane Smith",
-    //   "status": "green",
-    //   "gender": "Female",
-    //   "vehicle_type": "Motorcycle ",
-    //   "make": "Honda",
-    //   "model": "CBR600",
-    //   "state": "New York",
-    //   "city": "New York City",
-    //   "energy_cons": "150000 KWH"
-    // },
-    // {
-    //   "name": "Ankit",
-    //   "status": "red",
-    //   "gender": "Male",
-    //   "vehicle_type": "Motorcycle ",
-    //   "make": "Honda",
-    //   "model": "CBR600",
-    //   "state": "New York",
-    //   "city": "New York City",
-    //   "energy_cons": "150000 KWH"
-    // },
-    // {
-    //   "name": "Jane Smith",
-    //   "status": "green",
-    //   "gender": "Female",
-    //   "vehicle_type": "Motorcycle ",
-    //   "make": "Honda",
-    //   "model": "CBR600",
-    //   "state": "New York",
-    //   "city": "New York City",
-    //   "energy_cons": "150000 KWH"
-    // },
-    // {
-    //   "name": "Jane Smith",
-    //   "status": "green",
-    //   "gender": "Female",
-    //   "vehicle_type": "Motorcycle ",
-    //   "make": "Honda",
-    //   "model": "CBR600",
-    //   "state": "New York",
-    //   "city": "New York City",
-    //   "energy_cons": "150000 KWH"
-    // },
-    // {
-    //   "id": "2",
-    //   "status": "red",
-    //   "name": "Jane Smith",
-    //   "gender": "Female",
-    //   "vehicle_type": "Four Wheeler ",
-    //   "make": "Honda",
-    //   "model": "CBR600",
-    //   "state": "New York",
-    //   "city": "New York City",
-    //   "energy_cons": "150000 KWH"
-    // },
-    // {
-    //   "id": "3",
-    //   "status": "red",
-    //   "name": "Jane Smith",
-    //   "gender": "Female",
-    //   "vehicle_type": "Four Wheeler ",
-    //   "make": "Honda",
-    //   "model": "CBR600",
-    //   "state": "New York",
-    //   "city": "New York City",
-    //   "energy_cons": "150000 KWH"
-    // },
-    // {
-    //   "id": "4",
-    //   "status": "red",
-    //   "name": "Jane Smith",
-    //   "gender": "Female",
-    //   "vehicle_type": "Four Wheeler ",
-    //   "make": "Honda",
-    //   "model": "CBR600",
-    //   "state": "New York",
-    //   "city": "New York City",
-    //   "energy_cons": "150000 KWH"
-    // },
-    // {
-    //   "id": "5",
-    //   "status": "red",
-    //   "name": "Jane Smith",
-    //   "gender": "Female",
-    //   "vehicle_type": "Four Wheeler ",
-    //   "make": "Honda",
-    //   "model": "CBR600",
-    //   "state": "New York",
-    //   "city": "New York City",
-    //   "energy_cons": "150000 KWH"
-    // },
-    // {
-    //   "id": "6",
-    //   "status": "red",
-    //   "name": "Jane Smith",
-    //   "gender": "Female",
-    //   "vehicle_type": "Four Wheeler ",
-    //   "make": "Honda",
-    //   "model": "CBR600",
-    //   "state": "New York",
-    //   "city": "New York City",
-    //   "energy_cons": "150000 KWH"
-    // },
-    // {
-    //   "status": "red",
-    //   "name": "Jane Smith",
-    //   "gender": "Female",
-    //   "vehicle_type": "Four Wheeler ",
-    //   "make": "Honda",
-    //   "model": "CBR600",
-    //   "state": "New York",
-    //   "city": "New York City",
-    //   "energy_cons": "150000 KWH"
-    // },
-    // {
-    //   "status": "red",
-    //   "name": "Jane Smith",
-    //   "gender": "Female",
-    //   "vehicle_type": "Four Wheeler ",
-    //   "make": "Honda",
-    //   "model": "CBR600",
-    //   "state": "New York",
-    //   "city": "New York City",
-    //   "energy_cons": "150000 KWH"
-    // },
-    // {
-    //   "status": "red",
-    //   "name": "Jane Smith",
-    //   "gender": "Female",
-    //   "vehicle_type": "Four Wheeler ",
-    //   "make": "Honda",
-    //   "model": "CBR600",
-    //   "state": "New York",
-    //   "city": "New York City",
-    //   "energy_cons": "150000 KWH"
-    // },
-    // {
-    //   "status": "red",
-    //   "name": "Jane Smith",
-    //   "gender": "Female",
-    //   "vehicle_type": "Four Wheeler ",
-    //   "make": "Honda",
-    //   "model": "CBR600",
-    //   "state": "New York",
-    //   "city": "New York City",
-    //   "energy_cons": "150000 KWH"
-    // },
-    // {
-    //   "status": "red",
-    //   "name": "Jane Smith",
-    //   "gender": "Female",
-    //   "vehicle_type": "Four Wheeler ",
-    //   "make": "Honda",
-    //   "model": "CBR600",
-    //   "state": "New York",
-    //   "city": "New York City",
-    //   "energy_cons": "150000 KWH"
-    // },
-    // ...more rows
-  // ];
   const handleEdit = (row_data) => {
     navigate("/update-user", { state: row_data });
   };
@@ -405,42 +228,6 @@ function User_mgmt() {
     muiTableBodyCellProps: {
       align: 'center',
     },},
-    // { header: "FName", accessor: "user_id.first_name", align: "center" },
-    // { header: "LName", accessor: "user_id.last_name", align: "center" },
-    // {
-    //   header: "status",
-    //   accessor: "status",
-    //   align: "center",
-    //   Cell: (row) => (
-    //     <div>
-    //       <MDBadge badgeContent={row.row.original.status} size="xs" container />
-    //     </div>
-    //   ),
-    // },
-
-    // {
-    //   header: "Action",
-    //   accessor: "action",
-    //   align: "center",
-    //   // fixed:"true",
-    //   Cell: (row) => (
-    //     <div className="ccc" style={{
-    //       // position:'sticky', 
-    //       // right:'0',
-    //       // backgroundColor:'white',
-    //       // zIndex:'111',
-    //     }}>
-    //       <MDButton
-    //         onClick={(e) => handleEdit(row.row.original)}
-    //         variant="gradient"
-    //         color="info"
-    //         iconOnly
-    //       >
-    //         <LaunchIcon />
-    //       </MDButton>
-    //     </div>
-    //   ),
-    // },
     {
       header: "Action",
       accessorKey: "action",
@@ -600,13 +387,6 @@ function User_mgmt() {
                 </MDButton>
               </Grid>
             </MDBox>
-            {/* <DataTable
-              table={{ columns, rows }}
-              isSorted={true}
-              entriesPerPage={true}
-              showTotalEntries={false}
-              canSearch={true}
-            /> */}
             {isLoading ? (
                   <Loader />
                 ) : (

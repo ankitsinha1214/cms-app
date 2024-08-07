@@ -36,7 +36,6 @@ import Profile from "layouts/profile";
 // Custom Pages
 import Admin from "layouts/Admins/Admins";
 import SignIn from "layouts/SignIn/SignIn";
-import Tickets from "layouts/Tickets/Tickets";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
@@ -150,16 +149,6 @@ export const superAdminRoutes = [
   //   route: "/admins/create",
   //   component: <CreateAdmin />,
   // },
-  // Tickets
-  {
-    type: "collapse",
-    // type: "divider",
-    name: "Tickets",
-    key: "tickets",
-    icon: <Icon fontSize="small">confirmation_number</Icon>,
-    route: "/tickets",
-    component: <Tickets />,
-  },
   {
     type: "collapse",
     name: "Admins",
@@ -214,15 +203,6 @@ export const superAdminRoutes = [
 //     key: "create_subAdmin",
 //     route: "/sub-admins/create",
 //     component: <CreateSubAdmin />,
-//   },
-//   // Tickets
-//   {
-//     type: "collapse",
-//     name: "Tickets",
-//     key: "tickets",
-//     icon: <Icon fontSize="small">confirmation_number</Icon>,
-//     route: "/tickets",
-//     component: <Tickets />,
 //   },
 //   {
 //     key: "sign-in",

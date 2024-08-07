@@ -13,8 +13,6 @@ import { useNavigate } from "react-router-dom";
 // Material Dashboard 2 React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import Footer from "examples/Footer";
-import DataTable from "examples/Tables/DataTable";
 import EnergyCard from "./EnergyCard";
 import { MaterialReactTable } from 'material-react-table';
 import theme from "assets/theme";
@@ -201,42 +199,6 @@ function Charger_mgmt() {
       muiTableBodyCellProps: {
         align: 'center',
       }, },
-    // { Header: "FName", accessor: "user_id.first_name", align: "center" },
-    // { Header: "LName", accessor: "user_id.last_name", align: "center" },
-    // {
-    //   Header: "status",
-    //   accessor: "status",
-    //   align: "center",
-    //   Cell: (row) => (
-    //     <div>
-    //       <MDBadge badgeContent={row.row.original.status} size="xs" container />
-    //     </div>
-    //   ),
-    // },
-
-    // {
-    //   Header: "Action",
-    //   accessor: "action",
-    //   align: "center",
-    //   // fixed:"true",
-    //   Cell: (row) => (
-    //     <div className="ccc" style={{
-    //       // position:'sticky', 
-    //       // right:'0',
-    //       // backgroundColor:'white',
-    //       // zIndex:'111',
-    //     }}>
-    //       <MDButton
-    //         onClick={(e) => handleEdit(row.row.original)}
-    //         variant="gradient"
-    //         color="info"
-    //         iconOnly
-    //       >
-    //         <LaunchIcon />
-    //       </MDButton>
-    //     </div>
-    //   ),
-    // },
     {
       header: "Action",
       accessorKey: "action",
@@ -441,62 +403,6 @@ function Charger_mgmt() {
             </MDBox>
           </Grid>
         </Grid>
-        {/* <Grid container spacing={6}>
-          <Grid item xs={12}>
-            <Card>
-              <MDBox
-                mx={2}
-                mt={-3}
-                py={3}
-                px={2}
-                variant="gradient"
-                bgColor="info"
-                borderRadius="lg"
-                coloredShadow="info"
-              >
-                <MDTypography variant="h6" color="white">
-                  Authors Table
-                </MDTypography>
-              </MDBox>
-              <MDBox pt={3}>
-                <DataTable
-                  table={{ columns, rows }}
-                  isSorted={false}
-                  entriesPerPage={false}
-                  showTotalEntries={false}
-                  noEndBorder
-                />
-              </MDBox>
-            </Card>
-          </Grid>
-          <Grid item xs={12}>
-            <Card>
-              <MDBox
-                mx={2}
-                mt={-3}
-                py={3}
-                px={2}
-                variant="gradient"
-                bgColor="info"
-                borderRadius="lg"
-                coloredShadow="info"
-              >
-                <MDTypography variant="h6" color="white">
-                  Projects Table
-                </MDTypography>
-              </MDBox>
-              <MDBox pt={3}>
-                <DataTable
-                  table={{ columns: pColumns, rows: pRows }}
-                  isSorted={false}
-                  entriesPerPage={false}
-                  showTotalEntries={false}
-                  noEndBorder
-                />
-              </MDBox>
-            </Card>
-          </Grid>
-        </Grid> */}
         </MDBox>
         <MDTypography variant="h6" px={1} mb={1} style={{ fontFamily: "Montserrat",fontSize:"24px", fontWeight: "600", lineHeight: "36px" }}>
         Energy dispersed

@@ -3,7 +3,6 @@ import MDBox from "components/MDBox";
 import MDInput from "components/MDInput";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
-import MDTypography from "components/MDTypography";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -36,11 +35,9 @@ function PopAddUserVehicle(props) {
     const [modelShow, setModelShow] = useState([]);
     const [variantShow, setVariantShow] = useState([]);
     const navigate = useNavigate();
-    const [dialogMessage, setDialogMessage] = useState("");
     const [vehicleId, setVehicleId] = useState("");
 
     const createUser = (make, model, variant, registeration_number, range, vehicle_img) => {
-        // alert("User Created successfully!!")
         onClose(false);
         const uservehicle = {
             "make":make,
@@ -193,11 +190,6 @@ function PopAddUserVehicle(props) {
             [event.target.name]: event.target.value,
         }));
     };
-
-    // const handleSubmit = (event) => {
-    //     event.preventDefault();
-    //     createUser(values.make, values.model, values.variant, values.registeration_number, values.range);
-    // };
     const reset = (event) => {
         event.preventDefault();
         values.make = "";
@@ -341,44 +333,6 @@ function PopAddUserVehicle(props) {
                                     </Select>
                                 </FormControl>
                             </MDBox>
-                            {/* <MDBox p={1}>
-                                <MDInput
-                                    type="text"
-                                    label="Make"
-                                    value={values.make}
-                                    name="make"
-                                    margin="dense"
-                                    fullWidth={true}
-                                    onChange={handleChange}
-                                />
-                            </MDBox> */}
-
-                            {/* <MDBox p={1}>
-                                <MDInput
-                                    type="text"
-                                    label="Model"
-                                    value={values.model}
-                                    name="model"
-                                    // multiline
-                                    // rows={5}
-                                    margin="dense"
-                                    fullWidth={true}
-                                    onChange={handleChange}
-                                />
-                            </MDBox> */}
-                            {/* <MDBox p={1}>
-                                <MDInput
-                                    type="number"
-                                    label="Variant"
-                                    value={values.variant}
-                                    name="variant"
-                                    // multiline
-                                    // rows={5}
-                                    margin="dense"
-                                    fullWidth={true}
-                                    onChange={handleChange}
-                                />
-                            </MDBox> */}
                             <MDBox p={1}>
                                 <MDInput
                                     type="text"

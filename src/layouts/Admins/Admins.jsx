@@ -14,7 +14,7 @@ import MDBox from "components/MDBox";
 // Material example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import DataTable from "examples/Tables/DataTable";
+// import DataTable from "examples/Tables/DataTable";
 
 // ICONS
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -43,26 +43,26 @@ function Admin() {
     const [editLoading, setEditLoading] = useState(false);
     const [dialogEditData, setDialogEditData] = useState({ user_id: null, name: '' });
 
-    useEffect(() => {
-        fetchAllUsers();
-    }, [])
+    // useEffect(() => {
+    //     fetchAllUsers();
+    // }, [])
 
-    const fetchAllUsers = async () => {
-        setLoading(true);
-        await axios.get(`${process.env.REACT_APP_BASEURL}/admin/users/all-admins`, { headers: { Authorization: `Bearer ${auth}` } })
-            .then(res => {
-                if (!res.data?.success) return enqueueSnackbar('Error Fetching Areas !!!', { variant: 'error' })
+    // const fetchAllUsers = async () => {
+    //     setLoading(true);
+    //     await axios.get(`${process.env.REACT_APP_BASEURL}/admin/users/all-admins`, { headers: { Authorization: `Bearer ${auth}` } })
+    //         .then(res => {
+    //             if (!res.data?.success) return enqueueSnackbar('Error Fetching Areas !!!', { variant: 'error' })
 
-                createTableRowData(res.data.users);
-                setAllUsers(res.data.users);
-                setLoading(false);
-            })
-            .catch(err => {
-                console.log(err);
-                setLoading(false);
-                enqueueSnackbar('Error Fetching Areas !!!', { variant: 'error' })
-            })
-    }
+    //             createTableRowData(res.data.users);
+    //             setAllUsers(res.data.users);
+    //             setLoading(false);
+    //         })
+    //         .catch(err => {
+    //             console.log(err);
+    //             setLoading(false);
+    //             enqueueSnackbar('Error Fetching Areas !!!', { variant: 'error' })
+    //         })
+    // }
 
     const createTableRowData = (usersArr) => {
         const rowDataObjArr = [];
@@ -127,8 +127,8 @@ function Admin() {
     }
 
     const onEditClick = (rowData) => {
-        setOpenDialog(true)
-        setDialogEditData({ user_id: allUsers[rowData?.row?.index]?.user_id, name: allUsers[rowData?.row?.index]?.name })
+        // setOpenDialog(true)
+        // setDialogEditData({ user_id: allUsers[rowData?.row?.index]?.user_id, name: allUsers[rowData?.row?.index]?.name })
     }
 
     const onCloseDialog = (e, reason) => {
@@ -137,37 +137,37 @@ function Admin() {
     };
 
     const onUpdate = async () => {
-        setEditLoading(true);
-        const body = { ...dialogEditData }
+    //     setEditLoading(true);
+    //     const body = { ...dialogEditData }
 
-        await axios.put(`${process.env.REACT_APP_BASEURL}/admin/users/update-admin`, body, {
-            headers: { Authorization: `Bearer ${auth}` }
-        })
-            .then(res => {
-                if (res.data?.success) {
-                    const updateIndex = allUsers?.findIndex(u => u.user_id === body.user_id)
-                    if (updateIndex === -1) return enqueueSnackbar('Error Admin Not Found !!!', { variant: 'error' })
+    //     await axios.put(`${process.env.REACT_APP_BASEURL}/admin/users/update-admin`, body, {
+    //         headers: { Authorization: `Bearer ${auth}` }
+    //     })
+    //         .then(res => {
+    //             if (res.data?.success) {
+    //                 const updateIndex = allUsers?.findIndex(u => u.user_id === body.user_id)
+    //                 if (updateIndex === -1) return enqueueSnackbar('Error Admin Not Found !!!', { variant: 'error' })
 
-                    const allUsersArrTemp = [...allUsers];
-                    const userObj = { ...allUsers[updateIndex], name: body.name }
-                    allUsersArrTemp[updateIndex] = userObj;
+    //                 const allUsersArrTemp = [...allUsers];
+    //                 const userObj = { ...allUsers[updateIndex], name: body.name }
+    //                 allUsersArrTemp[updateIndex] = userObj;
 
-                    setAllUsers(allUsersArrTemp);
-                    createTableRowData(allUsersArrTemp);
-                    enqueueSnackbar('Admin Updated Successfully !!!', { variant: 'success' })
-                } else {
-                    enqueueSnackbar('Error Updating Admin !!!', { variant: 'error' })
-                }
+    //                 setAllUsers(allUsersArrTemp);
+    //                 createTableRowData(allUsersArrTemp);
+    //                 enqueueSnackbar('Admin Updated Successfully !!!', { variant: 'success' })
+    //             } else {
+    //                 enqueueSnackbar('Error Updating Admin !!!', { variant: 'error' })
+    //             }
 
-                setOpenDialog(false);
-                setEditLoading(false);
-            })
-            .catch(err => {
-                console.log(err);
-                setLoading(false);
-                setEditLoading(false);
-                enqueueSnackbar('Error Updating Admin !!!', { variant: 'error' })
-            })
+    //             setOpenDialog(false);
+    //             setEditLoading(false);
+    //         })
+    //         .catch(err => {
+    //             console.log(err);
+    //             setLoading(false);
+    //             setEditLoading(false);
+    //             enqueueSnackbar('Error Updating Admin !!!', { variant: 'error' })
+    //         })
     }
 
     const columns = [
@@ -213,7 +213,7 @@ function Admin() {
                                     </MDBox>
                                 </Grid>
                             </MDBox>
-                            <MDBox pt={3}>
+                            {/* <MDBox pt={3}>
                                 {loading ? (
                                     <CircularProgress sx={{ display: 'block', color: '#49a3f1', margin: '0 auto 20px' }} />
                                 ) : (
@@ -225,7 +225,7 @@ function Admin() {
                                         noEndBorder
                                     />
                                 )}
-                            </MDBox>
+                            </MDBox> */}
                         </Card>
                     </Grid>
                 </Grid>

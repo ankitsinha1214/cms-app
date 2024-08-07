@@ -4,8 +4,6 @@ import MDInput from "components/MDInput";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import dayjs from 'dayjs';
-// import Dialog from "assets/theme/components/dialog";
-import MDTypography from "components/MDTypography";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -16,7 +14,6 @@ import FormControl from "@mui/material/FormControl";
 import MDBackdrop from "components/MDBackdrop";
 import PopAddUserVehicle from "./PopAddUserVehicleInfo";
 import { useSnackbar } from "notistack";
-// import { useSelector } from 'react-redux';
 import CloseIcon from '@mui/icons-material/Close';
 import { useMaterialUIController } from "context";
 import themeDark from "assets/theme-dark";
@@ -27,13 +24,9 @@ import OutlinedInput from "@mui/material/OutlinedInput";
 import Select from '@mui/material/Select';
 import IconButton from '@mui/material/IconButton';
 function PopAddUser(props) {
-    // const data = useSelector((s) => s);
-    // console.log(data);
     const [controller] = useMaterialUIController();
     const { darkMode } = controller;
     const [isDisabled, setIsDisabled] = useState(false);
-    // const [state_show, setState_show] = useState([]);
-    // const [city_show, setCity_show] = useState([]);
     const [isBackdrop, setIsBackdrop] = useState(false);
     const { onClose } = props;
     const [stateData, setStateData] = useState({});
@@ -41,65 +34,10 @@ function PopAddUser(props) {
     const [selectedState, setSelectedState] = useState("");
     const [cities, setCities] = useState([]);
     const navigate = useNavigate();
-    const [dialogMessage, setDialogMessage] = useState("");
 
     const { enqueueSnackbar } = useSnackbar();
-    // const getValues = () => {
-    //   return {
-    //     first_name: "",
-    //     last_name: "",
-    //     phone_number: "",
-    //     email: "",
-    //     gender: "",
-    //     date_of_birth: "",
-    //     state: "",
-    //     city: "",
-    //     paidup_capital: "",
-    //     activity_code: "",
-    //     activity_description: "",
-    //     registered_office_address: "",
-    //     roc: "",
-    //     company_status: ""
-    //   };
-    // };
     const createUser = (first_name, last_name, phone_number, email, gender, clas, state, city, paidup_capital, activity_code, activity_description, registered_office_address) => {
         alert("All input are correct")
-        // var bodyFormData = new FormData();
-        // bodyFormData.append("user", localStorage.getItem("userId"));
-        // bodyFormData.append("first_name", first_name);
-        // bodyFormData.append("last_name", last_name);
-        // bodyFormData.append("phone_number", phone_number);
-        // bodyFormData.append("state", state);
-        // bodyFormData.append("roc", roc);
-        // bodyFormData.append("company_status", company_status);
-        // bodyFormData.append("gender", gender);
-        // bodyFormData.append("date_of_birth", clas);
-        // bodyFormData.append("state", state);
-        // bodyFormData.append("city", city);
-        // bodyFormData.append("paidup_capital", paidup_capital);
-        // bodyFormData.append("activity_code", activity_code);
-        // bodyFormData.append("activity_description", activity_description);
-        // bodyFormData.append("registered_office_address", registered_office_address);
-        // bodyFormData.append("email", email);
-        // setIsBackdrop(true);
-        // axios({
-        //   method: "post",
-        //   url: BASE_URL + "jbackend/createuser",
-        //   data: bodyFormData,
-        // })
-        //   .then((response) => {
-        //     console.log(response.data.message);
-        //     setLLP_data(response.data);
-        //     setIsBackdrop(false);
-        //     setDialogMessage(response.data.message);
-        //     setIsDialog(true);
-        //   })
-        //   .catch((error) => {
-        //     console.log(error);
-        //     setIsBackdrop(false);
-        //     setDialogMessage(error);
-        //     setIsDialog(true);
-        //   });
     };
 
     const [values, setValues] = useState(props.value);
@@ -123,14 +61,6 @@ function PopAddUser(props) {
     };
     const reset = (event) => {
         event.preventDefault();
-        // values.first_name = "";
-        // values.last_name = "";
-        // values.phone_number = "";
-        // values.email = "";
-        // values.gender = "";
-        // values.date_of_birth = "";
-        // values.state = "";
-        // values.city = "";
         setValues(props.value);
     }
     const handleClose = () => {
@@ -201,23 +131,6 @@ function PopAddUser(props) {
                 <DialogContent style={darkMode ? { backgroundColor: "#202940", color: "#ffffff" } : theme}>
                     <MDBox pt={0} pb={0} px={3}>
                         <MDBox pt={0}>
-                            {/* <MDBox pt={6} pb={3}> */}
-                            {/* <Grid container spacing={6}> */}
-                            {/* <Grid item xs={12}> */}
-                            {/* <Card> */}
-                            {/* <MDBox
-                                                mx={2}
-                                                mt={-3}
-                                                py={3}
-                                                px={2}
-                                                variant="gradient"
-                                                bgColor="info"
-                                                borderRadius="lg"
-                                                coloredShadow="info"
-                                            > */}
-                            {/* <MDTypography variant="h6" color="white">
-                                                    Personal information
-                                                </MDTypography> */}
                         </MDBox>
 
                         <MDBox p={2} component="form" role="form">
@@ -295,32 +208,7 @@ function PopAddUser(props) {
                                         <MenuItem value={'Female'}>Female</MenuItem>
                                     </Select>
                                 </FormControl>
-                                {/* <MDInput
-                                    type="text"
-                                    label="Gender"
-                                    value={values.gender}
-                                    name="gender"
-                                    // multiline
-                                    // rows={5}
-                                    margin="dense"
-                                    fullWidth={true}
-                                    onChange={handleChange}
-                                /> */}
                             </MDBox>
-                            {/* <MDBox p={1}>
-                                <MDInput
-                                    type="date"
-                                    label="Date Of Birth"
-                                    // value={values.date_of_birth}
-                                    value={dayjs(values.date_of_birth, 'DD/MM/YYYY').format('YYYY-MM-DD')}
-                                    name="date_of_birth"
-                                    // multiline
-                                    // rows={5}
-                                    margin="dense"
-                                    fullWidth={true}
-                                    onChange={handleChange}
-                                />
-                            </MDBox> */}
                             <MDBox p={1}>
                                 <FormControl fullWidth variant="outlined" margin="dense">
                                     <InputLabel
@@ -395,39 +283,10 @@ function PopAddUser(props) {
                                     </Select>
                                 </FormControl>
                             </MDBox>
-                            {/* <MDBox p={1}>
-                                <MDInput
-                                    type="text"
-                                    label="State"
-                                    value={values.state}
-                                    name="state"
-                                    // multiline
-                                    // rows={5}
-                                    margin="dense"
-                                    fullWidth={true}
-                                    onChange={handleChange}
-                                />
-                            </MDBox> */}
-                            {/* <MDBox p={1}>
-                                <MDInput
-                                    type="text"
-                                    label="City"
-                                    value={values.city}
-                                    name="city"
-                                    // multiline
-                                    // rows={5}
-                                    margin="dense"
-                                    fullWidth={true}
-                                    onChange={handleChange}
-                                />
-                            </MDBox> */}
                         </MDBox>
                     </MDBox>
                 </DialogContent>
                 <DialogActions style={darkMode ? { backgroundColor: "#202940", justifyContent: "space-evenly", color: "#ffffff" } : { theme, justifyContent: "space-evenly" }}>
-                    {/* <Button onClick={handleSubmit} autoFocus>
-                        Upload File
-                    </Button> */}
                     <MDButton variant="gradient" color="info" onClick={reset}>
                         Reset
                     </MDButton>

@@ -16,7 +16,6 @@ import MDSnackbar from "components/MDSnackbar";
 // Material Dashboard 2 React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import Footer from "examples/Footer";
 
 function Customer_service() {
   const navigate = useNavigate();

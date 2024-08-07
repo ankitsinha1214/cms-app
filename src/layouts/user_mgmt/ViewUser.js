@@ -79,8 +79,6 @@ function ViewUser(props) {
                                                 <MDTypography variant="h6" color="white">
                                                     Personal information
                                                 </MDTypography>
-
-                                                {/* <MDBadge badgeContent={props.data.status} size="md" color="secondary" container /> */}
                                             </Grid>
                                         </MDBox>
 
@@ -120,8 +118,6 @@ function ViewUser(props) {
                                                 <MDTypography variant="h6" color="white">
                                                     Vehicle information
                                                 </MDTypography>
-
-                                                {/* <MDBadge badgeContent={props.data.status} size="md" color="secondary" container /> */}
                                             </Grid>
                                         </MDBox>
 

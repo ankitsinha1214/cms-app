@@ -9,7 +9,7 @@ import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 
 // Material Dashboard 2 React example components
-import TimelineItem from "examples/Timeline/TimelineItem";
+// import TimelineItem from "examples/Timeline/TimelineItem";
 
 function OrdersOverview() {
   return (
@@ -31,7 +31,7 @@ function OrdersOverview() {
           </MDTypography>
         </MDBox>
       </MDBox>
-      <MDBox p={2}>
+      {/* <MDBox p={2}>
         <TimelineItem
           color="success"
           icon="notifications"
@@ -63,7 +63,7 @@ function OrdersOverview() {
           dateTime="18 DEC 4:54 AM"
           lastItem
         />
-      </MDBox>
+      </MDBox> */}
     </Card>
   );
 }
