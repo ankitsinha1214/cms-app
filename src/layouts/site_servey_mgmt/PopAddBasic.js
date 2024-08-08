@@ -535,7 +535,7 @@ function PopAddBasic(props) {
                                 </FormControl>
                             </MDBox>
                             <MDBox p={1}>
-                                <FormLabel>Working Hours</FormLabel>
+                                <FormLabel>Working Days</FormLabel>
                                     <Flex gap={8}>
                                         <RangePicker use12Hours format="h a" placeholder={['Start Time', 'End Time']} changeOnScroll needConfirm={false} onChange={handleRangeChange} />
                                     </Flex>

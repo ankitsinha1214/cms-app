@@ -25,6 +25,7 @@ import Dashboard from "layouts/dashboard";
 import ChargerMgmt from "layouts/charger_mgmt";
 import AppMgmt from "layouts/app_mgmt";
 import LocationMgmt from "layouts/location_mgmt";
+import Site_servey_mgmt from "layouts/site_servey_mgmt";
 import Settings from "layouts/settings";
 import UserMgmt from "layouts/user_mgmt";
 import UpdateUser from "layouts/user_mgmt/UpdateUser";
@@ -91,6 +92,14 @@ export const superAdminRoutes = [
     icon: <LocationOnIcon />,
     route: "/location",
     component: <LocationMgmt />,
+  },
+  {
+    type: "collapse",
+    name: "Site Survey Mgmt",
+    key: "site-servey",
+    icon: <LocationOnIcon />,
+    route: "/site-servey",
+    component: <Site_servey_mgmt />,
   },
   {
     type: "collapse",
