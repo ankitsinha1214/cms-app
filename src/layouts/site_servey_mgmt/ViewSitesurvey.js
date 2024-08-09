@@ -12,6 +12,7 @@ import first4 from "../../assets/images/demoLocation/4.png";
 import first5 from "../../assets/images/demoLocation/5.png";
 import first6 from "../../assets/images/demoLocation/6.png";
 import { Divider } from 'antd';
+import ImageBox from './Components/ImageBox';
 
 import { useLocation } from 'react-router-dom';
 import {
@@ -93,21 +94,17 @@ const ViewSitesurvey = () => {
             {/* Header Section */}
             <Grid item xs={12} sm={7}>
               {/* <Flex gap="4px 0" wrap> */}
-              {content?.status === "Active" ?
+              {content?.status === "Approved" ?
                 <Tag icon={<CheckCircleOutlined />} color="success">
-                  Live
+                  {content?.status}
                 </Tag>
-                : content?.status === "Pending" ?
-                  <Tag icon={<SyncOutlined spin />} color="warning">
-                    Pending
-                  </Tag>
-                  : content?.status === "Inactive" ?
+                  : content?.status === "Rejected" ?
                     <Tag icon={<CloseCircleOutlined />} color="error">
-                      Inactive
+                      {content?.status}
                     </Tag>
-                    : content?.status === "Waitlisted" ?
-                      <Tag icon={<ClockCircleOutlined />} color="default">
-                        waiting
+                    : content?.status === "Waiting for approval" ?
+                      <Tag icon={<ExclamationCircleOutlined />} color="warning">
+                        {content?.status}
                       </Tag> :
                       <Tag icon={<MinusCircleOutlined />} color="default">
                         {content?.status}
@@ -119,18 +116,15 @@ const ViewSitesurvey = () => {
               {/* {JSON.stringify(data)} */}
               {/* </Flex> */}
               <Typography variant="h4" component="h1" gutterBottom>
-                {content?.locationName}
+                {content?.locationId?.locationName}
               </Typography>
               <Typography variant="subtitle1">
-                {content?.city}, {content?.state}
-              </Typography>
-              <Typography variant="body2">
-                {content?.locationType} | {data.accessibility}
+                {content?.locationId?.city}, {content?.locationId?.state}
               </Typography>
               {/* Statistics Section */}
               <Grid item xs={12}
-              // md={6}
-              style={{marginTop: "2rem"}}
+                // md={6}
+                style={{ marginTop: "2rem" }}
               >
                 <Paper elevation={3} sx={{ p: 2 }}>
                   <Grid container spacing={2}>
@@ -198,57 +192,53 @@ const ViewSitesurvey = () => {
                 }}
               />
               {/* Additional Stats */}
-            <Grid item 
-            xs={12}
-            // xs={12} md={8} lg={6}
-            // md={6}
-            >
-              <Paper elevation={3} sx={{ p: 2 }}>
-                <Grid container spacing={2}>
-                  <Grid item xs={6}>
-                    <Typography variant="h6">{data.stats.energyDispersed}</Typography>
-                    <Typography variant="body2">Energy dispersed (kwh)</Typography>
+              <Grid item
+                xs={12}
+              // xs={12} md={8} lg={6}
+              // md={6}
+              >
+                <Paper elevation={3} sx={{ p: 2 }}>
+                  <Grid container spacing={2}>
+                    <Grid item xs={6}>
+                      <Typography variant="h6">{data.stats.energyDispersed}</Typography>
+                      <Typography variant="body2">Energy dispersed (kwh)</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="h6">{data.stats.visits}</Typography>
+                      <Typography variant="body2">Visits / Transactions</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="h6">{data.stats.occupancyRate}%</Typography>
+                      <Typography variant="body2">Occupancy rate</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="h6">{data.stats.kmsPowered}</Typography>
+                      <Typography variant="body2">KMS powered (km)</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="h6">{data.stats.co2Saved}</Typography>
+                      <Typography variant="body2">CO2 saved (kg)</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="h6">{data.stats.uptimeRate}%</Typography>
+                      <Typography variant="body2">Uptime rate</Typography>
+                    </Grid>
                   </Grid>
-                  <Grid item xs={6}>
-                    <Typography variant="h6">{data.stats.visits}</Typography>
-                    <Typography variant="body2">Visits / Transactions</Typography>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Typography variant="h6">{data.stats.occupancyRate}%</Typography>
-                    <Typography variant="body2">Occupancy rate</Typography>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Typography variant="h6">{data.stats.kmsPowered}</Typography>
-                    <Typography variant="body2">KMS powered (km)</Typography>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Typography variant="h6">{data.stats.co2Saved}</Typography>
-                    <Typography variant="body2">CO2 saved (kg)</Typography>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Typography variant="h6">{data.stats.uptimeRate}%</Typography>
-                    <Typography variant="body2">Uptime rate</Typography>
-                  </Grid>
-                </Grid>
-              </Paper>
-            </Grid>
-               {/* Placeholder for Energy Consumed Graph */}
-               {/* <Grid item xs={12} sx={{my: 4}}>
-              <Paper elevation={3} sx={{ p: 2 }}>
-                <Typography variant="h6">Energy Consumed</Typography>
-                <Box sx={{ height: 300 }}>
-                  <Grid item xs={12}>
-                    
-                  </Grid>
-                </Box>
-              </Paper>
-            </Grid> */}
+                </Paper>
+              </Grid>
+              {/* Placeholder for Energy Consumed Graph */}
+              <Grid item xs={12} sx={{ my: 4 }}>
+                <Paper elevation={3} sx={{ p: 2 }}>
+                  <Typography variant="h6">Meter Room</Typography>
+                    {/* <Grid item xs={12}> */}
+                  <ImageBox imageList={location?.state?.meterRoom?.electricMeter} />
+                  <ImageBox imageList={location?.state?.meterRoom?.electricBill} />
+                    {/* </Grid> */}
+                </Paper>
+              </Grid>
             </Grid>
             {/* placement of image */}
             <Grid item xs={12} sm={5} display="flex" justifyContent="flex-end">
-              {/* <IconButton color="primary">
-                <LocationOnIcon />
-              </IconButton> */}
               <Grid container spacing={3}>
                 <Grid item xs={12}>
                   <Card>
