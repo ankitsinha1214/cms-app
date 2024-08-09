@@ -246,7 +246,7 @@ function Site_servey_mgmt() {
     // console.log(column);
   }, []);
   const handleEdit = (row_data) => {
-    navigate("/location/view", { state: row_data });
+    navigate("/site-servey/view", { state: row_data });
   };
   const handleDelete = (row_data) => {
     axios({

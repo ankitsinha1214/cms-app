@@ -26,6 +26,7 @@ import { CacheProvider } from "@emotion/react";
 
 // Dashboard routes
 import { superAdminRoutes, notLoggedInRoutes } from "routes";
+import NotFoundPage  from "./NotFoundPage";
 
 // Dashboard contexts
 import { useMaterialUIController, setMiniSidenav, setOpenConfigurator } from "context";
@@ -132,10 +133,11 @@ export default function App() {
       <Routes>
         {getRoutes(routes)}
 
-        <Route
+        {/* <Route
           path="*"
           element={<Navigate to={rState?.role === "super-admin" ? "/dashboard" : "/dashboard"} />}
-        />
+        /> */}
+        <Route path="*" element={<NotFoundPage />} />
 
       </Routes>
     </ThemeProvider>

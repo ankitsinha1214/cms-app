@@ -43,6 +43,7 @@ import Icon from "@mui/material/Icon";
 import HomeIcon from '@mui/icons-material/Home';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import ViewLocation from "layouts/location_mgmt/ViewLocation";
+import ViewSitesurvey from "layouts/site_servey_mgmt/ViewSitesurvey";
 
 export const superAdminRoutes = [
   {
@@ -51,6 +52,14 @@ export const superAdminRoutes = [
     key: "dashboard",
     icon: <HomeIcon />,
     route: "/dashboard",
+    component: <Dashboard />,
+  },
+  {
+    // type: "collapse",
+    // name: "Dashboard",
+    key: "dashboard",
+    // icon: <HomeIcon />,
+    route: "/",
     component: <Dashboard />,
   },
   {
@@ -100,6 +109,14 @@ export const superAdminRoutes = [
     icon: <LocationOnIcon />,
     route: "/site-servey",
     component: <Site_servey_mgmt />,
+  },
+  {
+    // type: "collapse",
+    // name: "Update User",
+    key: "site-survey-View",
+    // icon: <Icon fontSize="small">receipt_long</Icon>,
+    route: "/site-servey/view",
+    component: <ViewSitesurvey />,
   },
   {
     type: "collapse",
