@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Container, Grid, Typography, Paper, Avatar, IconButton, Card, CardContent, CardMedia, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
+import { Box, Container, Grid, Typography, Paper, IconButton, Card, CardContent, CardMedia, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import { green } from '@mui/material/colors';
+import { Avatar, List } from 'antd';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
@@ -13,6 +14,7 @@ import first5 from "../../assets/images/demoLocation/5.png";
 import first6 from "../../assets/images/demoLocation/6.png";
 import { Divider } from 'antd';
 import ImageBox from './Components/ImageBox';
+// import VideoCanvas from './Components/VideoCanvas';
 
 import { useLocation } from 'react-router-dom';
 import {
@@ -69,6 +71,13 @@ const data = {
 
 const ViewSitesurvey = () => {
   const location = useLocation();
+  const data1 = [
+    {
+      title: (location.state?.userId?.username),
+      desc: (location.state?.userId?.email),
+      desc1: (location.state?.userId?.phone?.prefix) + ' ' + (location.state?.userId?.phone?.number),
+    }
+  ];
   console.log(location.state);
   const additionalImages = [first2, first3, first4, first5, first6];
   const [content, setContent] = useState([]);
@@ -94,152 +103,148 @@ const ViewSitesurvey = () => {
             {/* Header Section */}
             <Grid item xs={12} sm={7}>
               {/* <Flex gap="4px 0" wrap> */}
-              {content?.status === "Approved" ?
-                <Tag icon={<CheckCircleOutlined />} color="success">
-                  {content?.status}
-                </Tag>
-                  : content?.status === "Rejected" ?
-                    <Tag icon={<CloseCircleOutlined />} color="error">
+
+              <Grid container spacing={3} alignItems="center">
+                <Grid item xs={12} sm={6}>
+                  {content?.status === "Approved" ?
+                    <Tag icon={<CheckCircleOutlined />} color="success">
                       {content?.status}
                     </Tag>
-                    : content?.status === "Waiting for approval" ?
-                      <Tag icon={<ExclamationCircleOutlined />} color="warning">
-                        {content?.status}
-                      </Tag> :
-                      <Tag icon={<MinusCircleOutlined />} color="default">
+                    : content?.status === "Rejected" ?
+                      <Tag icon={<CloseCircleOutlined />} color="error">
                         {content?.status}
                       </Tag>
-              }
-              {/* <Tag icon={<ExclamationCircleOutlined />} color="warning">
+                      : content?.status === "Waiting for approval" ?
+                        <Tag icon={<ExclamationCircleOutlined />} color="warning">
+                          {content?.status}
+                        </Tag> :
+                        <Tag icon={<MinusCircleOutlined />} color="default">
+                          {content?.status}
+                        </Tag>
+                  }
+                  {/* <Tag icon={<ExclamationCircleOutlined />} color="warning">
                   warning
                 </Tag> */}
-              {/* {JSON.stringify(data)} */}
-              {/* </Flex> */}
-              <Typography variant="h4" component="h1" gutterBottom>
-                {content?.locationId?.locationName}
-              </Typography>
-              <Typography variant="subtitle1">
-                {content?.locationId?.city}, {content?.locationId?.state}
-              </Typography>
-              {/* Statistics Section */}
-              <Grid item xs={12}
-                // md={6}
-                style={{ marginTop: "2rem" }}
-              >
-                <Paper elevation={3} sx={{ p: 2 }}>
-                  <Grid container spacing={2}>
-                    <Grid item xs={2.5} style={{ textAlign: 'center' }}>
-                      <Typography variant="h6">{data.stats.total}</Typography>
-                      <Typography variant="body2">Total</Typography>
-                    </Grid>
-                    <Grid item xs={2 / 3} >
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          height: '100%', // Ensure the Box takes full height of the Grid item
-                        }}
-                      >
-                        <Divider type="vertical" style={{
-                          borderColor: '#D9D9D9', height: '50%',
-                        }} />
-                      </Box>
-                    </Grid>
-                    <Grid item xs={2.5} style={{ textAlign: 'center' }}>
-                      <Typography variant="h6">{data.stats.ac}</Typography>
-                      <Typography variant="body2">AC</Typography>
-                    </Grid>
-                    <Grid item xs={2 / 3} >
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          height: '100%', // Ensure the Box takes full height of the Grid item
-                        }}
-                      >
-                        <Divider type="vertical" style={{
-                          borderColor: '#D9D9D9', height: '50%',
-                        }} />
-                      </Box>
-                    </Grid>
-                    <Grid item xs={2.5} style={{ textAlign: 'center' }}>
-                      <Typography variant="h6">{data.stats.dc}</Typography>
-                      <Typography variant="body2">DC</Typography>
-                    </Grid>
-                    <Grid item xs={2 / 3} >
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          height: '100%', // Ensure the Box takes full height of the Grid item
-                        }}
-                      >
-                        <Divider type="vertical" style={{
-                          borderColor: '#D9D9D9', height: '50%',
-                        }} />
-                      </Box>
-                    </Grid>
-                    <Grid item xs={2.5} style={{ textAlign: 'center' }}>
-                      <Typography variant="h6">{data.stats.twoWheelerDC}</Typography>
-                      <Typography variant="body2">2wDC</Typography>
-                    </Grid>
-                  </Grid>
-                </Paper>
+                  {/* {JSON.stringify(data)} */}
+                  {/* </Flex> */}
+                  <Typography variant="h4" component="h1" gutterBottom sx={{ mt: 1 }}>
+                    {content?.locationId?.locationName}
+                  </Typography>
+                  <Typography variant="subtitle1">
+                    {content?.locationId?.city}, {content?.locationId?.state}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} sm={6} sx={{textAlign: 'right'}}>
+                  <Typography variant="body">Site survey done by </Typography>
+                  <Typography variant="body" >{data1[0].title} </Typography>
+                  <Typography variant="body" sx={{
+                    wordBreak: 'break-word', // Break long words
+                    overflowWrap: 'break-word', // Break long words and URLs
+                    whiteSpace: 'normal', // Allow text to wrap
+                    mb: 1 // Margin bottom for spacing
+                  }}><a href={`mailto:${data1[0].desc}`}>{data1[0].desc}</a> </Typography>
+                  <Typography variant="h6">{data1[0].desc1}</Typography>
+
+                  {/* <List
+    itemLayout="horizontal"
+    dataSource={data1}
+    renderItem={(item, index) => (
+      <List.Item>
+        <List.Item.Meta
+          avatar={<Avatar src={`https://api.dicebear.com/7.x/miniavs/svg?seed=${index}`} />}
+          title={<a href="https://ant.design">{item.title}</a>}
+          // description={item.desc}
+          description={`${item.desc} ${item.desc1}`}
+          // description={item.desc1}
+        />
+      </List.Item>
+    )}
+  /> */}
+                </Grid>
               </Grid>
-              <Divider dashed
-                style={{
-                  borderColor: '#D9D9D9',
-                }}
-              />
-              {/* Additional Stats */}
-              <Grid item
-                xs={12}
-              // xs={12} md={8} lg={6}
-              // md={6}
-              >
-                <Paper elevation={3} sx={{ p: 2 }}>
-                  <Grid container spacing={2}>
-                    <Grid item xs={6}>
-                      <Typography variant="h6">{data.stats.energyDispersed}</Typography>
-                      <Typography variant="body2">Energy dispersed (kwh)</Typography>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Typography variant="h6">{data.stats.visits}</Typography>
-                      <Typography variant="body2">Visits / Transactions</Typography>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Typography variant="h6">{data.stats.occupancyRate}%</Typography>
-                      <Typography variant="body2">Occupancy rate</Typography>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Typography variant="h6">{data.stats.kmsPowered}</Typography>
-                      <Typography variant="body2">KMS powered (km)</Typography>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Typography variant="h6">{data.stats.co2Saved}</Typography>
-                      <Typography variant="body2">CO2 saved (kg)</Typography>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Typography variant="h6">{data.stats.uptimeRate}%</Typography>
-                      <Typography variant="body2">Uptime rate</Typography>
-                    </Grid>
-                  </Grid>
-                </Paper>
-              </Grid>
+              {/* <List.Item>
+        <List.Item.Meta
+          avatar={ <Avatar style={{ backgroundColor: '#fde3cf', color: '#f56a00' }}>U</Avatar>}
+          title={<a href="https://ant.design">{content?.userId?.username}</a>}
+          description="Ant Design, a design language for background applications, is refined by Ant UED Team"
+        />
+      </List.Item> */}
+              {/* <Avatar style={{ backgroundColor: '#fde3cf', color: '#f56a00' }}>A</Avatar> */}
+
               {/* Placeholder for Energy Consumed Graph */}
               <Grid item xs={12} sx={{ my: 4 }}>
                 <Paper elevation={3} sx={{ p: 2 }}>
-                  <Typography variant="h6">Meter Room</Typography>
-                    {/* <Grid item xs={12}> */}
+                  <Divider>
+                    <Typography variant="h2">Power</Typography>
+                  </Divider>
+                  <Typography variant="h3">Meter Room</Typography>
+                  <Typography variant="h6" sx={{ mb: 4 }}>Electric Meter</Typography>
+                  {/* <Grid item xs={12}> */}
                   <ImageBox imageList={location?.state?.meterRoom?.electricMeter} />
+                  <Typography variant="h6" sx={{ my: 2 }}>Electric Bill</Typography>
                   <ImageBox imageList={location?.state?.meterRoom?.electricBill} />
-                    {/* </Grid> */}
+                  <Typography variant="h3" sx={{ my: 2 }}>Transformer</Typography>
+                  <Grid container spacing={2}>
+                    <Grid item xs={6}>
+                      <Typography variant="h6">Power availability</Typography>
+                      <Typography variant="body2">{location?.state?.transformer?.powerAvailability} kW</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="h6">Load enhancement</Typography>
+                      <Typography variant="body2">{location?.state?.transformer?.loadEnhancement}</Typography>
+                    </Grid>
+                  </Grid>
+                  <Typography variant="h3" sx={{ my: 2 }}>Wiring & cabling</Typography>
+                  <Grid container spacing={2}>
+                    <Grid item xs={6}>
+                      <Typography variant="h6">Distance - Meter room to DC box</Typography>
+                      <Typography variant="body2">{location?.state?.cableLength?.distanceMeterRoomToDcBox} m</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="h6">Distance - DC box to charger</Typography>
+                      <Typography variant="body2">{location?.state?.cableLength?.distanceDcBoxToDispenser} m</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="h6">CD meter space availability</Typography>
+                      <Typography variant="body2">{location?.state?.cableLength?.cdMeterSpAvail}</Typography>
+                    </Grid>
+                  </Grid>
+                  <Typography variant="h6" sx={{ my: 2 }}>Cable Length Images</Typography>
+                  <ImageBox imageList={location?.state?.cableLength?.wiringAndCablingImages} />
+
+                  <Typography variant="h3" sx={{ my: 2 }}>Conduit</Typography>
+                  <Grid container spacing={2}>
+                    <Grid item xs={6}>
+                      <Typography variant="h6">Requirement</Typography>
+                      <Typography variant="body2">{location?.state?.conduit?.conduitRequirement}</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="h6">Material</Typography>
+                      <Typography variant="body2">{location?.state?.conduit?.conduitMaterial}</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="h6">Distance - Meter room to DC box</Typography>
+                      <Typography variant="body2">{location?.state?.conduit?.distanceMeterRoomToDcBox} m</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="h6">Distance - DC box to charger</Typography>
+                      <Typography variant="body2">{location?.state?.conduit?.distanceDcBoxToCharger} m</Typography>
+                    </Grid>
+                  </Grid>
+                  <Typography variant="h3" sx={{ my: 2 }}>Earthing</Typography>
+                  <Grid container spacing={2}>
+                    <Grid item xs={6}>
+                      <Typography variant="h6">Requirement</Typography>
+                      <Typography variant="body2">{location?.state?.earthingRequirement}</Typography>
+                    </Grid>
+                  </Grid>
                 </Paper>
               </Grid>
             </Grid>
+
             {/* placement of image */}
             <Grid item xs={12} sm={5} display="flex" justifyContent="flex-end">
-              <Grid container spacing={3}>
+              {/* <Grid container spacing={3}>
                 <Grid item xs={12}>
                   <Card>
                     <CardMedia
@@ -251,7 +256,6 @@ const ViewSitesurvey = () => {
                     />
                     <CardContent style={{ padding: 0 }}>
                       <Grid container spacing={0.2}>
-                        {/* Additional images */}
                         {additionalImages.map((image, index) => (
                           <Grid item xs={2.4} key={index}>
                             <CardMedia
@@ -265,7 +269,6 @@ const ViewSitesurvey = () => {
                         ))}
                       </Grid>
                     </CardContent>
-                    {/* Address and Phone Number */}
                     <Box padding={4}>
                       <Grid container spacing={1} >
                         <Grid item xs={12}>
@@ -274,12 +277,11 @@ const ViewSitesurvey = () => {
                           <Typography variant="h6">Phone no</Typography>
                           <Typography mb={3}>{data.contact.phone}</Typography>
                         </Grid>
-                        {/* Facilities */}
                         <Grid item xs={12} mb={2}>
                           <Typography variant="h6" mb={1.5}>Facilities</Typography>
                           <Grid container spacing={2}>
                             {[1, 2, 3, 4, 5].map((_, index) => (
-                              <Grid item xs={4} sm={2} key={index}> {/* Responsive grid items */}
+                              <Grid item xs={4} sm={2} key={index}> 
                                 <Avatar sx={{ bgcolor: green[500], width: 40, height: 40 }}>
                                   <LocationOnIcon />
                                 </Avatar>
@@ -289,7 +291,6 @@ const ViewSitesurvey = () => {
                         </Grid>
                       </Grid>
                     </Box>
-                    {/* Personal Information */}
                     <Grid item xs={12}>
                       <Accordion>
                         <AccordionSummary
@@ -339,7 +340,6 @@ const ViewSitesurvey = () => {
                       </Accordion>
                     </Grid>
 
-                    {/* Contact Information */}
                     <Grid item xs={12} mt={0}>
                       <Accordion>
                         <AccordionSummary
@@ -356,6 +356,50 @@ const ViewSitesurvey = () => {
                       </Accordion>
                     </Grid>
                   </Card>
+                </Grid>
+              </Grid> */}
+              <Grid container spacing={3}>
+                <Grid item xs={12}>
+                  <Paper elevation={3} sx={{ p: 2 }}>
+                    <Divider>
+                      <Typography variant="h3">Visibility</Typography>
+                    </Divider>
+                    <Typography variant="h6" sx={{ mb: 4 }}>Pictures</Typography>
+                    {/* <Grid item xs={12}> */}
+                    <ImageBox imageList={location?.state?.visibility?.pics} />
+                    <Typography variant="h6" sx={{ my: 2 }}>Videos</Typography>
+                    <video
+                      // ref={videoRef}
+                      src={`${process.env.REACT_APP_AWS_BASEURL}${location?.state?.visibility?.videos}`}
+                      controls
+                      style={{ width: '100%', height: '360px' }}
+                    />
+                    <Typography variant="h6" sx={{ my: 2 }}>Charging Area</Typography>
+                    <Grid item xs={6}>
+                      <Typography variant="h6">Obstruction</Typography>
+                      <Typography variant="body2">{location?.state?.visibility?.obstruction}</Typography>
+                    </Grid>
+                    <Typography variant="h6" sx={{ my: 2 }}>Obstruction Pictures</Typography>
+                    <ImageBox imageList={location?.state?.visibility?.obstructionPics} />
+                    {/* <VideoCanvas videoSrc={`${process.env.REACT_APP_AWS_BASEURL}${location?.state?.visibility?.videos}`} /> */}
+                    {/* </Grid> */}
+                  </Paper>
+                </Grid>
+                <Grid item xs={12}>
+                  <Paper elevation={3} sx={{ p: 2 }}>
+                    <Divider>
+                      <Typography variant="h3">Civil</Typography>
+                    </Divider>
+                    <Grid item xs={6}>
+                      <Typography variant="h6">Flooring</Typography>
+                      <Typography variant="body2">{location?.state?.civil?.flooring}</Typography>
+                    </Grid>
+                    <Typography variant="h6" sx={{ my: 2 }}>Flooring Pictures</Typography>
+                    {/* <Grid item xs={12}> */}
+                    <ImageBox imageList={location?.state?.civil?.pics} />
+                    {/* <VideoCanvas videoSrc={`${process.env.REACT_APP_AWS_BASEURL}${location?.state?.visibility?.videos}`} /> */}
+                    {/* </Grid> */}
+                  </Paper>
                 </Grid>
               </Grid>
             </Grid>
