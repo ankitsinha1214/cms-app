@@ -1,21 +1,25 @@
 import React, { useState, useEffect } from 'react';
+import axios from "axios";
 import { Box, Container, Grid, Typography, Paper, IconButton, Card, CardContent, CardMedia, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import { green } from '@mui/material/colors';
+import { Modal } from 'antd';
+import TextField from '@mui/material/TextField';
 import { Avatar, List } from 'antd';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import first from "../../assets/images/demoLocation/1.png";
-import first2 from "../../assets/images/demoLocation/2.png";
-import first3 from "../../assets/images/demoLocation/3.png";
-import first4 from "../../assets/images/demoLocation/4.png";
-import first5 from "../../assets/images/demoLocation/5.png";
-import first6 from "../../assets/images/demoLocation/6.png";
+import { useSnackbar } from "notistack";
 import { Divider } from 'antd';
 import ImageBox from './Components/ImageBox';
+import { Button as Button1 } from '@mui/material';
+import Stack from '@mui/material/Stack';
+import CloseIcon from '@mui/icons-material/Close';
+import DoneIcon from '@mui/icons-material/Done';
 // import VideoCanvas from './Components/VideoCanvas';
+import { Button } from 'antd';
 
+import { useNavigate } from "react-router-dom";
 import { useLocation } from 'react-router-dom';
 import {
   CheckCircleOutlined,
@@ -71,6 +75,28 @@ const data = {
 
 const ViewSitesurvey = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
+  const [content, setContent] = useState([]);
+  const [reason, setReason] = useState('');
+  const [open, setOpen] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
+  const showModal = () => {
+    setOpen(true);
+  };
+  const handleOk = () => {
+    if (!reason) return enqueueSnackbar('Please Fill All The Details !!!', { variant: 'error' })
+    setConfirmLoading(true);
+    setTimeout(() => {
+      setOpen(false);
+      handleSubmit("Rejected");
+      setConfirmLoading(false);
+    }, 2000);
+  };
+  const handleCancel = () => {
+    console.log('Clicked cancel button');
+    setOpen(false);
+  };
   const data1 = [
     {
       title: (location.state?.userId?.username),
@@ -79,25 +105,82 @@ const ViewSitesurvey = () => {
     }
   ];
   console.log(location.state);
-  const additionalImages = [first2, first3, first4, first5, first6];
-  const [content, setContent] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
     setContent(location.state);
   }, []);
-  const renderContactDetails = (contact) => (
-    Object.keys(contact).map((key) => (
-      key !== 'phone' && (
-        <Box key={key} display="flex" justifyContent="space-between" my={1}>
-          <Typography variant="body2" fontWeight="bold">{key.charAt(0).toUpperCase() + key.slice(1)}:</Typography>
-          <Typography variant="body2">{contact[key].name} - {contact[key].phone}</Typography>
-        </Box>
-      )
-    ))
-  );
+  const handleSubmit = (status) => {
+    setIsLoading(true);
+    const payload = {
+      "id": location.state?._id,
+      "reason": reason,
+      "type": 'site-survey',
+      "status": status,
+    };
+    axios({
+      method: "post",
+      url: process.env.REACT_APP_BASEURL + "charger-dc-box/change-status",
+      data: payload, // JSON payload
+      headers: {
+        "Content-Type": "application/json", // Set the Content-Type header
+      },
+    })
+      .then((response) => {
+        console.log(response.data.message);
+        if (response.data.success === true) {
+          console.log(response);
+          enqueueSnackbar(response.data.message, { variant: 'success' })
+          setIsLoading(false);
+          navigate("/site-servey");
+        } else {
+          enqueueSnackbar(response.data.message, { variant: 'error' });
+          setIsLoading(false);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        enqueueSnackbar(error.response.data.message, { variant: 'error' });
+        setIsLoading(false);
+      });
+  };
+  const handleChange = (event) => {
+    setReason(event.target.value);
+};
+  // const renderContactDetails = (contact) => (
+  //   Object.keys(contact).map((key) => (
+  //     key !== 'phone' && (
+  //       <Box key={key} display="flex" justifyContent="space-between" my={1}>
+  //         <Typography variant="body2" fontWeight="bold">{key.charAt(0).toUpperCase() + key.slice(1)}:</Typography>
+  //         <Typography variant="body2">{contact[key].name} - {contact[key].phone}</Typography>
+  //       </Box>
+  //     )
+  //   ))
+  // );
   return (
     <DashboardLayout>
       <DashboardNavbar />
       <Container maxWidth="lg" style={{ backgroundColor: "#F0F0F0" }}>
+      <Modal
+        title="Please Give The Reason For Rejecting"
+        open={open}
+        onOk={handleOk}
+        confirmLoading={confirmLoading}
+        onCancel={handleCancel}
+      >
+         {/* Reason TextField */}
+    <div style={{ width: "100%", marginTop: "1.5rem" }}>
+      <TextField
+        error
+        id="outlined-error"
+        label="Reason"
+        multiline
+        rows={4}
+        sx={{ width: '100%' }}
+        value={reason}
+    onChange={handleChange}
+      />
+    </div>
+      </Modal>
         <Box sx={{ my: 4 }}>
           <Grid container spacing={3}>
             {/* Header Section */}
@@ -134,7 +217,12 @@ const ViewSitesurvey = () => {
                     {content?.locationId?.city}, {content?.locationId?.state}
                   </Typography>
                 </Grid>
-                <Grid item xs={12} sm={6} sx={{textAlign: 'right'}}>
+                <Grid item xs={12} sm={6} sx={{
+                  textAlign: {
+                    xs: 'left', // Align text to the left on extra-small screens
+                    sm: 'right' // Align text to the right on small screens and larger
+                  }
+                }}>
                   <Typography variant="body">Site survey done by </Typography>
                   <Typography variant="body" >{data1[0].title} </Typography>
                   <Typography variant="body" sx={{
@@ -404,6 +492,65 @@ const ViewSitesurvey = () => {
               </Grid>
             </Grid>
           </Grid>
+          {/* {(content?.status === "Waiting for approval")?
+            <>
+          <Stack direction="row" spacing={2} sx={{mt: 2}}>
+            <Button1 variant="contained" onClick={} color="error" startIcon={<CloseIcon />} sx={{ color: "red" }}>
+              Reject
+            </Button1>
+            <Button1 variant="contained" onClick={handleSubmit("Approved")} color="success" startIcon={<DoneIcon />} sx={{ color: "green" }}>
+              Approve
+            </Button1>
+          </Stack>
+          <div style={{width: "100%", marginTop:"1.5rem"}}>
+            <TextField
+              error
+              id="outlined-error"
+              label="Reason"
+              multiline
+              rows={4}
+            // defaultValue="Default Value"
+            sx={{ width: '55%' }} 
+            />
+          </div>
+          </>:null
+          } */}
+          {content?.status === "Waiting for approval" && (
+  <>
+    <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
+      {/* Reject Button */}
+      <Button1 
+        variant="contained" 
+        onClick={showModal}// Add your onClick handler here
+        color="error" 
+        startIcon={<CloseIcon />} 
+        sx={{ color: "red" }}
+      >
+        Reject
+      </Button1>
+      
+      {/* Approve Button */}
+      <Button1 
+        variant="contained" 
+        onClick={() => handleSubmit("Approved")} // Ensure handleSubmit function is properly defined
+        color="success" 
+        startIcon={<DoneIcon />} 
+        sx={{ color: "green" }}
+      >
+        Approve
+      </Button1>
+    </Stack>
+    
+   
+  </>
+)}
+          {/* <br /> */}
+          {/* <Flex wrap gap="small">
+    <Button danger>Reject</Button>
+        <Button type="primary" ghost>
+      Approve
+    </Button>
+  </Flex> */}
         </Box>
       </Container>
     </DashboardLayout>
