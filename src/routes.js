@@ -26,6 +26,7 @@ import ChargerMgmt from "layouts/charger_mgmt";
 import AppMgmt from "layouts/app_mgmt";
 import LocationMgmt from "layouts/location_mgmt";
 import Site_servey_mgmt from "layouts/site_servey_mgmt";
+import Pre_installation_mgmt from "layouts/pre_installation_mgmt";
 import Settings from "layouts/settings";
 import UserMgmt from "layouts/user_mgmt";
 import UpdateUser from "layouts/user_mgmt/UpdateUser";
@@ -44,6 +45,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import ViewLocation from "layouts/location_mgmt/ViewLocation";
 import ViewSitesurvey from "layouts/site_servey_mgmt/ViewSitesurvey";
+import ViewPreinstallation from "layouts/pre_installation_mgmt/ViewPreinstallation";
 
 export const superAdminRoutes = [
   {
@@ -111,12 +113,28 @@ export const superAdminRoutes = [
     component: <Site_servey_mgmt />,
   },
   {
+    type: "collapse",
+    name: "Pre Installation Mgmt",
+    key: "pre-installation",
+    icon: <LocationOnIcon />,
+    route: "/pre-installation",
+    component: <Pre_installation_mgmt />,
+  },
+  {
     // type: "collapse",
     // name: "Update User",
     key: "site-survey-View",
     // icon: <Icon fontSize="small">receipt_long</Icon>,
     route: "/site-servey/view",
     component: <ViewSitesurvey />,
+  },
+  {
+    // type: "collapse",
+    // name: "Update User",
+    key: "pre-installation-View",
+    // icon: <Icon fontSize="small">receipt_long</Icon>,
+    route: "/pre-installation/view",
+    component: <ViewPreinstallation />,
   },
   {
     type: "collapse",

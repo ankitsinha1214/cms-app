@@ -29,7 +29,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import CircleIcon from '@mui/icons-material/Circle';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
-function Site_servey_mgmt() {
+function Pre_installation_mgmt() {
   const [controller] = useMaterialUIController();
   const { darkMode } = controller;
   const [isLoading, setIsLoading] = useState(true);
@@ -39,28 +39,9 @@ function Site_servey_mgmt() {
     'Approved',
     'Waiting for approval'
   ];
-  const getValues = () => {
-    return {
-      locationName: "",
-      locationType: "",
-      address: "",
-      state: "",
-      city: "",
-      status: "",
-      freepaid: {
-        "parking": true,
-        "charging": true
-      },
-      direction: {},
-      chargerInfo: [{}],
-      facilities: [],
-      workingDays: "Everyday",
-      workingHours: "",
-      salesManager: { name: '', phoneNumber: '', email: '' },
-      dealer: { name: '', phoneNumber: '', email: '' },
-      locationImage: []
-    };
-  };
+  const [columns, setColumns] = useState([]);
+  const [rows, setRows] = useState([]);
+  const [count, setCount] = useState({});
   useEffect(() => {
     if (
       localStorage.getItem("login_status") !== "true"
@@ -69,11 +50,24 @@ function Site_servey_mgmt() {
     }
     axios({
       method: "get",
-      url: process.env.REACT_APP_BASEURL + "site-surveys",
+      url: process.env.REACT_APP_BASEURL + "pre-installations",
     })
       .then((response) => {
         if (response.data.status === true) {
           setRows(response.data.data);
+          // Count the number of Approved and Rejected statuses
+          const statusCounts = response?.data?.data?.reduce(
+            (counts, item) => {
+              if (item.status === "Approved") {
+                counts.approved += 1;
+              } else if (item.status === "Rejected") {
+                counts.rejected += 1;
+              }
+              return counts;
+            },
+            { approved: 0, rejected: 0 }
+          );
+          setCount(statusCounts);
           setIsLoading(false);
         } else {
           enqueueSnackbar(response.data.message, { variant: 'error' });
@@ -89,12 +83,6 @@ function Site_servey_mgmt() {
     width: '100%',
     height: '400px',
   };
-
-  const [values, setValues] = useState(getValues);
-  console.log(values);
-  const [isDisabled2, setIsDisabled2] = useState(false);
-  const [columns, setColumns] = useState([]);
-  const [rows, setRows] = useState([]);
 
   const column = [
     {
@@ -186,7 +174,7 @@ function Site_servey_mgmt() {
       }, // default
       Cell: (row) => (
         <div>
-          {`${row.row.original.userId.phone.prefix} ${row.row.original.userId.phone.number}`}
+          {`${row.row.original.userId?.phone?.prefix} ${row.row.original.userId?.phone?.number}`}
         </div>
       ),
     },
@@ -247,12 +235,12 @@ function Site_servey_mgmt() {
     // console.log(column);
   }, []);
   const handleEdit = (row_data) => {
-    navigate("/site-servey/view", { state: row_data });
+    navigate("/pre-installation/view", { state: row_data });
   };
   const handleDelete = (row_data) => {
     axios({
       method: "delete",
-      url: process.env.REACT_APP_BASEURL + "site-surveys/" + row_data._id,
+      url: process.env.REACT_APP_BASEURL + "pre-installations/" + row_data._id,
       // headers: {
       //   "Content-Type": "application/json", 
       // },
@@ -382,7 +370,7 @@ function Site_servey_mgmt() {
             <MDBox mx={2} mt={-3} py={3} px={2} variant="gradient" bgColor="info" borderRadius="lg" coloredShadow="info">
               <Grid container direction="row" justifyContent="space-between" alignItems="center">
                 <MDTypography variant="h6" color="white">
-                  All Site Survey
+                  All Pre Installation
                 </MDTypography>
                 {/* <MDButton
                   onClick={() => setIsDisabled2(!isDisabled2)}
@@ -486,4 +474,4 @@ function Site_servey_mgmt() {
   );
 }
 
-export default Site_servey_mgmt;
+export default Pre_installation_mgmt;
