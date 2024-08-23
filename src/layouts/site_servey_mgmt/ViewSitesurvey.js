@@ -131,7 +131,7 @@ const ViewSitesurvey = () => {
           console.log(response);
           enqueueSnackbar(response.data.message, { variant: 'success' })
           setIsLoading(false);
-          navigate("/site-servey");
+          navigate("/site-survey");
         } else {
           enqueueSnackbar(response.data.message, { variant: 'error' });
           setIsLoading(false);

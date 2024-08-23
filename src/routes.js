@@ -25,8 +25,10 @@ import Dashboard from "layouts/dashboard";
 import ChargerMgmt from "layouts/charger_mgmt";
 import AppMgmt from "layouts/app_mgmt";
 import LocationMgmt from "layouts/location_mgmt";
+import Service_and_maintenance_mgmt from "layouts/service_and_maintenance_mgmt";
 import Site_servey_mgmt from "layouts/site_servey_mgmt";
 import Pre_installation_mgmt from "layouts/pre_installation_mgmt";
+import Charger_and_dcbox_mgmt from "layouts/charger_and_dcbox_mgmt";
 import Settings from "layouts/settings";
 import UserMgmt from "layouts/user_mgmt";
 import UpdateUser from "layouts/user_mgmt/UpdateUser";
@@ -46,6 +48,7 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import ViewLocation from "layouts/location_mgmt/ViewLocation";
 import ViewSitesurvey from "layouts/site_servey_mgmt/ViewSitesurvey";
 import ViewPreinstallation from "layouts/pre_installation_mgmt/ViewPreinstallation";
+import ViewChargerandDcbox from "layouts/charger_and_dcbox_mgmt/ViewChargerandDcbox";
 
 export const superAdminRoutes = [
   {
@@ -106,10 +109,18 @@ export const superAdminRoutes = [
   },
   {
     type: "collapse",
-    name: "Site Survey Mgmt",
-    key: "site-servey",
+    name: "Service & Maintenace Mgmt",
+    key: "service-maintenace",
     icon: <LocationOnIcon />,
-    route: "/site-servey",
+    route: "/service-maintenace",
+    component: <Service_and_maintenance_mgmt />,
+  },
+  {
+    type: "collapse",
+    name: "Site Survey Mgmt",
+    key: "site-survey",
+    icon: <LocationOnIcon />,
+    route: "/site-survey",
     component: <Site_servey_mgmt />,
   },
   {
@@ -121,11 +132,19 @@ export const superAdminRoutes = [
     component: <Pre_installation_mgmt />,
   },
   {
+    type: "collapse",
+    name: "Charger and Dcbox Mgmt",
+    key: "charger-and-dcbox",
+    icon: <LocationOnIcon />,
+    route: "/charger-and-dcbox",
+    component: <Charger_and_dcbox_mgmt />,
+  },
+  {
     // type: "collapse",
     // name: "Update User",
     key: "site-survey-View",
     // icon: <Icon fontSize="small">receipt_long</Icon>,
-    route: "/site-servey/view",
+    route: "/site-survey/view",
     component: <ViewSitesurvey />,
   },
   {
@@ -135,6 +154,14 @@ export const superAdminRoutes = [
     // icon: <Icon fontSize="small">receipt_long</Icon>,
     route: "/pre-installation/view",
     component: <ViewPreinstallation />,
+  },
+  {
+    // type: "collapse",
+    // name: "Update User",
+    key: "charger-and-dcbox-View",
+    // icon: <Icon fontSize="small">receipt_long</Icon>,
+    route: "/charger-and-dcbox/view",
+    component: <ViewChargerandDcbox />,
   },
   {
     type: "collapse",
