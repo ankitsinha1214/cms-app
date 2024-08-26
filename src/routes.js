@@ -49,6 +49,8 @@ import ViewLocation from "layouts/location_mgmt/ViewLocation";
 import ViewSitesurvey from "layouts/site_servey_mgmt/ViewSitesurvey";
 import ViewPreinstallation from "layouts/pre_installation_mgmt/ViewPreinstallation";
 import ViewChargerandDcbox from "layouts/charger_and_dcbox_mgmt/ViewChargerandDcbox";
+import Pre_delivery_mgmt from "layouts/pre_delivery_mgmt";
+import ViewPreDelivery from "layouts/pre_delivery_mgmt/ViewPreDelivery";
 
 export const superAdminRoutes = [
   {
@@ -116,28 +118,36 @@ export const superAdminRoutes = [
     component: <Service_and_maintenance_mgmt />,
   },
   {
-    type: "collapse",
-    name: "Site Survey Mgmt",
+    // type: "collapse",
+    // name: "Site Survey Mgmt",
     key: "site-survey",
-    icon: <LocationOnIcon />,
+    // icon: <LocationOnIcon />,
     route: "/site-survey",
     component: <Site_servey_mgmt />,
   },
   {
-    type: "collapse",
-    name: "Pre Installation Mgmt",
+    // type: "collapse",
+    // name: "Pre Installation Mgmt",
     key: "pre-installation",
-    icon: <LocationOnIcon />,
+    // icon: <LocationOnIcon />,
     route: "/pre-installation",
     component: <Pre_installation_mgmt />,
   },
   {
-    type: "collapse",
-    name: "Charger and Dcbox Mgmt",
+    // type: "collapse",
+    // name: "Charger and Dcbox Mgmt",
     key: "charger-and-dcbox",
-    icon: <LocationOnIcon />,
+    // icon: <LocationOnIcon />,
     route: "/charger-and-dcbox",
     component: <Charger_and_dcbox_mgmt />,
+  },
+  {
+    // type: "collapse",
+    // name: "Pre Delivery Mgmt",
+    key: "pre-delivery",
+    // icon: <LocationOnIcon />,
+    route: "/pre-delivery",
+    component: <Pre_delivery_mgmt />,
   },
   {
     // type: "collapse",
@@ -162,6 +172,14 @@ export const superAdminRoutes = [
     // icon: <Icon fontSize="small">receipt_long</Icon>,
     route: "/charger-and-dcbox/view",
     component: <ViewChargerandDcbox />,
+  },
+  {
+    // type: "collapse",
+    // name: "Update User",
+    key: "pre-delivery-view",
+    // icon: <Icon fontSize="small">receipt_long</Icon>,
+    route: "/pre-delivery/view",
+    component: <ViewPreDelivery />,
   },
   {
     type: "collapse",

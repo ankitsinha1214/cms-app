@@ -14,6 +14,7 @@ import site from '../../assets/images/site-suvey.png';
 import pre_install from '../../assets/images/pre-installation.png';
 import pre_delivery from '../../assets/images/pre-delivery.png';
 import charger_dcbox from '../../assets/images/charger-dcbox.png';
+import user from '../../assets/images/users.png';
 import { Avatar, Card } from 'antd';
 import { Col, Row } from 'antd';
 const { Meta } = Card;
@@ -71,13 +72,25 @@ function Service_and_maintenance_mgmt() {
             </CardActionArea>
           </Col>
           <Col xs={24} sm={12} md={8} lg={6}>
-            <CardActionArea onClick={() => navigate('/site-survey')}>
+            <CardActionArea onClick={() => navigate('/pre-delivery')}>
               <Card
                 cover={<img alt="Pre-Delivery" src={pre_delivery} />}
               >
                 <Meta
                   title="Pre-Delivery"
                   description="This is a description for the Pre-Delivery card."
+                />
+              </Card>
+            </CardActionArea>
+          </Col> 
+          <Col xs={24} sm={12} md={8} lg={6}>
+            <CardActionArea onClick={() => navigate('/pre-delivery')}>
+              <Card
+                cover={<img alt="Pre-Delivery" src={user} />}
+              >
+                <Meta
+                  title="User Management"
+                  description="This is a description for the user card."
                 />
               </Card>
             </CardActionArea>
