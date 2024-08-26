@@ -34,63 +34,63 @@ function Service_and_maintenance_mgmt() {
     <DashboardLayout>
       <DashboardNavbar absolute isMini />
       <MDBox mt={8}>
-        <Row gutter={[16, 16]}>
-          <Col xs={24} sm={12} md={8} lg={6}>
+        <Row gutter={[16, 32]}>
+          <Col xs={24} sm={12} md={8} lg={22/3}>
             <CardActionArea onClick={() => navigate('/site-survey')}>
               <Card
                 cover={<img alt="Site Survey" src={site} />}
               >
                 <Meta
                   title="Site Survey"
-                  description="This is a description for the Site Survey card."
+                  description="Coordinate and track site assessments for charger installation feasibility."
                 />
               </Card>
             </CardActionArea>
           </Col>
-          <Col xs={24} sm={12} md={8} lg={6}>
+          <Col xs={24} sm={12} md={8} lg={22/3}>
             <CardActionArea onClick={() => navigate('/pre-installation')}>
               <Card
                 cover={<img alt="Pre-Installation" src={pre_install} />}
               >
                 <Meta
                   title="Pre-Installation"
-                  description="This is a description for the Pre-Installation card."
+                  description="Manage tasks before installing chargers, ensuring readiness and compliance."
                 />
               </Card>
             </CardActionArea>
           </Col>
-          <Col xs={24} sm={12} md={8} lg={6}>
+          <Col xs={24} sm={12} md={8} lg={22/3}>
             <CardActionArea onClick={() => navigate('/charger-and-dcbox')}>
               <Card
                 cover={<img alt="Charger and DC Box" src={charger_dcbox} />}
               >
                 <Meta
                   title="Charger and DC Box"
-                  description="This is a description for the Charger and DC Box card."
+                  description="Monitor and control the deployment of chargers and DC boxes."
                 />
               </Card>
             </CardActionArea>
           </Col>
-          <Col xs={24} sm={12} md={8} lg={6}>
+          <Col xs={24} sm={12} md={8} lg={8}>
             <CardActionArea onClick={() => navigate('/pre-delivery')}>
               <Card
                 cover={<img alt="Pre-Delivery" src={pre_delivery} />}
               >
                 <Meta
                   title="Pre-Delivery"
-                  description="This is a description for the Pre-Delivery card."
+                  description="Oversee logistics and preparations before charger delivery to installation sites."
                 />
               </Card>
             </CardActionArea>
           </Col> 
-          <Col xs={24} sm={12} md={8} lg={6}>
-            <CardActionArea onClick={() => navigate('/pre-delivery')}>
+          <Col xs={24} sm={12} md={8} lg={8}>
+            <CardActionArea onClick={() => navigate('/users-service-and-maintenance')}>
               <Card
-                cover={<img alt="Pre-Delivery" src={user} />}
+                cover={<img alt="User Management" src={user} />}
               >
                 <Meta
                   title="User Management"
-                  description="This is a description for the user card."
+                  description="Administer user roles, access, and interactions within the charging network."
                 />
               </Card>
             </CardActionArea>

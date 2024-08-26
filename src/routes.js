@@ -51,6 +51,7 @@ import ViewPreinstallation from "layouts/pre_installation_mgmt/ViewPreinstallati
 import ViewChargerandDcbox from "layouts/charger_and_dcbox_mgmt/ViewChargerandDcbox";
 import Pre_delivery_mgmt from "layouts/pre_delivery_mgmt";
 import ViewPreDelivery from "layouts/pre_delivery_mgmt/ViewPreDelivery";
+import User_service_maintenace_mgmt from "layouts/user_service_maintenace_mgmt";
 
 export const superAdminRoutes = [
   {
@@ -180,6 +181,14 @@ export const superAdminRoutes = [
     // icon: <Icon fontSize="small">receipt_long</Icon>,
     route: "/pre-delivery/view",
     component: <ViewPreDelivery />,
+  },
+  {
+    // type: "collapse",
+    // name: "Update User",
+    key: "users-service-and-maintenance",
+    // icon: <Icon fontSize="small">receipt_long</Icon>,
+    route: "/users-service-and-maintenance",
+    component: <User_service_maintenace_mgmt />,
   },
   {
     type: "collapse",
