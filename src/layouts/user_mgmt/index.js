@@ -113,7 +113,7 @@ function User_mgmt() {
       })
       .catch((error) => {
         console.log(error);
-        enqueueSnackbar(error.data.message, { variant: 'error' });
+        enqueueSnackbar(error.response?.data?.message, { variant: 'error' });
       });
   };
   const column = [

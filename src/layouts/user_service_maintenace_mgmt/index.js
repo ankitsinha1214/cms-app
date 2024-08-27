@@ -6,6 +6,11 @@ import Grid from "@mui/material/Grid";
 import MDBox from "components/MDBox";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Modal } from 'antd';
+import TextField from '@mui/material/TextField';
+import Tooltip from '@mui/material/Tooltip';
+import InputAdornment from '@mui/material/InputAdornment';
+// import { Button, Input, Select, Space } from 'antd';
 import Loader from "components/custom/Loader";
 // Material Dashboard 2 React examples
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
@@ -29,7 +34,8 @@ import { useSnackbar } from "notistack";
 import LaunchIcon from "@mui/icons-material/Launch";
 import DeleteIcon from '@mui/icons-material/Delete';
 import CircleIcon from '@mui/icons-material/Circle';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import NoAccountsIcon from '@mui/icons-material/NoAccounts';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 function User_service_maintenace_mgmt() {
   const [controller] = useMaterialUIController();
@@ -40,7 +46,22 @@ function User_service_maintenace_mgmt() {
     'Active',
     'Inactive'
   ];
+  const getValues = () => {
+    return {
+      name: "",
+      prefix: "",
+      number: "",
+      email: "",
+      username: "",
+    };
+  };
   const [columns, setColumns] = useState([]);
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
+  // const showModal = () => {
+  //   setOpen(true);
+  // };
   const [rows, setRows] = useState([]);
   const [count, setCount] = useState({});
   useEffect(() => {
@@ -91,6 +112,60 @@ function User_service_maintenace_mgmt() {
     const zonedDate = toZonedTime(new Date(utcDate), timeZone); // Convert UTC to IST
     return format(zonedDate, 'yyyy-MM-dd HH:mm:ss'); // Format the date as desired
   };
+  const handleSubmit = () => {
+    const payload = {
+      "name": values.name,
+      "email": values.email,
+      "username": values.username,
+      "phone": {
+        "prefix": values.prefix,
+        "number": values.number
+      },
+    };
+    axios({
+      method: "post",
+      url: process.env.REACT_APP_BASEURL + "user-service-and-maintenance/updateuserdetails",
+      data: payload, // JSON payload
+      headers: {
+        "Content-Type": "application/json", // Set the Content-Type header
+      },
+    })
+      .then((response) => {
+        console.log(response.data.message);
+        if (response.data.success === true) {
+          console.log(response);
+          enqueueSnackbar(response.data.message, { variant: 'success' });
+          window.location.reload();
+        } else {
+          enqueueSnackbar(response.data.message, { variant: 'error' });
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        enqueueSnackbar(error.response?.data?.message, { variant: 'error' });
+      });
+  };
+  const [values, setValues] = useState(getValues);
+  const handleOk = () => {
+    if (!values.name || !values.email || !values.prefix || !values.number) return enqueueSnackbar('Please Fill All The Details !!!', { variant: 'error' })
+    setConfirmLoading(true);
+    setTimeout(() => {
+      setOpen(false);
+      handleSubmit();
+      setConfirmLoading(false);
+      // window.location.reload();
+    }, 2000);
+  };
+  const handleCancel = () => {
+    console.log('Clicked cancel button');
+    setOpen(false);
+  };
+  const handleChange = (event) => {
+    setValues((prevValues) => ({
+        ...prevValues,
+        [event.target.name]: event.target.value,
+    }));
+};
   const column = [
     {
       header: "Status",
@@ -167,7 +242,7 @@ function User_service_maintenace_mgmt() {
       },
       muiTableBodyCellProps: {
         align: 'center',
-      }, // default
+      },
       Cell: (row) => (
         <div>
           {`${row.row.original.phone?.prefix} ${row.row.original.phone?.number}`}
@@ -195,34 +270,56 @@ function User_service_maintenace_mgmt() {
       }, accessorKey: "action",
       align: "center",
       Cell: (row) => (
-        row.row.depth === 0 ? (
-          <div style={{
-            position: 'sticky',
-            right: '0',
-            zIndex: '111',
-          }}>
-            <MDButton
-              onClick={(e) => handleEdit(row.row.original)}
-              variant="gradient"
-              color="info"
-              iconOnly
-            >
-              <LaunchIcon />
-            </MDButton>
-            <MDButton
-              sx={{
-                marginLeft: 2,
-              }}
-              onClick={(e) => handleDelete(row.row.original)}
-              variant="gradient"
-              color="info"
-              // color="secondary"
-              iconOnly
-            >
-              <DeleteIcon />
-            </MDButton>
-          </div>
-        ) : null
+        // row.row.depth === 0 ? (
+        <div style={{
+          position: 'sticky',
+          right: '0',
+          zIndex: '111',
+        }}>
+          <MDButton
+            onClick={(e) => handleEdit(row.row.original)}
+            // onClick={showModal}
+            variant="gradient"
+            color="info"
+            iconOnly
+          >
+            <LaunchIcon />
+          </MDButton>
+          {
+            (row.row.original.status === "Inactive") ?
+              <Tooltip title="Activate This User">
+                <MDButton
+                  sx={{
+                    marginLeft: 2,
+                  }}
+                  onClick={(e) => handleDelete(row.row.original)}
+                  variant="gradient"
+                  // color="info"
+                  color="success"
+                  iconOnly
+                >
+                  <AccountCircleIcon />
+                </MDButton>
+              </Tooltip>
+              :
+              <Tooltip title="Deactivate This User">
+                <MDButton
+                  sx={{
+                    marginLeft: 2,
+                  }}
+                  onClick={(e) => handleDelete(row.row.original)}
+                  variant="gradient"
+                  // color="info"
+                  color="error"
+                  iconOnly
+                >
+                  <NoAccountsIcon />
+                </MDButton>
+              </Tooltip>
+          }
+          {/* <DeleteIcon /> */}
+        </div>
+        // ) : null
       ),
     },
   ];
@@ -241,33 +338,51 @@ function User_service_maintenace_mgmt() {
     // console.log(column);
   }, []);
   const handleEdit = (row_data) => {
-    navigate("/charger-and-dcbox/view", { state: row_data });
+    values.name = row_data.name;
+    values.email = row_data.email;
+    values.prefix = row_data.phone?.prefix;
+    values.number = row_data.phone?.number;
+    values.username = row_data.username;
+    setOpen(true);
+    // navigate("/charger-and-dcbox/view", { state: row_data });
   };
   const handleDelete = (row_data) => {
+    var status;
+    if (row_data.status === "Active") {
+      status = "Inactive";
+    }
+    else {
+      status = "Active";
+    }
+    const payload = {
+      userId: row_data._id,
+      status: status
+    }
     axios({
-      method: "delete",
-      url: process.env.REACT_APP_BASEURL + "charger-dc-box/" + row_data._id,
-      // headers: {
-      //   "Content-Type": "application/json", 
-      // },
+      method: "post",
+      url: process.env.REACT_APP_BASEURL + "user-service-and-maintenance/update-status",
+      data: payload,
+      headers: {
+        "Content-Type": "application/json",
+      },
     })
       .then((response) => {
-        if (response.data.status === true) {
+        if (response.data.success === true) {
           // console.log(response);
           // setIsBackdrop(false);
           // setDialogMessage(response.data.message);
           // setIsDialog(true);
           // alert(response.data.message);
-          enqueueSnackbar(response.data.message, { variant: 'success' });
+          enqueueSnackbar(response.data?.message, { variant: 'success' });
           window.location.reload();
         } else {
-          // console.log("status is false ");
-          enqueueSnackbar(response.data.message, { variant: 'error' });
+          // console.log(response.data);
+          enqueueSnackbar(response.data?.message, { variant: 'error' });
         }
       })
       .catch((error) => {
-        // console.log(error);
-        enqueueSnackbar(error.data.message, { variant: 'error' });
+        console.log(error);
+        enqueueSnackbar(error.response?.data?.message, { variant: 'error' });
       });
   };
   const total = rows.length;
@@ -286,6 +401,78 @@ function User_service_maintenace_mgmt() {
         onHandleChange={handleChange}
       /> */}
       <DashboardNavbar />
+      <Modal
+        title="Update Profile"
+        open={open}
+        onOk={handleOk}
+        confirmLoading={confirmLoading}
+        onCancel={handleCancel}
+      >
+        {/* Reason TextField */}
+        <div style={{ width: "100%", marginTop: "1rem" }}>
+          <TextField
+            id="outlined-error"
+            label="Name"
+            value={values.name}
+            name="name"
+            margin="dense"
+            // multiline
+            // rows={4}
+            sx={{ width: '100%' }}
+            onChange={handleChange}
+          />
+          <TextField
+            id="outlined-error"
+            label="Email ID"
+            value={values.email}
+            name="email"
+            margin="dense"
+            // multiline
+            // rows={4}
+            sx={{ width: '100%' }}
+            onChange={handleChange}
+          />
+          <TextField
+            id="filled-adornment-amount"
+            label="country code"
+            // type="number"
+            value={values.prefix}
+            name="prefix"
+            margin="dense"
+            // multiline
+            // rows={4}
+            sx={{ width: '20%', marginRight: '0.5rem' }}
+            onChange={handleChange}
+            // startAdornment={<InputAdornment position="start">+</InputAdornment>}
+          />
+          <TextField
+            id="amount"
+            label="Phone Number"
+            type="number"
+            value={values.number}
+            name="number"
+            margin="dense"
+            // multiline
+            // rows={4}
+            sx={{ width: '78%' }}
+            onChange={handleChange}
+          />
+          {/* <Space.Compact>
+      <Input
+        style={{
+          width: '20%',
+        }}
+        defaultValue="0571"
+      />
+      <Input
+        style={{
+          width: '80%',
+        }}
+        defaultValue="26888888"
+      />
+    </Space.Compact> */}
+        </div>
+      </Modal>
       {/* <MDBox mt={8}> */}
       {/* <Box sx={{ flexGrow: 1 }} mt={2}>
         <Grid container spacing={2}>
@@ -376,13 +563,13 @@ function User_service_maintenace_mgmt() {
                 <MDTypography variant="h6" color="white">
                   All User Service & Maintenace
                 </MDTypography>
-                {/* <MDButton
-                  onClick={() => setIsDisabled2(!isDisabled2)}
+                <MDButton
+                  onClick={() => setIsDisabled(!isDisabled)}
                   variant="outlined"
                   color="white"
                 >
-                  Add Locations
-                </MDButton> */}
+                  Add User
+                </MDButton>
               </Grid>
             </MDBox>
             {isLoading ? (
