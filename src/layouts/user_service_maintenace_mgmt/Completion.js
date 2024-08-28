@@ -45,20 +45,20 @@ function Completion(props) {
         <>
             <MDBackdrop isBackdrop={isBackdrop} />
             <Dialog open={props.isDialog} onClose={handleClose} fullWidth maxWidth="md">
-                <DialogTitle style={darkMode ? { backgroundColor: "#202940", color: "#ffffff" ,display : "flex", alignItems : "center", justifyContent : "space-between"} : {theme,display : "flex", alignItems : "center", justifyContent : "space-between"}}>
-                
+                <DialogTitle style={darkMode ? { backgroundColor: "#202940", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "space-between" } : { theme, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+
                     {/* <IconButton aria-label="delete" onClick={back}>
                         <ArrowBackIcon />
                     </IconButton> */}
-                    Location Created successfully!!
-                    <IconButton aria-label="delete" style={darkMode ? {color: "#ffffff"} : theme} onClick={handleClose}>
+                    User Created successfully!!
+                    <IconButton aria-label="delete" style={darkMode ? { color: "#ffffff" } : theme} onClick={handleClose}>
                         <CloseIcon />
                     </IconButton>
                 </DialogTitle>
                 <DialogContent style={darkMode ? { backgroundColor: "#202940", color: "#ffffff" } : theme}>
-                    <MDBox pt={0} pb={0} style={{display : "flex" , justifyContent : "center", height : "50vh"}}>
-                        <img src={complete} alt="Location Created successfully!!" />
-                        </MDBox>
+                    <MDBox pt={0} pb={0} style={{ display: "flex", justifyContent: "center", height: "50vh" }}>
+                        <img src={complete} alt="User Created successfully!!" />
+                    </MDBox>
                 </DialogContent>
                 {/* <DialogActions style={darkMode ? { backgroundColor: "#202940",justifyContent : "space-evenly", color: "#ffffff" } : {theme,justifyContent : "space-evenly"}}>
                     <MDButton variant="gradient" color="info"

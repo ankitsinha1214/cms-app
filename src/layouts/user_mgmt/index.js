@@ -18,7 +18,8 @@ import ComplexStatisticsCard from "examples/Cards/StatisticsCards/ComplexStatist
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import PopAddUser from "./PopAddUser";
-
+import ElectricMopedIcon from '@mui/icons-material/ElectricMoped';
+import ElectricCarIcon from '@mui/icons-material/ElectricCar';
 import LaunchIcon from "@mui/icons-material/Launch";
 import DeleteIcon from '@mui/icons-material/Delete';
 import CircleIcon from '@mui/icons-material/Circle';
@@ -328,6 +329,7 @@ function User_mgmt() {
           <Grid item xs={12} md={6} lg={3}>
             <MDBox mb={1.5}>
               <ComplexStatisticsCard
+                color="success"
                 icon="leaderboard"
                 title="Active"
                 count="287"
@@ -342,8 +344,7 @@ function User_mgmt() {
           <Grid item xs={12} md={6} lg={3}>
             <MDBox mb={1.5}>
               <ComplexStatisticsCard
-                color="success"
-                icon="store"
+                labelicon={ElectricMopedIcon}
                 title="2 Wheeler"
                 count="13"
                 percentage={{
@@ -358,7 +359,8 @@ function User_mgmt() {
             <MDBox mb={1.5}>
               <ComplexStatisticsCard
                 color="primary"
-                icon="person_add"
+                // icon="person_add"
+                labelicon={ElectricCarIcon}
                 title="4 Wheeler"
                 count="91"
                 percentage={{

@@ -1,7 +1,7 @@
 import axios from "axios";
 // @mui material components
 import Grid from "@mui/material/Grid";
-// import PopAddBasic from "./PopAddBasic";
+import PopAddBasic from "./PopAddBasic";
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
 import React, { useState, useEffect } from "react";
@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { Modal } from 'antd';
 import TextField from '@mui/material/TextField';
 import Tooltip from '@mui/material/Tooltip';
-import InputAdornment from '@mui/material/InputAdornment';
+import EditIcon from '@mui/icons-material/Edit';
 // import { Button, Input, Select, Space } from 'antd';
 import Loader from "components/custom/Loader";
 // Material Dashboard 2 React examples
@@ -31,8 +31,6 @@ import { toZonedTime } from 'date-fns-tz';
 import { useSnackbar } from "notistack";
 // Location Management Page components
 
-import LaunchIcon from "@mui/icons-material/Launch";
-import DeleteIcon from '@mui/icons-material/Delete';
 import CircleIcon from '@mui/icons-material/Circle';
 import NoAccountsIcon from '@mui/icons-material/NoAccounts';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -53,6 +51,14 @@ function User_service_maintenace_mgmt() {
       number: "",
       email: "",
       username: "",
+    };
+  };
+  const getValues1 = () => {
+    return {
+      username: "",
+      password: "",
+      company: "",
+      department: ""
     };
   };
   const [columns, setColumns] = useState([]);
@@ -146,6 +152,7 @@ function User_service_maintenace_mgmt() {
       });
   };
   const [values, setValues] = useState(getValues);
+  const [values1, setValues1] = useState(getValues1);
   const handleOk = () => {
     if (!values.name || !values.email || !values.prefix || !values.number) return enqueueSnackbar('Please Fill All The Details !!!', { variant: 'error' })
     setConfirmLoading(true);
@@ -283,7 +290,7 @@ function User_service_maintenace_mgmt() {
             color="info"
             iconOnly
           >
-            <LaunchIcon />
+            <EditIcon />
           </MDButton>
           {
             (row.row.original.status === "Inactive") ?
@@ -393,13 +400,13 @@ function User_service_maintenace_mgmt() {
   const percentageRejected = ((countInactive / total) * 100).toFixed(2);
   return (
     <DashboardLayout>
-      {/* <PopAddBasic
-        isDialog={isDisabled2}
-        onClose={setIsDisabled2}
-        value={values}
-        onStateChange={handleStateChange}
+      <PopAddBasic
+        isDialog={isDisabled}
+        onClose={setIsDisabled}
+        value={values1}
+        // onStateChange={handleStateChange}
         onHandleChange={handleChange}
-      /> */}
+      />
       <DashboardNavbar />
       <Modal
         title="Update Profile"
@@ -567,6 +574,7 @@ function User_service_maintenace_mgmt() {
                   onClick={() => setIsDisabled(!isDisabled)}
                   variant="outlined"
                   color="white"
+                  sx={{cursor: "pointer"}}
                 >
                   Add User
                 </MDButton>

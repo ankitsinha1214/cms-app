@@ -1,8 +1,4 @@
 import MDBox from "components/MDBox";
-// import { DemoItem } from '@mui/x-date-pickers/internals/demo';
-// import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-// import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-// import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import axios from "axios";
 import MDInput from "components/MDInput";
 import Button from "@mui/material/Button";
@@ -18,7 +14,6 @@ import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import FormControl from "@mui/material/FormControl";
 import MDBackdrop from "components/MDBackdrop";
-import PopAddLocation from "./PopAddLocation";
 import { useSnackbar } from "notistack";
 // import { useSelector } from 'react-redux';
 import CloseIcon from '@mui/icons-material/Close';
@@ -36,26 +31,15 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel'
 import FormLabel from '@mui/material/FormLabel';
-import LocationPicker from "./components/LocationPicker";
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import { Space, Switch } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import { Image, Upload } from 'antd';
-import { Flex, TimePicker } from 'antd';
+// import { Flex, TimePicker } from 'antd';
 import './Somecss.css';
-const { RangePicker } = TimePicker;
+// const { RangePicker } = TimePicker;
 
-const getBase64 = (file) =>
-    new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = (error) => reject(error);
-    });
 function PopAddBasic(props) {
     const [isDialogOpen, setIsDialogOpen] = useState(props.isDialog);
-    const [previewOpen, setPreviewOpen] = useState(false);
-    const [previewImage, setPreviewImage] = useState('');
     const [fileList, setFileList] = useState([
         // {
         //     uid: '-1',
@@ -94,20 +78,6 @@ function PopAddBasic(props) {
         //     status: 'error',
         // },
     ]);
-    const handlePreview = async (file) => {
-        setIsBackdrop(false);
-        setIsDialogOpen(false);
-        if (!file.url && !file.preview) {
-            file.preview = await getBase64(file.originFileObj);
-        }
-        // if (file.url) {
-        //     window.open(file.url, '_blank');
-        // } else {
-        //     window.open(file.preview, '_blank');
-        // }
-        setPreviewImage(file.url || file.preview);
-        setPreviewOpen(true);
-    };
     const uploadButton = (
         <button
             style={{
@@ -155,67 +125,17 @@ function PopAddBasic(props) {
             [event.target.name]: event.target.value,
         }));
     };
-    const handleFreePaidChange = (event) => {
-        setValues((prevValues) => {
-            return {
-                ...prevValues,
-                ["freepaid"]: {
-                    ...prevValues["freepaid"],
-                    ["parking"]: event,
-                },
-            };
-        });
-    };
-    const handleFreePaidChangeCharging = (event) => {
-        setValues((prevValues) => {
-            return {
-                ...prevValues,
-                ["freepaid"]: {
-                    ...prevValues["freepaid"],
-                    ["charging"]: event,
-                },
-            };
-        });
-    };
 
-
-    const handleLocationChange = (location) => {
-        setValues((prevValues) => ({
-            ...prevValues,
-            direction: location,
-        }));
-    };
-    const handleRangeChange = (values1) => {
-        // `values` is an array of moment objects
-        // setRange(values);
-    
-        if (values1) {
-          const [start, end] = values1;
-          const workingHr = start.format('ha') + '-' + end.format('ha');
-          console.log('Time : ', workingHr);
-          setValues((prevValues) => ({
-            ...prevValues,
-            workingHours: workingHr,
-        }));
-        }
-      };
     // const handleSubmit = (event) => {
     //     event.preventDefault();
     //     createUser(values.locationName, values.locationType, values.address, values.state, values.city,values.status, values.paidup_capital, values.activity_code, values.activity_description, values.registered_office_address);
     // };
     const reset = (event) => {
         event.preventDefault();
-        values.locationName = "";
-        values.locationType = "";
-        values.address = "";
-        values.state = "";
-        values.city = "";
-        values.status = "";
-        values.freepaid = {
-            "parking": true,
-            "charging": true
-        };
-        setFileList([]);
+        values.username = "";
+        values.password = "";
+        values.company = "";
+        values.department = "";
         setValues(props.value);
     }
     const handleClose = () => {
@@ -285,47 +205,20 @@ function PopAddBasic(props) {
     const handlePopStateChange = (newState) => {
         setIsDisabled(newState);
     };
-    const handlePreviewClose = () => {
-        setPreviewImage('');
-        setPreviewOpen(false);
-        // props.isDialog = true;
-        setIsDialogOpen(true);
-    };
     return (
         <>
-            {previewImage && (
-                <Image
-                    wrapperStyle={{
-                        display: 'none',
-                        // zIndex: 1050,
-                    }}
-                    preview={{
-                        visible: previewOpen,
-                        onVisibleChange: (visible) => {
-                            setPreviewOpen(visible);
-                            if (!visible) handlePreviewClose(); // Handle dialog reopening when preview closes
-                        },
-                        afterOpenChange: (visible) => {
-                            if (!visible) handlePreviewClose();
-                        },
-                        // onVisibleChange: (visible) => setPreviewOpen(visible),
-                        // afterOpenChange: (visible) => !visible && setPreviewImage(''),
-                    }}
-                    src={previewImage}
-                />
-            )}
-            <PopAddLocation
+            {/* <PopAddLocation
                 isDialog={isDisabled}
                 onClose={setIsDisabled}
                 value={values}
                 onStateChange={props.onStateChange}
                 onStateChange1={handlePopStateChange}
-            />
+            /> */}
             <MDBackdrop isBackdrop={isBackdrop} />
             {/* <Dialog open={props.isDialog} onClose={handleClose} fullWidth maxWidth="md" > */}
             <Dialog open={isDialogOpen} onClose={handleClose} fullWidth maxWidth="md" >
                 <DialogTitle style={darkMode ? { backgroundColor: "#202940", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "space-between" } : { theme, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                    Basic Information
+                    User Information
                     <IconButton aria-label="delete" onClick={handleClose} style={darkMode ? { color: "#ffffff" } : theme}>
                         <CloseIcon />
                     </IconButton>
@@ -352,20 +245,71 @@ function PopAddBasic(props) {
                                                 </MDTypography> */}
                         </MDBox>
 
-                        <MDBox p={2} component="form" role="form">
+                        <MDBox p={1} component="form" role="form">
                             <MDBox p={1}>
                                 <MDInput
                                     type="text"
-                                    label="Location Name"
-                                    value={values.locationName}
-                                    name="locationName"
-                                    margin="dense"
+                                    label="Username"
+                                    value={values.username}
+                                    name="username"
+                                    // margin="dense"
                                     fullWidth={true}
                                     onChange={handleChange}
                                 />
                             </MDBox>
-
                             <MDBox p={1}>
+                                <MDInput
+                                    type="password"
+                                    label="Password"
+                                    value={values.password}
+                                    name="password"
+                                    // margin="dense"
+                                    fullWidth={true}
+                                    onChange={handleChange}
+                                />
+                            </MDBox>
+                            <MDBox p={1}>
+                                <FormControl fullWidth>
+                                    <InputLabel id="location-type-label">Company</InputLabel>
+                                    <Select
+                                        sx={{
+                                            height: 50,
+                                        }}
+                                        labelId="company-label"
+                                        id="company-select"
+                                        value={values.company}
+                                        name="company"
+                                        onChange={handleChange}
+                                        input={<OutlinedInput label="Company" />}
+                                    >
+                                        <MenuItem value="Esyasoft">Esyasoft</MenuItem>
+                                        <MenuItem value="Esyasoft1">Esyasoft1</MenuItem>
+                                        <MenuItem value="Esyasoft2">Esyasoft2</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </MDBox>
+                            <MDBox p={1}>
+                                <FormControl fullWidth>
+                                    <InputLabel id="location-type-label">Department</InputLabel>
+                                    <Select
+                                        sx={{
+                                            height: 50,
+                                        }}
+                                        labelId="department-label"
+                                        id="department-select"
+                                        value={values.department}
+                                        name="department"
+                                        onChange={handleChange}
+                                        input={<OutlinedInput label="Department" />}
+                                    >
+                                        <MenuItem value="Chargeup">Chargeup</MenuItem>
+                                        <MenuItem value="Chargeup1">Chargeup1</MenuItem>
+                                        <MenuItem value="Chargeup2">Chargeup2</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </MDBox>
+
+                            {/* <MDBox p={1}>
                                 <FormControl fullWidth>
                                     <InputLabel id="location-type-label">Location Type</InputLabel>
                                     <Select
@@ -382,28 +326,6 @@ function PopAddBasic(props) {
                                         <MenuItem value="Petrol Pumps">Petrol Pumps</MenuItem>
                                         <MenuItem value="Malls">Malls</MenuItem>
                                         <MenuItem value="Highways">Highways</MenuItem>
-                                        <MenuItem value="Resorts">Resorts</MenuItem>
-                                        <MenuItem value="Airports">Airports</MenuItem>
-                                        <MenuItem value="Hotels">Hotels</MenuItem>
-                                        <MenuItem value="Parking Garages">Parking Garages</MenuItem>
-                                        <MenuItem value="Office Complexes">Office Complexes</MenuItem>
-                                        <MenuItem value="Supermarkets">Supermarkets</MenuItem>
-                                        <MenuItem value="Train Stations">Train Stations</MenuItem>
-                                        <MenuItem value="Restaurants">Restaurants</MenuItem>
-                                        <MenuItem value="Residential Areas">Residential Areas</MenuItem>
-                                        <MenuItem value="Parks and Recreational Areas">Parks and Recreational Areas</MenuItem>
-                                        <MenuItem value="University Campuses">University Campuses</MenuItem>
-                                        <MenuItem value="Convention Centers">Convention Centers</MenuItem>
-                                        <MenuItem value="Stadiums and Sports Arenas">Stadiums and Sports Arenas</MenuItem>
-                                        <MenuItem value="Movie Theaters">Movie Theaters</MenuItem>
-                                        <MenuItem value="Hospitals">Hospitals</MenuItem>
-                                        <MenuItem value="Government Buildings">Government Buildings</MenuItem>
-                                        <MenuItem value="Libraries">Libraries</MenuItem>
-                                        <MenuItem value="Community Centers">Community Centers</MenuItem>
-                                        <MenuItem value="Beach Parking Lots">Beach Parking Lots</MenuItem>
-                                        <MenuItem value="Tourist Attractions">Tourist Attractions</MenuItem>
-                                        <MenuItem value="Car Dealerships">Car Dealerships</MenuItem>
-                                        <MenuItem value="Metro Stations">Metro Stations</MenuItem>
                                     </Select>
                                 </FormControl>
                             </MDBox>
@@ -594,7 +516,7 @@ function PopAddBasic(props) {
                                     {fileList.length >= 6 ? null : uploadButton}
                                 </Upload>
 
-                            </MDBox>
+                            </MDBox> */}
                         </MDBox>
                     </MDBox>
                 </DialogContent>

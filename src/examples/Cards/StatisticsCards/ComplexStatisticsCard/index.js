@@ -2,7 +2,7 @@
 
 // prop-types is a library for typechecking of props
 import PropTypes from "prop-types";
-
+import React from "react";
 // @mui material components
 import Card from "@mui/material/Card";
 import Divider from "@mui/material/Divider";
@@ -12,7 +12,7 @@ import Icon from "@mui/material/Icon";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 
-function ComplexStatisticsCard({ color, title, count, percentage, icon }) {
+function ComplexStatisticsCard({ color, title, count, percentage, icon, labelicon }) {
   return (
     <Card>
       <MDBox display="flex" justifyContent="space-between" pt={1} px={2}>
@@ -29,9 +29,13 @@ function ComplexStatisticsCard({ color, title, count, percentage, icon }) {
           height="4rem"
           mt={-3}
         >
+          {(labelicon)?
+          React.createElement(labelicon)
+          :
           <Icon fontSize="medium" color="inherit">
             {icon}
           </Icon>
+          }
         </MDBox>
         <MDBox textAlign="right" lineHeight={1.25}>
           <MDTypography variant="button" fontWeight="light" color="text">
