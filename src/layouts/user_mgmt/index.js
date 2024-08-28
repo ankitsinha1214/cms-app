@@ -299,6 +299,12 @@ function User_mgmt() {
       [event.target.name]: event.target.value,
     }));
   };
+  const total = rows.length;
+  const countActive = rows.filter(row => row.status === "active").length;
+  // const countInactive = rows.filter(row => row.status === "Inactive").length;
+
+  const percentageApproved = ((countActive / total) * 100).toFixed(2);
+  // const percentageRejected = ((countInactive / total) * 100).toFixed(2);
   return (
     <DashboardLayout>
       <PopAddUser
@@ -315,14 +321,14 @@ function User_mgmt() {
             <MDBox mb={1.5}>
               <ComplexStatisticsCard
                 color="dark"
-                icon="weekend"
+                icon="functions"
                 title="Total"
-                count={300}
-                percentage={{
-                  color: "success",
-                  amount: "+55%",
-                  label: "than lask week",
-                }}
+                count={total}
+                // percentage={{
+                //   color: "success",
+                //   amount: "+55%",
+                //   label: "than lask week",
+                // }}
               />
             </MDBox>
           </Grid>
@@ -332,11 +338,11 @@ function User_mgmt() {
                 color="success"
                 icon="leaderboard"
                 title="Active"
-                count="287"
+                count={countActive}
                 percentage={{
                   color: "success",
-                  amount: "+3%",
-                  label: "than last month",
+                  amount: `${percentageApproved}%`,
+                  label: "of total",
                 }}
               />
             </MDBox>

@@ -27,7 +27,7 @@ import Select from '@mui/material/Select';
 import IconButton from '@mui/material/IconButton';
 import { Country, State, City } from 'country-state-city';
 
-import Radio from '@mui/material/Radio';
+import Completion from "./Completion";
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel'
 import FormLabel from '@mui/material/FormLabel';
@@ -104,12 +104,8 @@ function PopAddBasic(props) {
     const [fileName, setFileName] = useState("");
     const [isBackdrop, setIsBackdrop] = useState(false);
     const { onClose } = props;
-    const [states, setStates] = useState(State.getStatesOfCountry('IN'));
-    const [cities, setCities] = useState([]);
     const navigate = useNavigate();
     const [dialogMessage, setDialogMessage] = useState("");
-    const currentLocation = JSON.parse(localStorage.getItem("Currentlocation"));
-    const initialLocation = { lat: currentLocation?.lat, lng: currentLocation?.lng } || {};
 
     const { enqueueSnackbar } = useSnackbar();
 
@@ -125,11 +121,6 @@ function PopAddBasic(props) {
             [event.target.name]: event.target.value,
         }));
     };
-
-    // const handleSubmit = (event) => {
-    //     event.preventDefault();
-    //     createUser(values.locationName, values.locationType, values.address, values.state, values.city,values.status, values.paidup_capital, values.activity_code, values.activity_description, values.registered_office_address);
-    // };
     const reset = (event) => {
         event.preventDefault();
         values.username = "";
@@ -147,73 +138,51 @@ function PopAddBasic(props) {
         return file.type.startsWith('image/');
     };
     const pop = () => {
-        // Check if fileList has at least one file and if that file is an image
-        const hasImages = Array.from(fileList).some(file => isValidImage(file));
-        if (!hasImages) {
-            // Show error notification if no images are found
-            return enqueueSnackbar('Please upload at least one location image!', { variant: 'error' });
-        }
-        if (!values.locationName || !values.locationType || !values.address || !values.state || !values.city || !values.status) return enqueueSnackbar('Please Fill All The Details !!!', { variant: 'error' })
-        if (!values.direction.latitude || !values.direction.longitude) return enqueueSnackbar('Please Enter the location correctly !!!', { variant: 'error' })
+        if (!values.username || !values.password || !values.company || !values.department) return enqueueSnackbar('Please Fill All The Details !!!', { variant: 'error' })
         setIsBackdrop(false);
-        onClose(false);
-        setIsDisabled(!isDisabled);
-        values.locationImage = fileList;
+        createUser();
+        // setIsDisabled(!isDisabled);
         // setIsDialog(true);
     };
-    // const getState = () => {
-    //     axios({
-    //         method: "get",
-    //         url: process.env.REACT_APP_BASEURL + "charger-locations/all-location",
-    //     })
-    //         .then((response) => {
-    //             if (response.data.success === true) {
-    //                 const data = response.data.data;
-    //                 const structuredData = {};
-    //                 console.log(data);
-    //                 data.forEach(stateObj => {
-    //                     const state = Object.keys(stateObj)[0];
-    //                     const cities = stateObj[state];
-    //                     structuredData[state] = cities;
-    //                 });
-
-    //                 setStateData(structuredData);
-    //                 setStates(Object.keys(structuredData));
-
-    //                 // setState_show(response.data.data);
-    //             } else {
-    //                 console.log("status is false ");
-    //             }
-    //         })
-    //         .catch((error) => {
-    //             console.log(error);
-    //         });
-    // };
-    const handleStateChange = (event) => {
-        const selectedState = event.target.value;
-        setValues((prevValues) => ({
-            ...prevValues,
-            state: selectedState,
-            city: '',
-        }));
-        const stateIsoCode = states.find(state => state.name === selectedState)?.isoCode;
-        setCities(City.getCitiesOfState('IN', stateIsoCode));
+    const createUser = () => {
+        onClose(false);
+        const payload = {
+            "username": values.username,
+            "password": values.password,
+            "company": values.company,
+            "department": values.department,
+        };
+        axios({
+            method: "post",
+            url: process.env.REACT_APP_BASEURL + "user-service-and-maintenance/register",
+            data: payload, // JSON payload
+            headers: {
+                "Content-Type": "application/json", // Set the Content-Type header
+            },
+        })
+            .then((response) => {
+                if (response.data.success === true) {
+                    console.log(response.data);
+                    setIsDisabled(!isDisabled);
+                } else {
+                    enqueueSnackbar(response.data.message, { variant: 'error' });
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+                enqueueSnackbar(error.response?.data?.message, { variant: 'error' });
+            });
     };
     useEffect(() => {
         setIsDialogOpen(props.isDialog);
     }, [props.isDialog]);
-    const handlePopStateChange = (newState) => {
-        setIsDisabled(newState);
-    };
     return (
         <>
-            {/* <PopAddLocation
+            <Completion
                 isDialog={isDisabled}
                 onClose={setIsDisabled}
-                value={values}
-                onStateChange={props.onStateChange}
-                onStateChange1={handlePopStateChange}
-            /> */}
+                // value={values}
+            />
             <MDBackdrop isBackdrop={isBackdrop} />
             {/* <Dialog open={props.isDialog} onClose={handleClose} fullWidth maxWidth="md" > */}
             <Dialog open={isDialogOpen} onClose={handleClose} fullWidth maxWidth="md" >
@@ -531,7 +500,7 @@ function PopAddBasic(props) {
                         // onClick={handleSubmit}
                         onClick={pop}
                     >
-                        NEXT
+                        Submit
                     </MDButton>
                 </DialogActions>
             </Dialog>
