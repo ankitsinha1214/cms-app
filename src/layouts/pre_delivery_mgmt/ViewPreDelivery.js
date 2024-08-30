@@ -71,6 +71,9 @@ const ViewPreDelivery = () => {
     axios({
       method: "get",
       url: process.env.REACT_APP_BASEURL + "pre-delivery-question",
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`
+      },
     })
       .then((response) => {
         if (response.data.success === true) {
@@ -105,6 +108,7 @@ const ViewPreDelivery = () => {
       data: payload, // JSON payload
       headers: {
         "Content-Type": "application/json", // Set the Content-Type header
+        "Authorization": `Bearer ${localStorage.getItem("token")}`
       },
     })
       .then((response) => {

@@ -123,6 +123,7 @@ const ViewSitesurvey = () => {
       data: payload, // JSON payload
       headers: {
         "Content-Type": "application/json", // Set the Content-Type header
+        "Authorization": `Bearer ${localStorage.getItem("token")}`
       },
     })
       .then((response) => {

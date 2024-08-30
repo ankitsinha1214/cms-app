@@ -79,6 +79,9 @@ function User_service_maintenace_mgmt() {
     axios({
       method: "get",
       url: process.env.REACT_APP_BASEURL + "user-service-and-maintenance",
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`
+      },
     })
       .then((response) => {
         if (response.data.success === true) {
@@ -134,6 +137,7 @@ function User_service_maintenace_mgmt() {
       data: payload, // JSON payload
       headers: {
         "Content-Type": "application/json", // Set the Content-Type header
+          "Authorization": `Bearer ${localStorage.getItem("token")}`
       },
     })
       .then((response) => {
@@ -371,6 +375,7 @@ function User_service_maintenace_mgmt() {
       data: payload,
       headers: {
         "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("token")}`
       },
     })
       .then((response) => {

@@ -53,6 +53,9 @@ function Pre_delivery_mgmt() {
     axios({
       method: "get",
       url: process.env.REACT_APP_BASEURL + "pre-delivery-chargebox-response",
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`
+      },
     })
       .then((response) => {
         if (response.data.success === true) {
@@ -258,6 +261,9 @@ const convertUTCtoIST = (utcDate) => {
     axios({
       method: "delete",
       url: process.env.REACT_APP_BASEURL + "pre-delivery-chargebox-response/" + row_data._id,
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`
+      },
       // headers: {
       //   "Content-Type": "application/json", 
       // },

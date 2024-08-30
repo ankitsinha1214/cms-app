@@ -70,6 +70,9 @@ function Site_servey_mgmt() {
     axios({
       method: "get",
       url: process.env.REACT_APP_BASEURL + "site-surveys",
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`
+      },
     })
       .then((response) => {
         if (response.data.status === true) {
@@ -253,6 +256,9 @@ function Site_servey_mgmt() {
     axios({
       method: "delete",
       url: process.env.REACT_APP_BASEURL + "site-surveys/" + row_data._id,
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`
+      },
       // headers: {
       //   "Content-Type": "application/json", 
       // },
