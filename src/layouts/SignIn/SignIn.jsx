@@ -51,7 +51,7 @@
 //     const [password, setPassword] = useState('')
 //     const [loading, setLoading] = useState(false)
 //     const [isFormInvalid, setIsFormInvalid] = useState(false);
-   
+
 //     useEffect(() => {
 //         console.log(process.env.REACT_APP_USERNAME)
 //         localStorage.clear();
@@ -155,15 +155,55 @@ function SignIn() {
 
     const onSignIn = async () => {
         if (!email || !password) return enqueueSnackbar('Please Fill All The Details !!!', { variant: 'error' });
+        setLoading(false);
 
-        if (email === process.env.REACT_APP_USERNAME && password === process.env.REACT_APP_PASSWORD) {
-            localStorage.setItem("login_status", true);
-            dispatch({ type: ADD_USER, payload: { name: 'Super Admin', role: 'super-admin', auth: process.env.REACT_APP_SUPER_ADMIN_JWT } });
-            navigate('/dashboard');
-            return enqueueSnackbar('Admin Login Successful !!!', { variant: 'success' });
-        }
-        setIsFormInvalid(true);
-        return enqueueSnackbar('Admin Login Failed !!!', { variant: 'error' });
+        // login api
+        const payload = {
+            "username": email,
+            "password": password
+        };
+        axios({
+            method: "post",
+            url: process.env.REACT_APP_BASEURL + "user-service-and-maintenance/login",
+            data: payload,
+            headers: {
+                "Content-Type": "application/json",
+            }
+        })
+            .then((response) => {
+                console.log(response.data.data);
+
+                if (response.data.success === true) {
+                    if(response.data.data.role === "User"){
+                        return enqueueSnackbar('You are not authorized to log in here!', { variant: 'error' });
+                    }
+                    localStorage.setItem("login_status", true);
+                    localStorage.setItem("role", response.data.data.role);
+                    localStorage.setItem("token", response.data.token);
+                    localStorage.setItem("data", JSON.stringify(response.data.data));
+                    setLoading(false);
+                    navigate('/dashboard');
+                    return enqueueSnackbar('Admin Login Successful !!!', { variant: 'success' });
+                } else {
+                    console.log("status is false ");
+                    setLoading(false);
+                    setIsFormInvalid(true);
+                    return enqueueSnackbar(response.data.message, { variant: 'error' });
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+
+                setLoading(false);
+                setIsFormInvalid(true);
+                return enqueueSnackbar('Admin Login Failed !!!', { variant: 'error' });
+            });
+        // if (email === process.env.REACT_APP_USERNAME && password === process.env.REACT_APP_PASSWORD) {
+        //     localStorage.setItem("login_status", true);
+        //     // dispatch({ type: ADD_USER, payload: { name: 'Super Admin', role: 'super-admin', auth: process.env.REACT_APP_SUPER_ADMIN_JWT } });
+        //     navigate('/dashboard');
+        //     return enqueueSnackbar('Admin Login Successful !!!', { variant: 'success' });
+        // }
     };
 
     return (
@@ -176,9 +216,9 @@ function SignIn() {
                     {/* <Typography component="h1" variant="h5" className='subhead'>
                         Enter your username and password to continue
                     </Typography> */}
-                    <Typography component="h1" variant="h5" style={{fontFamily : "Montserrat",fontSize : "14px",fontWeight:"500", lineHeight : "17.07px", color : "rgba(0, 0, 0, 0.75)"}}>
-                         Enter your username and password to continue
-                        </Typography>
+                    <Typography component="h1" variant="h5" style={{ fontFamily: "Montserrat", fontSize: "14px", fontWeight: "500", lineHeight: "17.07px", color: "rgba(0, 0, 0, 0.75)" }}>
+                        Enter your username and password to continue
+                    </Typography>
                 </MDBox>
                 <MDBox pt={4} pb={3} px={3}>
                     <MDBox component="form" role="form">

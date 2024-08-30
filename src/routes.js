@@ -112,7 +112,7 @@ export const superAdminRoutes = [
   },
   {
     type: "collapse",
-    name: "Service & Maintenace Mgmt",
+    name: "Service & Maintenace",
     key: "service-maintenace",
     icon: <LocationOnIcon />,
     route: "/service-maintenace",

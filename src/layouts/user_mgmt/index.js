@@ -65,6 +65,9 @@ function User_mgmt() {
     axios({
       method: "get",
       url: process.env.REACT_APP_BASEURL + "users",
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+      },
     })
       .then((response) => {
         console.log(response.data.data);
@@ -96,6 +99,7 @@ function User_mgmt() {
       // data: payload, // JSON payload
     headers: {
       "Content-Type": "application/json", // Set the Content-Type header
+        "Authorization": `Bearer ${localStorage.getItem("token")}`,
     },
     })
       .then((response) => {

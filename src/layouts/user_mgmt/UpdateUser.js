@@ -120,12 +120,14 @@ function UpdateUser() {
       "state": values.state,
       "city": values.city,
     };
+    const token = localStorage.getItem("token");
     axios({
       method: "patch",
       url: process.env.REACT_APP_BASEURL + "users/" + phone_number,
       data: payload, // JSON payload
       headers: {
         "Content-Type": "application/json", // Set the Content-Type header
+        "Authorization": `Bearer ${token}`,
       },
     })
       .then((response) => {
@@ -142,7 +144,7 @@ function UpdateUser() {
       })
       .catch((error) => {
         console.log(error);
-        enqueueSnackbar(error.data.message, { variant: 'error' });
+        enqueueSnackbar(error.response.data.message, { variant: 'error' });
       });
     // console.log(parseDate(dob));
   };
