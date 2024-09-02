@@ -51,6 +51,9 @@ function Pre_installation_mgmt() {
     axios({
       method: "get",
       url: process.env.REACT_APP_BASEURL + "pre-installations",
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`
+      },
     })
       .then((response) => {
         if (response.data.status === true) {
@@ -241,6 +244,9 @@ function Pre_installation_mgmt() {
     axios({
       method: "delete",
       url: process.env.REACT_APP_BASEURL + "pre-installations/" + row_data._id,
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`
+      },
       // headers: {
       //   "Content-Type": "application/json", 
       // },
