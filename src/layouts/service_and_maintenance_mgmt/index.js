@@ -36,7 +36,7 @@ function Service_and_maintenance_mgmt() {
       <MDBox mt={8}>
         <Row gutter={[16, 32]}>
           <Col xs={24} sm={12} md={8} lg={22/3}>
-            <CardActionArea onClick={() => navigate('/site-survey')}>
+            <CardActionArea onClick={() => navigate('/service-maintenace/site-survey')}>
               <Card
                 cover={<img alt="Site Survey" src={site} />}
               >
@@ -48,7 +48,7 @@ function Service_and_maintenance_mgmt() {
             </CardActionArea>
           </Col>
           <Col xs={24} sm={12} md={8} lg={22/3}>
-            <CardActionArea onClick={() => navigate('/pre-installation')}>
+            <CardActionArea onClick={() => navigate('/service-maintenace/pre-installation')}>
               <Card
                 cover={<img alt="Pre-Installation" src={pre_install} />}
               >
@@ -60,7 +60,7 @@ function Service_and_maintenance_mgmt() {
             </CardActionArea>
           </Col>
           <Col xs={24} sm={12} md={8} lg={22/3}>
-            <CardActionArea onClick={() => navigate('/charger-and-dcbox')}>
+            <CardActionArea onClick={() => navigate('/service-maintenace/charger-and-dcbox')}>
               <Card
                 cover={<img alt="Charger and DC Box" src={charger_dcbox} />}
               >
@@ -72,7 +72,7 @@ function Service_and_maintenance_mgmt() {
             </CardActionArea>
           </Col>
           <Col xs={24} sm={12} md={8} lg={8}>
-            <CardActionArea onClick={() => navigate('/pre-delivery')}>
+            <CardActionArea onClick={() => navigate('/service-maintenace/pre-delivery')}>
               <Card
                 cover={<img alt="Pre-Delivery" src={pre_delivery} />}
               >
@@ -84,7 +84,7 @@ function Service_and_maintenance_mgmt() {
             </CardActionArea>
           </Col> 
           <Col xs={24} sm={12} md={8} lg={8}>
-            <CardActionArea onClick={() => navigate('/users-service-and-maintenance')}>
+            <CardActionArea onClick={() => navigate('/service-maintenace/users-service-and-maintenance')}>
               <Card
                 cover={<img alt="User Management" src={user} />}
               >

@@ -238,7 +238,7 @@ function Pre_installation_mgmt() {
     // console.log(column);
   }, []);
   const handleEdit = (row_data) => {
-    navigate("/pre-installation/view", { state: row_data });
+    navigate("/service-maintenace/pre-installation/view", { state: row_data });
   };
   const handleDelete = (row_data) => {
     axios({

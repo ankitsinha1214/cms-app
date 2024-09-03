@@ -52,6 +52,12 @@ import ViewChargerandDcbox from "layouts/charger_and_dcbox_mgmt/ViewChargerandDc
 import Pre_delivery_mgmt from "layouts/pre_delivery_mgmt";
 import ViewPreDelivery from "layouts/pre_delivery_mgmt/ViewPreDelivery";
 import User_service_maintenace_mgmt from "layouts/user_service_maintenace_mgmt";
+import EvStationIcon from '@mui/icons-material/EvStation';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import EditLocationAltIcon from '@mui/icons-material/EditLocationAlt';
+import PowerIcon from '@mui/icons-material/Power';
+import SupportAgentIcon from '@mui/icons-material/SupportAgent';
+import TextSnippetIcon from '@mui/icons-material/TextSnippet';
 
 export const superAdminRoutes = [
   {
@@ -74,7 +80,7 @@ export const superAdminRoutes = [
     type: "collapse",
     name: "Charger Mgmt",
     key: "Charger-Management",
-    icon: <Icon fontSize="small">table_view</Icon>,
+    icon: <PowerIcon />,
     route: "/Charger-Management",
     component: <ChargerMgmt />,
   },
@@ -82,7 +88,7 @@ export const superAdminRoutes = [
     type: "collapse",
     name: "User Mgmt",
     key: "User-Management",
-    icon: <Icon fontSize="small">receipt_long</Icon>,
+    icon: <ManageAccountsIcon />,
     route: "/User-Management",
     component: <UserMgmt />,
   },
@@ -106,7 +112,7 @@ export const superAdminRoutes = [
     type: "collapse",
     name: "Location Mgmt",
     key: "location",
-    icon: <LocationOnIcon />,
+    icon: <EditLocationAltIcon />,
     route: "/location",
     component: <LocationMgmt />,
   },
@@ -114,7 +120,7 @@ export const superAdminRoutes = [
     type: "collapse",
     name: "Service & Maintenace",
     key: "service-maintenace",
-    icon: <LocationOnIcon />,
+    icon: <EvStationIcon />,
     route: "/service-maintenace",
     component: <Service_and_maintenance_mgmt />,
   },
@@ -123,7 +129,7 @@ export const superAdminRoutes = [
     // name: "Site Survey Mgmt",
     key: "site-survey",
     // icon: <LocationOnIcon />,
-    route: "/site-survey",
+    route: "/service-maintenace/site-survey",
     component: <Site_servey_mgmt />,
   },
   {
@@ -131,7 +137,7 @@ export const superAdminRoutes = [
     // name: "Pre Installation Mgmt",
     key: "pre-installation",
     // icon: <LocationOnIcon />,
-    route: "/pre-installation",
+    route: "/service-maintenace/pre-installation",
     component: <Pre_installation_mgmt />,
   },
   {
@@ -139,7 +145,7 @@ export const superAdminRoutes = [
     // name: "Charger and Dcbox Mgmt",
     key: "charger-and-dcbox",
     // icon: <LocationOnIcon />,
-    route: "/charger-and-dcbox",
+    route: "/service-maintenace/charger-and-dcbox",
     component: <Charger_and_dcbox_mgmt />,
   },
   {
@@ -147,7 +153,7 @@ export const superAdminRoutes = [
     // name: "Pre Delivery Mgmt",
     key: "pre-delivery",
     // icon: <LocationOnIcon />,
-    route: "/pre-delivery",
+    route: "/service-maintenace/pre-delivery",
     component: <Pre_delivery_mgmt />,
   },
   {
@@ -155,7 +161,7 @@ export const superAdminRoutes = [
     // name: "Update User",
     key: "site-survey-View",
     // icon: <Icon fontSize="small">receipt_long</Icon>,
-    route: "/site-survey/view",
+    route: "/service-maintenace/site-survey/view",
     component: <ViewSitesurvey />,
   },
   {
@@ -163,7 +169,7 @@ export const superAdminRoutes = [
     // name: "Update User",
     key: "pre-installation-View",
     // icon: <Icon fontSize="small">receipt_long</Icon>,
-    route: "/pre-installation/view",
+    route: "/service-maintenace/pre-installation/view",
     component: <ViewPreinstallation />,
   },
   {
@@ -171,7 +177,7 @@ export const superAdminRoutes = [
     // name: "Update User",
     key: "charger-and-dcbox-View",
     // icon: <Icon fontSize="small">receipt_long</Icon>,
-    route: "/charger-and-dcbox/view",
+    route: "/service-maintenace/charger-and-dcbox/view",
     component: <ViewChargerandDcbox />,
   },
   {
@@ -179,7 +185,7 @@ export const superAdminRoutes = [
     // name: "Update User",
     key: "pre-delivery-view",
     // icon: <Icon fontSize="small">receipt_long</Icon>,
-    route: "/pre-delivery/view",
+    route: "/service-maintenace/pre-delivery/view",
     component: <ViewPreDelivery />,
   },
   {
@@ -187,7 +193,7 @@ export const superAdminRoutes = [
     // name: "Update User",
     key: "users-service-and-maintenance",
     // icon: <Icon fontSize="small">receipt_long</Icon>,
-    route: "/users-service-and-maintenance",
+    route: "/service-maintenace/users-service-and-maintenance",
     component: <User_service_maintenace_mgmt />,
   },
   {
@@ -210,7 +216,7 @@ export const superAdminRoutes = [
     type: "collapse",
     name: "Customer service",
     key: "customer_service",
-    icon: <Icon fontSize="small">notifications</Icon>,
+    icon: <SupportAgentIcon />,
     route: "/customer_service",
     component: <CustomerService />,
   },
@@ -218,7 +224,7 @@ export const superAdminRoutes = [
     type: "collapse",
     name: "Reports",
     key: "profile",
-    icon: <Icon fontSize="small">person</Icon>,
+    icon: <TextSnippetIcon />,
     route: "/profile",
     component: <Profile />,
   },

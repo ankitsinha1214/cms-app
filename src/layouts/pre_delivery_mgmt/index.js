@@ -255,7 +255,7 @@ const convertUTCtoIST = (utcDate) => {
     // console.log(column);
   }, []);
   const handleEdit = (row_data) => {
-    navigate("/pre-delivery/view", { state: row_data });
+    navigate("/service-maintenace/pre-delivery/view", { state: row_data });
   };
   const handleDelete = (row_data) => {
     axios({

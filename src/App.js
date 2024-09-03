@@ -32,8 +32,10 @@ import NotFoundPage  from "./NotFoundPage";
 import { useMaterialUIController, setMiniSidenav, setOpenConfigurator } from "context";
 
 // Images
-import brandWhite from "assets/images/chargedock-icon.png";
-import brandDark from "assets/images/chargedock-icon.png";
+// import brandWhite from "assets/images/chargedock-icon.png";
+// import brandDark from "assets/images/chargedock-icon.png";
+import brandWhite from "assets/images/asa.png";
+import brandDark from "assets/images/asa.png";
 
 export default function App() {
   const [controller, dispatch] = useMaterialUIController();

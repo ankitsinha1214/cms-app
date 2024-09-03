@@ -88,7 +88,8 @@ function PopAddContact(props) {
             url: process.env.REACT_APP_BASEURL + "charger-locations",
             data: bodyFormData,
             headers: {
-                'Content-Type': 'multipart/form-data'
+                'Content-Type': 'multipart/form-data',
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`
             }
         })
             .then((response) => {

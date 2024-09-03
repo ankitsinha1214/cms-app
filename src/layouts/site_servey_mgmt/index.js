@@ -250,7 +250,7 @@ function Site_servey_mgmt() {
     // console.log(column);
   }, []);
   const handleEdit = (row_data) => {
-    navigate("/site-survey/view", { state: row_data });
+    navigate("/service-maintenace/site-survey/view", { state: row_data });
   };
   const handleDelete = (row_data) => {
     axios({

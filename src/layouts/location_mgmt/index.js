@@ -94,6 +94,9 @@ function Location_mgmt() {
     axios({
       method: "get",
       url: process.env.REACT_APP_BASEURL + "charger-locations",
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`
+      },
     })
       .then((response) => {
         // console.log(response.data.data);
@@ -319,6 +322,9 @@ function Location_mgmt() {
       method: "post",
       url: process.env.REACT_APP_BASEURL + "charger-locations/" + row_data._id,
       data: payload, // JSON payload
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`
+      },
       // headers: {
       //   "Content-Type": "application/json", 
       // },

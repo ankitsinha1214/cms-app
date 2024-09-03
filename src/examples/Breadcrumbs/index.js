@@ -16,6 +16,7 @@ import MDTypography from "components/MDTypography";
 
 function Breadcrumbs({ icon, title, route, light, hideTitle }) {
   const routes = route.slice(0, -1);
+  let accumulatedPath = "";
 
   return (
     <MDBox mr={{ xs: 0, xl: 8 }}>
@@ -37,8 +38,12 @@ function Breadcrumbs({ icon, title, route, light, hideTitle }) {
             <Icon>{icon}</Icon>
           </MDTypography>
         </Link>
-        {routes.map((el) => (
-          <Link to={`/${el}`} key={el}>
+        {routes.map((el, index) => {
+          accumulatedPath += `/${el}`; // Accumulate the path
+
+          return (
+          // <Link to={`/${el}`} key={el}>
+          <Link to={accumulatedPath} key={el}>
             <MDTypography
               component="span"
               variant="button"
@@ -48,10 +53,12 @@ function Breadcrumbs({ icon, title, route, light, hideTitle }) {
               opacity={light ? 0.8 : 0.5}
               sx={{ lineHeight: 0 }}
             >
-              {el}
+              {el.replace("-", " ")}
+              {/* {el} */}
             </MDTypography>
           </Link>
-        ))}
+        );
+      })}
 
         <MDTypography variant="button" fontWeight="regular" textTransform="capitalize"
           color={light ? "white" : "dark"} sx={{ lineHeight: 0 }}

@@ -12,6 +12,7 @@ import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import Icon from "@mui/material/Icon";
+import LogoutIcon from '@mui/icons-material/Logout';
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
@@ -124,11 +125,6 @@ function DashboardNavbar({ absolute, light, isMini, hidebreadcrumbTitle }) {
               <MDInput label="Search here" />
             </MDBox> */}
             <MDBox color={light ? "white" : "inherit"}>
-              <Link to="/sign-in">
-                <IconButton sx={navbarIconButton} size="medium" disableRipple>
-                  <Icon sx={iconsStyle} style={{fontSize : "2rem!important"}}>account_circle</Icon>
-                </IconButton>
-              </Link>
               <IconButton
                 size="small"
                 disableRipple
@@ -149,6 +145,12 @@ function DashboardNavbar({ absolute, light, isMini, hidebreadcrumbTitle }) {
               >
                 <Icon sx={iconsStyle}>settings</Icon>
               </IconButton>
+              <Link to="/sign-in">
+                <IconButton sx={navbarIconButton} onClick={() => localStorage.clear()} size="medium" disableRipple>
+                  <LogoutIcon />
+                  {/* <Icon sx={iconsStyle} style={{fontSize : "2rem!important"}}>account_circle</Icon> */}
+                </IconButton>
+              </Link>
               {/* <IconButton
                 size="small"
                 disableRipple

@@ -238,7 +238,7 @@ function Charger_and_dcbox_mgmt() {
     // console.log(column);
   }, []);
   const handleEdit = (row_data) => {
-    navigate("/charger-and-dcbox/view", { state: row_data });
+    navigate("/service-maintenace/charger-and-dcbox/view", { state: row_data });
   };
   const handleDelete = (row_data) => {
     axios({

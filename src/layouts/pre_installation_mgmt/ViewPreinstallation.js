@@ -132,7 +132,7 @@ const ViewPreinstallation = () => {
           console.log(response);
           enqueueSnackbar(response.data.message, { variant: 'success' })
           setIsLoading(false);
-          navigate("/pre-installation");
+          navigate("/service-maintenace/pre-installation");
         } else {
           enqueueSnackbar(response.data.message, { variant: 'error' });
           setIsLoading(false);

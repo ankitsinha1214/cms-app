@@ -85,13 +85,13 @@ const ViewPreDelivery = () => {
           // setQuestions(response.data.data);
         } else {
           enqueueSnackbar(response.data.message, { variant: 'error' });
-          navigate("/pre-delivery");
+          navigate("/service-maintenace/pre-delivery");
           // console.log("status is false ");
         }
       })
       .catch((error) => {
         console.log(error);
-        navigate("/pre-delivery");
+        navigate("/service-maintenace/pre-delivery");
       });
   }, []);
   const handleSubmit = (status) => {
@@ -117,7 +117,7 @@ const ViewPreDelivery = () => {
           console.log(response);
           enqueueSnackbar(response.data.message, { variant: 'success' })
           setIsLoading(false);
-          navigate("/charger-and-dcbox");
+          navigate("/service-maintenace/pre-delivery");
         } else {
           enqueueSnackbar(response.data.message, { variant: 'error' });
           setIsLoading(false);

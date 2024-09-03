@@ -80,6 +80,9 @@ function UpdateUser() {
     axios({
       method: "get",
       url: process.env.REACT_APP_BASEURL + "location/structured/all",
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`
+      },
     })
     .then((response) => {
       if (response.data.success === true) {

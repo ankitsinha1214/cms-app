@@ -125,6 +125,9 @@ function PopAddUserVehicle(props) {
         axios({
             method: "get",
             url: process.env.REACT_APP_BASEURL + "vehicle/all",
+            headers: {
+                "Authorization": `Bearer ${localStorage.getItem("token")}`
+              },
         })
             .then((response) => {
                 if (response.data.success === true) {
