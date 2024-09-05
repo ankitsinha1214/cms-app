@@ -23,8 +23,8 @@ import { MaterialReactTable } from 'material-react-table';
 import { useMaterialUIController } from "context";
 import ComplexStatisticsCard from "examples/Cards/StatisticsCards/ComplexStatisticsCard";
 import '../SignIn/SignIn.css';
-import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
+// import Box from '@mui/material/Box';
+// import Paper from '@mui/material/Paper';
 import { format } from 'date-fns';
 import { toZonedTime } from 'date-fns-tz';
 
@@ -69,7 +69,6 @@ function User_service_maintenace_mgmt() {
   //   setOpen(true);
   // };
   const [rows, setRows] = useState([]);
-  const [count, setCount] = useState({});
   useEffect(() => {
     if (
       localStorage.getItem("login_status") !== "true"
@@ -86,19 +85,6 @@ function User_service_maintenace_mgmt() {
       .then((response) => {
         if (response.data.success === true) {
           setRows(response.data.data);
-          // Count the number of Approved and Rejected statuses
-          const statusCounts = response?.data?.data?.reduce(
-            (counts, item) => {
-              if (item.status === "Active") {
-                counts.active += 1;
-              } else if (item.status === "Inactive") {
-                counts.inactive += 1;
-              }
-              return counts;
-            },
-            { active: 0, inactive: 0 }
-          );
-          setCount(statusCounts);
           setIsLoading(false);
         } else {
           enqueueSnackbar(response.data.message, { variant: 'error' });
@@ -110,10 +96,6 @@ function User_service_maintenace_mgmt() {
         console.log(error);
       });
   }, []);
-  const mapContainerStyle = {
-    width: '100%',
-    height: '400px',
-  };
 
   // Function to convert UTC to IST and format it
   const convertUTCtoIST = (utcDate) => {

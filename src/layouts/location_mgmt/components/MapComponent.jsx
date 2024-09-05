@@ -6,6 +6,7 @@ import LocationAvailable from '../../../assets/images/location_available.png';
 import LocationInuse from '../../../assets/images/location_in_use.png'; 
 import LocationInactive from '../../../assets/images/location_inactive.png'; 
 import BlueDotIcon from '../../../assets/images/location.png';
+import { MarkerClusterer } from '@googlemaps/markerclusterer';
 
 const useCurrentLocation = () => {
   const [location, setLocation] = useState({ lat: null, lng: null });
@@ -54,9 +55,31 @@ const MapComponent = ({ locations }) => {
 
   const API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
 
-  const handleMapLoad = () => {
+  const handleMapLoad = (map) => {
     localStorage.setItem("maploaded", "true");
     setIsMapLoaded(true);
+    // Initialize marker clusterer
+    // const markers = locations.map((loc, index) => {
+    //   const position = { lat: loc?.direction?.latitude, lng: loc?.direction?.longitude };
+    //   const icon = (loc?.availCount > 0) ? {
+    //     url: LocationAvailable,
+    //     scaledSize: new window.google.maps.Size(25, 25),
+    //   } : (loc?.inuseCount > 0) ? {
+    //     url: LocationInuse,
+    //     scaledSize: new window.google.maps.Size(25, 25),
+    //   } : {
+    //     url: LocationInactive,
+    //     scaledSize: new window.google.maps.Size(25, 25),
+    //   };
+    //   // const icon = {
+    //   //   url: LocationAvailable,
+    //   //   scaledSize: new window.google.maps.Size(25, 25),
+    //   // }
+    //   return new window.google.maps.Marker({ position, icon, title: loc?.name });
+    // });
+
+    // new MarkerClusterer({ map, markers });
+
   };
 
   const handleMarkerClick = (location) => {

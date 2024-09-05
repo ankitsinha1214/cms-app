@@ -44,7 +44,7 @@ import SignIn from "layouts/SignIn/SignIn";
 // @mui icons
 import Icon from "@mui/material/Icon";
 import HomeIcon from '@mui/icons-material/Home';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
+// import LocationOnIcon from '@mui/icons-material/LocationOn';
 import ViewLocation from "layouts/location_mgmt/ViewLocation";
 import ViewSitesurvey from "layouts/site_servey_mgmt/ViewSitesurvey";
 import ViewPreinstallation from "layouts/pre_installation_mgmt/ViewPreinstallation";
