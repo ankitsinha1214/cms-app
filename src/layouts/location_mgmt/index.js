@@ -158,10 +158,10 @@ function Location_mgmt() {
 
   const [values, setValues] = useState(getValues);
   console.log(values);
-  const center = {
-    lat: 12.927923, // Latitude of the center point
-    lng: 77.627106, // Longitude of the center point
-  };
+  // const center = {
+  //   lat: 12.927923, // Latitude of the center point
+  //   lng: 77.627106, // Longitude of the center point
+  // };
   const [isDisabled2, setIsDisabled2] = useState(false);
   const [mapDisabled, setMapDisabled] = useState(true);
   const [columns, setColumns] = useState([]);
