@@ -29,7 +29,7 @@ import { superAdminRoutes, notLoggedInRoutes } from "routes";
 import NotFoundPage  from "./NotFoundPage";
 
 // Dashboard contexts
-import { useMaterialUIController, setMiniSidenav, setOpenConfigurator } from "context";
+import { useMaterialUIController, setMiniSidenav, setSidenavColor, setOpenConfigurator } from "context";
 
 // Images
 // import brandWhite from "assets/images/chargedock-icon.png";
@@ -111,7 +111,7 @@ export default function App() {
       </Icon>
     </MDBox>
   );
-
+  // setSidenavColor(dispatch, "#7F9C3C");
   const routes = rState?.role === "super-admin" ? superAdminRoutes : superAdminRoutes
   return (
     <ThemeProvider theme={darkMode ? themeDark : theme}>

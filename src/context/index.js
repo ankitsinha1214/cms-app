@@ -61,7 +61,7 @@ function MaterialUIControllerProvider({ children }) {
     miniSidenav: false,
     transparentSidenav: false,
     whiteSidenav: false,
-    sidenavColor: "info",
+    sidenavColor: "success",
     transparentNavbar: true,
     fixedNavbar: true,
     openConfigurator: false,

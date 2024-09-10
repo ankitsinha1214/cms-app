@@ -52,6 +52,7 @@ import ViewChargerandDcbox from "layouts/charger_and_dcbox_mgmt/ViewChargerandDc
 import Pre_delivery_mgmt from "layouts/pre_delivery_mgmt";
 import ViewPreDelivery from "layouts/pre_delivery_mgmt/ViewPreDelivery";
 import User_service_maintenace_mgmt from "layouts/user_service_maintenace_mgmt";
+import Notification_service_maintenace_mgmt from "layouts/notification_service_maintenance";
 import EvStationIcon from '@mui/icons-material/EvStation';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import EditLocationAltIcon from '@mui/icons-material/EditLocationAlt';
@@ -195,6 +196,14 @@ export const superAdminRoutes = [
     // icon: <Icon fontSize="small">receipt_long</Icon>,
     route: "/service-maintenace/users-service-and-maintenance",
     component: <User_service_maintenace_mgmt />,
+  },
+  {
+    // type: "collapse",
+    // name: "Update User",
+    key: "notifications-service-and-maintenance",
+    // icon: <Icon fontSize="small">receipt_long</Icon>,
+    route: "/service-maintenace/notifications-service-and-maintenance",
+    component: <Notification_service_maintenace_mgmt />,
   },
   {
     type: "collapse",

@@ -124,16 +124,57 @@ const MapComponent = ({ locations }) => {
         />
       ))}
       {selectedLocation && (
-        <InfoWindow
-          position={{ lat: selectedLocation?.direction?.latitude, lng: selectedLocation?.direction?.longitude }}
-          onCloseClick={() => setSelectedLocation(null)}
-        >
-          <div style={{display:"flex",flexDirection:"column",alignItems:"center"}}>
-            <h4>{selectedLocation?.name}</h4>
-            <p>{selectedLocation?.data?.address}</p>
-            <Button variant="text" onClick={() => pop(selectedLocation?.data)}>View Location</Button>
-          </div>
-        </InfoWindow>
+         <InfoWindow
+         position={{ lat: selectedLocation?.direction?.latitude, lng: selectedLocation?.direction?.longitude }}
+         onCloseClick={() => setSelectedLocation(null)}
+       >
+         <div style={{display:"flex",flexDirection:"column",width: "250px" }}>
+         {/* alignItems:"center", */}
+           <h4 style={{marginBottom:"0.5rem"}}>{selectedLocation?.name}</h4>
+           <p>{selectedLocation?.data?.address}</p>
+           <Button variant="text" onClick={() => pop(selectedLocation?.data)}>View Location</Button>
+         </div>
+       </InfoWindow>
+      //   <InfoWindow
+      //   position={{ lat: selectedLocation?.direction?.latitude, lng: selectedLocation?.direction?.longitude }}
+      //   content={
+      //     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      //       <h4 style={{ margin: 0 }}>{selectedLocation.name}</h4>
+      //     </div>
+      //   }
+      //   onCloseClick={() => setSelectedLocation(null)}
+      // >
+      //   <span>something</span>
+      //   </InfoWindow>
+        // {/* <div style={{ width: "200px" }}>
+        //   <h4 style={{ margin: "0", padding: "0", fontSize: "16px", lineHeight: "1.2" }}>
+        //     {selectedLocation.name}
+        //   </h4>
+        //   <p style={{ margin: "4px 0", padding: "0", fontSize: "14px", lineHeight: "1.4" }}>
+        //     {selectedLocation.data?.address}
+        //   </p>
+        //   <p style={{ margin: "4px 0", fontSize: "12px", color: "gray" }}>
+        //   <Button variant="text" onClick={() => pop(selectedLocation?.data)}>View Location</Button>
+        //   </p>
+        // </div> */}
+      //    <OverlayView
+      //    position={{
+      //      lat: selectedLocation?.direction?.latitude,
+      //      lng: selectedLocation?.direction?.longitude,
+      //    }}
+      //    mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
+      //  >
+      //    <div style={{ background: "white", padding: "10px", borderRadius: "8px", position: "relative" }}>
+      //      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      //        <h4 style={{ margin: 0 }}>{selectedLocation?.name}</h4>
+      //        <button onClick={() => setSelectedLocation(null)} style={{ background: "transparent", border: "none", cursor: "pointer" }}>
+      //          ❌
+      //        </button>
+      //      </div>
+      //      <p>{selectedLocation?.data?.address}</p>
+      //      <Button variant="text" onClick={() => pop(selectedLocation?.data)}>View Location</Button>
+      //    </div>
+      //  </OverlayView>
       )}
       {isMapLoaded && (
         <Marker 

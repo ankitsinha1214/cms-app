@@ -15,6 +15,7 @@ import pre_install from '../../assets/images/pre-installation.png';
 import pre_delivery from '../../assets/images/pre-delivery.png';
 import charger_dcbox from '../../assets/images/charger-dcbox.png';
 import user from '../../assets/images/users.png';
+import notification from '../../assets/images/notification.png';
 import { Avatar, Card } from 'antd';
 import { Col, Row } from 'antd';
 const { Meta } = Card;
@@ -91,6 +92,18 @@ function Service_and_maintenance_mgmt() {
                 <Meta
                   title="User Management"
                   description="Administer user roles, access, and interactions within the charging network."
+                />
+              </Card>
+            </CardActionArea>
+          </Col> 
+          <Col xs={24} sm={12} md={8} lg={8}>
+            <CardActionArea onClick={() => navigate('/service-maintenace/notifications-service-and-maintenance')}>
+              <Card
+                cover={<img alt="Notification Management" src={notification} />}
+              >
+                <Meta
+                  title="Notification Management"
+                  description="Configure alerts and updates for service and maintenance tasks."
                 />
               </Card>
             </CardActionArea>
