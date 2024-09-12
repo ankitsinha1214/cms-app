@@ -132,8 +132,8 @@ const ViewLocation = () => {
               </Typography>
               {/* Statistics Section */}
               <Grid item xs={12}
-              // md={6}
-              style={{marginTop: "2rem"}}
+                // md={6}
+                style={{ marginTop: "2rem" }}
               >
                 <Paper elevation={3} sx={{ p: 2 }}>
                   <Grid container spacing={2}>
@@ -201,60 +201,60 @@ const ViewLocation = () => {
                 }}
               />
               {/* Additional Stats */}
-            <Grid item 
-            xs={12}
-            // xs={12} md={8} lg={6}
-            // md={6}
-            >
-              <Paper elevation={3} sx={{ p: 2 }}>
-                <Grid container spacing={2}>
-                  <Grid item xs={6}>
-                    <Typography variant="h6">{data.stats.energyDispersed}</Typography>
-                    <Typography variant="body2">Energy dispersed (kwh)</Typography>
+              <Grid item
+                xs={12}
+              // xs={12} md={8} lg={6}
+              // md={6}
+              >
+                <Paper elevation={3} sx={{ p: 2 }}>
+                  <Grid container spacing={2}>
+                    <Grid item xs={6}>
+                      <Typography variant="h6">{data.stats.energyDispersed}</Typography>
+                      <Typography variant="body2">Energy dispersed (kwh)</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="h6">{data.stats.visits}</Typography>
+                      <Typography variant="body2">Visits / Transactions</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="h6">{data.stats.occupancyRate}%</Typography>
+                      <Typography variant="body2">Occupancy rate</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="h6">{data.stats.kmsPowered}</Typography>
+                      <Typography variant="body2">KMS powered (km)</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="h6">{data.stats.co2Saved}</Typography>
+                      <Typography variant="body2">CO2 saved (kg)</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="h6">{data.stats.uptimeRate}%</Typography>
+                      <Typography variant="body2">Uptime rate</Typography>
+                    </Grid>
                   </Grid>
-                  <Grid item xs={6}>
-                    <Typography variant="h6">{data.stats.visits}</Typography>
-                    <Typography variant="body2">Visits / Transactions</Typography>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Typography variant="h6">{data.stats.occupancyRate}%</Typography>
-                    <Typography variant="body2">Occupancy rate</Typography>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Typography variant="h6">{data.stats.kmsPowered}</Typography>
-                    <Typography variant="body2">KMS powered (km)</Typography>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Typography variant="h6">{data.stats.co2Saved}</Typography>
-                    <Typography variant="body2">CO2 saved (kg)</Typography>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Typography variant="h6">{data.stats.uptimeRate}%</Typography>
-                    <Typography variant="body2">Uptime rate</Typography>
-                  </Grid>
-                </Grid>
-              </Paper>
-            </Grid>
-               {/* Placeholder for Energy Consumed Graph */}
-               <Grid item xs={12} sx={{my: 4}}>
-              <Paper elevation={3} sx={{ p: 2 }}>
-                {/* <Typography variant="h6">Energy Consumed</Typography> */}
-                <Box sx={{ height: 300 }}>
-                  {/* Insert your graph component here */}
-                  <Grid item xs={12}>
-                    <Box mb={3}>
-                      <ReportsLineChart
-                        color="success"
-                        title="Energy Consumed"
-                        // description="Last Campaign Performance"
-                        // date="just updated"
-                        chart={energyCons}
-                      />
-                    </Box>
-                  </Grid>
-                </Box>
-              </Paper>
-            </Grid>
+                </Paper>
+              </Grid>
+              {/* Placeholder for Energy Consumed Graph */}
+              <Grid item xs={12} sx={{ my: 4 }}>
+                <Paper elevation={3} sx={{ p: 2 }}>
+                  {/* <Typography variant="h6">Energy Consumed</Typography> */}
+                  <Box sx={{ height: 300 }}>
+                    {/* Insert your graph component here */}
+                    <Grid item xs={12}>
+                      <Box mb={3}>
+                        <ReportsLineChart
+                          color="success"
+                          title="Energy Consumed"
+                          // description="Last Campaign Performance"
+                          // date="just updated"
+                          chart={energyCons}
+                        />
+                      </Box>
+                    </Grid>
+                  </Box>
+                </Paper>
+              </Grid>
             </Grid>
             {/* placement of image */}
             <Grid item xs={12} sm={5} display="flex" justifyContent="flex-end">
@@ -291,17 +291,19 @@ const ViewLocation = () => {
                     <Box padding={4}>
                       <Grid container spacing={1} >
                         <Grid item xs={12}>
-                          <Typography variant="h6">Hours</Typography>
+                          <Typography variant="h6">Address</Typography>
                           <Typography mb={2}>{content?.address}</Typography>
                           <Typography variant="h6">Phone no</Typography>
                           <Typography mb={3}>{data.contact.phone}</Typography>
+                          <Typography variant="h6">Hours</Typography>
+                          <Typography mb={3}>{content?.workingDays} {content?.workingHours}</Typography>
                         </Grid>
                         {/* Facilities */}
                         <Grid item xs={12} mb={2}>
                           <Typography variant="h6" mb={1.5}>Facilities</Typography>
                           <Grid container spacing={2}>
-                            {[1, 2, 3, 4, 5].map((_, index) => (
-                              <Grid item xs={4} sm={2} key={index}> {/* Responsive grid items */}
+                            {Array.isArray(content?.facilities) && content?.facilities.map((_, index) => (
+                              <Grid item xs={4} sm={2} key={index}>
                                 <Avatar sx={{ bgcolor: green[500], width: 40, height: 40 }}>
                                   <LocationOnIcon />
                                 </Avatar>

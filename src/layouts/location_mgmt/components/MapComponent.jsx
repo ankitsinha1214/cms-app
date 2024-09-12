@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import { GoogleMap, Marker, InfoWindow } from '@react-google-maps/api';
-import LocationAvailable from '../../../assets/images/location_available.png'; 
-import LocationInuse from '../../../assets/images/location_in_use.png'; 
-import LocationInactive from '../../../assets/images/location_inactive.png'; 
+import LocationAvailable from '../../../assets/images/location_available.png';
+import LocationInuse from '../../../assets/images/location_in_use.png';
+import LocationInactive from '../../../assets/images/location_inactive.png';
 import BlueDotIcon from '../../../assets/images/location.png';
 import { MarkerClusterer } from '@googlemaps/markerclusterer';
 
@@ -13,7 +13,7 @@ const useCurrentLocation = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-  localStorage.setItem("maploaded", "false");
+    localStorage.setItem("maploaded", "false");
     if (!navigator.geolocation) {
       setError("Geolocation is not supported by your browser");
     } else {
@@ -35,7 +35,14 @@ const useCurrentLocation = () => {
 };
 
 const MapComponent = ({ locations }) => {
+  const [locations1, setLocations1] = useState([]);
+  const [mapInstance, setMapInstance] = useState(null);
   const navigate = useNavigate();
+  useEffect(() => {
+    setLocations1(locations);
+  }, [locations]);
+  console.log(locations);
+  console.log(locations1);
   const { location: currentLocation, error } = useCurrentLocation();
   localStorage.setItem("Currentlocation", JSON.stringify(currentLocation));
   const [center, setCenter] = useState({ lat: 0, lng: 0 });
@@ -55,30 +62,40 @@ const MapComponent = ({ locations }) => {
 
   const API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
 
-  const handleMapLoad = (map) => {
-    localStorage.setItem("maploaded", "true");
-    setIsMapLoaded(true);
-    // Initialize marker clusterer
-    // const markers = locations.map((loc, index) => {
-    //   const position = { lat: loc?.direction?.latitude, lng: loc?.direction?.longitude };
-    //   const icon = (loc?.availCount > 0) ? {
-    //     url: LocationAvailable,
-    //     scaledSize: new window.google.maps.Size(25, 25),
-    //   } : (loc?.inuseCount > 0) ? {
-    //     url: LocationInuse,
-    //     scaledSize: new window.google.maps.Size(25, 25),
-    //   } : {
-    //     url: LocationInactive,
-    //     scaledSize: new window.google.maps.Size(25, 25),
-    //   };
-    //   // const icon = {
-    //   //   url: LocationAvailable,
-    //   //   scaledSize: new window.google.maps.Size(25, 25),
-    //   // }
-    //   return new window.google.maps.Marker({ position, icon, title: loc?.name });
-    // });
 
-    // new MarkerClusterer({ map, markers });
+  // Trigger map load after locations1 is set
+  useEffect(() => {
+    if (mapInstance && locations1.length > 0) {
+      handleMapLoad(mapInstance);
+    }
+  }, [locations1, mapInstance]);
+
+  const handleMapLoad = (map) => {
+    console.log("Locations:", locations1);
+    localStorage.setItem("maploaded", "true");
+    // Initialize marker clusterer
+    const markers = locations1.map((loc, index) => {
+      const position = { lat: loc?.direction?.latitude, lng: loc?.direction?.longitude };
+      const icon = (loc?.availCount > 0) ? {
+        url: LocationAvailable,
+        scaledSize: new window.google.maps.Size(25, 25),
+      } : (loc?.inuseCount > 0) ? {
+        url: LocationInuse,
+        scaledSize: new window.google.maps.Size(25, 25),
+      } : {
+        url: LocationInactive,
+        scaledSize: new window.google.maps.Size(25, 25),
+      };
+      // const icon = {
+      //   url: LocationAvailable,
+      //   scaledSize: new window.google.maps.Size(25, 25),
+      // }
+
+      return new window.google.maps.Marker({ position, icon, title: loc?.name });
+    });
+    console.log("Markers created:", markers);
+    setIsMapLoaded(true);
+    new MarkerClusterer({ map, markers });
 
   };
 
@@ -99,13 +116,14 @@ const MapComponent = ({ locations }) => {
   };
 
   return (
-    <GoogleMap 
-      mapContainerStyle={mapContainerStyle} 
-      center={center} 
-      zoom={14} 
-      onLoad={handleMapLoad}
+    <GoogleMap
+      mapContainerStyle={mapContainerStyle}
+      center={center}
+      zoom={14}
+      // onLoad={handleMapLoad}
+      onLoad={(map) => setMapInstance(map)}
     >
-      {isMapLoaded && locations?.map((loc, index) => (
+      {/* {isMapLoaded && locations1?.map((loc, index) => (
         <Marker 
           key={index} 
           position={{ lat: loc?.direction?.latitude, lng: loc?.direction?.longitude }} 
@@ -122,30 +140,30 @@ const MapComponent = ({ locations }) => {
             scaledSize: new window.google.maps.Size(25, 25), 
           }}
         />
-      ))}
+      ))} */}
       {selectedLocation && (
-         <InfoWindow
-         position={{ lat: selectedLocation?.direction?.latitude, lng: selectedLocation?.direction?.longitude }}
-         onCloseClick={() => setSelectedLocation(null)}
-       >
-         <div style={{display:"flex",flexDirection:"column",width: "250px" }}>
-         {/* alignItems:"center", */}
-           <h4 style={{marginBottom:"0.5rem"}}>{selectedLocation?.name}</h4>
-           <p>{selectedLocation?.data?.address}</p>
-           <Button variant="text" onClick={() => pop(selectedLocation?.data)}>View Location</Button>
-         </div>
-       </InfoWindow>
-      //   <InfoWindow
-      //   position={{ lat: selectedLocation?.direction?.latitude, lng: selectedLocation?.direction?.longitude }}
-      //   content={
-      //     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-      //       <h4 style={{ margin: 0 }}>{selectedLocation.name}</h4>
-      //     </div>
-      //   }
-      //   onCloseClick={() => setSelectedLocation(null)}
-      // >
-      //   <span>something</span>
-      //   </InfoWindow>
+        <InfoWindow
+          position={{ lat: selectedLocation?.direction?.latitude, lng: selectedLocation?.direction?.longitude }}
+          onCloseClick={() => setSelectedLocation(null)}
+        >
+          <div style={{ display: "flex", flexDirection: "column", width: "250px" }}>
+            {/* alignItems:"center", */}
+            <h4 style={{ marginBottom: "0.5rem" }}>{selectedLocation?.name}</h4>
+            <p>{selectedLocation?.data?.address}</p>
+            <Button variant="text" onClick={() => pop(selectedLocation?.data)}>View Location</Button>
+          </div>
+        </InfoWindow>
+        //   <InfoWindow
+        //   position={{ lat: selectedLocation?.direction?.latitude, lng: selectedLocation?.direction?.longitude }}
+        //   content={
+        //     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        //       <h4 style={{ margin: 0 }}>{selectedLocation.name}</h4>
+        //     </div>
+        //   }
+        //   onCloseClick={() => setSelectedLocation(null)}
+        // >
+        //   <span>something</span>
+        //   </InfoWindow>
         // {/* <div style={{ width: "200px" }}>
         //   <h4 style={{ margin: "0", padding: "0", fontSize: "16px", lineHeight: "1.2" }}>
         //     {selectedLocation.name}
@@ -157,32 +175,32 @@ const MapComponent = ({ locations }) => {
         //   <Button variant="text" onClick={() => pop(selectedLocation?.data)}>View Location</Button>
         //   </p>
         // </div> */}
-      //    <OverlayView
-      //    position={{
-      //      lat: selectedLocation?.direction?.latitude,
-      //      lng: selectedLocation?.direction?.longitude,
-      //    }}
-      //    mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
-      //  >
-      //    <div style={{ background: "white", padding: "10px", borderRadius: "8px", position: "relative" }}>
-      //      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-      //        <h4 style={{ margin: 0 }}>{selectedLocation?.name}</h4>
-      //        <button onClick={() => setSelectedLocation(null)} style={{ background: "transparent", border: "none", cursor: "pointer" }}>
-      //          ❌
-      //        </button>
-      //      </div>
-      //      <p>{selectedLocation?.data?.address}</p>
-      //      <Button variant="text" onClick={() => pop(selectedLocation?.data)}>View Location</Button>
-      //    </div>
-      //  </OverlayView>
+        //    <OverlayView
+        //    position={{
+        //      lat: selectedLocation?.direction?.latitude,
+        //      lng: selectedLocation?.direction?.longitude,
+        //    }}
+        //    mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
+        //  >
+        //    <div style={{ background: "white", padding: "10px", borderRadius: "8px", position: "relative" }}>
+        //      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        //        <h4 style={{ margin: 0 }}>{selectedLocation?.name}</h4>
+        //        <button onClick={() => setSelectedLocation(null)} style={{ background: "transparent", border: "none", cursor: "pointer" }}>
+        //          ❌
+        //        </button>
+        //      </div>
+        //      <p>{selectedLocation?.data?.address}</p>
+        //      <Button variant="text" onClick={() => pop(selectedLocation?.data)}>View Location</Button>
+        //    </div>
+        //  </OverlayView>
       )}
       {isMapLoaded && (
-        <Marker 
+        <Marker
           position={center}
           title="Current Location"
           icon={{
-            url: BlueDotIcon, 
-            scaledSize: new window.google.maps.Size(25, 25), 
+            url: BlueDotIcon,
+            scaledSize: new window.google.maps.Size(25, 25),
           }}
         />
       )}

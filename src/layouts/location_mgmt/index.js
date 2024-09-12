@@ -58,6 +58,7 @@ function Location_mgmt() {
   });
   // const mapboxApiKey = 'BkQdGUmSHFrZj1ph0zOioSjRYyWt64VSJlRZFrKb';
   const statusList = [
+    'Complete',
     'Inactive',
     'Active',
     'Pending',
@@ -182,6 +183,12 @@ function Location_mgmt() {
       }, accessorKey: "status",
       align: "center",
       fixed: "true",
+      filterFn: (row, columnFilterValue) => {
+        if (columnFilterValue === 'Complete') {
+          return row.original.status !== 'Active';
+        }
+        return row.row.original.status === columnFilterValue; 
+      },
       Cell: (row) => (
         <div>
           {(row.row.original.status === "Inactive") ?
@@ -392,6 +399,9 @@ function Location_mgmt() {
       setMapDisabled(false);
     }
   }, [localStorage.getItem("maploaded")]);
+
+  const total = rows.length;
+  const countActive = rows.filter(row => row.status === "Active").length;
   return (
     <DashboardLayout>
       <PopAddBasic
@@ -414,7 +424,7 @@ function Location_mgmt() {
                 </span>
               </Box>
               <Box style={{ display: "flex", alignItems: "center" }}>
-                <span >45</span>
+                <span >{total - countActive}</span>
                 <IconButton aria-label="delete">
                   <ArrowForwardIosIcon />
                 </IconButton>
