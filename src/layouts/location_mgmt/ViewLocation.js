@@ -34,6 +34,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import EmojiTransportationIcon from '@mui/icons-material/EmojiTransportation';
 import { Divider } from 'antd';
 import InfoCard from './components/Infocard';
+import Tooltip from '@mui/material/Tooltip';
 import { useLocation } from 'react-router-dom';
 import {
   CheckCircleOutlined,
@@ -363,11 +364,13 @@ const ViewLocation = () => {
                           <Typography variant="h6" mb={1.5}>Facilities</Typography>
                           <Grid container spacing={2}>
                             {Array.isArray(content?.facilities) && content?.facilities.map((facility, index) => (
+                            <Tooltip title={facility.name}>
                               <Grid item xs={4} sm={2} key={index}>
                                 <Avatar sx={{ bgcolor: green[500], width: 40, height: 40 }}>
                                     {iconMap[facility.name] || <MoreHorizIcon />}
                                 </Avatar>
                               </Grid>
+                            </Tooltip>
                             ))}
                           </Grid>
                         </Grid>
