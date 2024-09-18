@@ -90,8 +90,17 @@ const MapComponent = ({ locations }) => {
       //   url: LocationAvailable,
       //   scaledSize: new window.google.maps.Size(25, 25),
       // }
-
-      return new window.google.maps.Marker({ position, icon, title: loc?.name });
+      const marker = new window.google.maps.Marker({
+        position,
+        icon,
+        title: loc?.name
+      });
+      // Add click event listener to the marker
+      marker.addListener('click', () => {
+        handleMarkerClick(loc);
+      });
+      return marker;
+      // return new window.google.maps.Marker({ position, icon, title: loc?.name });
     });
     console.log("Markers created:", markers);
     setIsMapLoaded(true);

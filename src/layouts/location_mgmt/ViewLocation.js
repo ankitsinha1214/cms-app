@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Box, Container, Grid, Typography, Paper, Avatar, IconButton, Card, CardContent, CardMedia, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import { green } from '@mui/material/colors';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+// import LocationOnIcon from '@mui/icons-material/LocationOn';
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import reportsLineChartData from "./components/reportsLineChartData";
@@ -13,8 +14,26 @@ import first3 from "../../assets/images/demoLocation/3.png";
 import first4 from "../../assets/images/demoLocation/4.png";
 import first5 from "../../assets/images/demoLocation/5.png";
 import first6 from "../../assets/images/demoLocation/6.png";
+import WifiIcon from '@mui/icons-material/Wifi';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import WcIcon from '@mui/icons-material/Wc';
+import LocalGasStationIcon from '@mui/icons-material/LocalGasStation';
+import LocalParkingIcon from '@mui/icons-material/LocalParking';
+import HotelIcon from '@mui/icons-material/Hotel';
+import RestaurantIcon from '@mui/icons-material/Restaurant';
+import LocalAtmIcon from '@mui/icons-material/LocalAtm';
+import LocalCafeIcon from '@mui/icons-material/LocalCafe';
+import MedicationIcon from '@mui/icons-material/Medication';
+import LocalCarWashIcon from '@mui/icons-material/LocalCarWash';
+import StoreIcon from '@mui/icons-material/Store';
+import NatureIcon from '@mui/icons-material/Nature';
+import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
+import EngineeringIcon from '@mui/icons-material/Engineering';
+import TempleHinduIcon from '@mui/icons-material/TempleHindu';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import EmojiTransportationIcon from '@mui/icons-material/EmojiTransportation';
 import { Divider } from 'antd';
-
+import InfoCard from './components/Infocard';
 import { useLocation } from 'react-router-dom';
 import {
   CheckCircleOutlined,
@@ -66,6 +85,27 @@ const data = {
       phone: '9876543210'
     }
   }
+};
+
+const iconMap = {
+  PetrolPumps: <LocalGasStationIcon />,
+  ShoppingCenters: <ShoppingCartIcon />,
+  Hotels: <HotelIcon />,
+  Cafes: <LocalCafeIcon />,
+  ATM: <LocalAtmIcon />,
+  Pharmacies: <MedicationIcon />,
+  "Wi-Fi Zones": <WifiIcon />,
+  GroceryStores: <StoreIcon />,
+  EVMaintenanceServices: <EngineeringIcon />,
+  CarWash: <LocalCarWashIcon />,
+  RecreationalAreas: <NatureIcon />,
+  FitnessCenters: <FitnessCenterIcon />,
+  CulturalSites: <TempleHinduIcon />,
+  PublicTransportationHubs: <EmojiTransportationIcon />,
+  Toilets: <WcIcon />,
+  Parking: <LocalParkingIcon />,
+  Restaurant: <RestaurantIcon />,
+  // Location: <LocationOnIcon />,
 };
 
 const ViewLocation = () => {
@@ -206,7 +246,27 @@ const ViewLocation = () => {
               // xs={12} md={8} lg={6}
               // md={6}
               >
-                <Paper elevation={3} sx={{ p: 2 }}>
+                <Grid container spacing={2}>
+                  <Grid item xs={6} lg={4}>
+                    <InfoCard value='30000' label="Energy dispersed (kwh)" />
+                  </Grid>
+                  <Grid item xs={6} lg={4}>
+                    <InfoCard value='90' label="Visits / Transactions" />
+                  </Grid>
+                  <Grid item xs={6} lg={4}>
+                    <InfoCard value='75%' label="Occupancy rate (%)" />
+                  </Grid>
+                  <Grid item xs={6} lg={4}>
+                    <InfoCard value='30000' label="KMS powered (km)" />
+                  </Grid>
+                  <Grid item xs={6} lg={4}>
+                    <InfoCard value='1245' label="CO2 saved (kg)" />
+                  </Grid>
+                  <Grid item xs={6} lg={4}>
+                    <InfoCard value='90%' label="Uptime rate (%)" />
+                  </Grid>
+                </Grid>
+                {/* <Paper elevation={3} sx={{ p: 2 }}>
                   <Grid container spacing={2}>
                     <Grid item xs={6}>
                       <Typography variant="h6">{data.stats.energyDispersed}</Typography>
@@ -233,7 +293,7 @@ const ViewLocation = () => {
                       <Typography variant="body2">Uptime rate</Typography>
                     </Grid>
                   </Grid>
-                </Paper>
+                </Paper> */}
               </Grid>
               {/* Placeholder for Energy Consumed Graph */}
               <Grid item xs={12} sx={{ my: 4 }}>
@@ -302,10 +362,10 @@ const ViewLocation = () => {
                         <Grid item xs={12} mb={2}>
                           <Typography variant="h6" mb={1.5}>Facilities</Typography>
                           <Grid container spacing={2}>
-                            {Array.isArray(content?.facilities) && content?.facilities.map((_, index) => (
+                            {Array.isArray(content?.facilities) && content?.facilities.map((facility, index) => (
                               <Grid item xs={4} sm={2} key={index}>
                                 <Avatar sx={{ bgcolor: green[500], width: 40, height: 40 }}>
-                                  <LocationOnIcon />
+                                    {iconMap[facility.name] || <MoreHorizIcon />}
                                 </Avatar>
                               </Grid>
                             ))}
