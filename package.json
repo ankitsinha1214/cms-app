@@ -2,6 +2,7 @@
   "name": "cd-cms-dashboard",
   "version": "0.1.0",
   "private": true,
+  "homepage": ".",
   "author": "",
   "license": "See license in ",
   "description": "React version of CMS Website",
