@@ -47,78 +47,84 @@ function Charger_mgmt() {
   const [isDisabled, setIsDisabled] = useState(false);
   const [columns, setColumns] = useState([]);
   const statusList = [
-    'Red',
-    'Green',
-    'Yellow'
+    'Inactive',
+    'Available',
+    'Inuse'
   ];
   const [controller] = useMaterialUIController();
   const { darkMode } = controller;
   const rows = [
     {
       "charger_id": "CH001AC",
-      "status": "red",
+      "status": "Inactive",
       "c_type": "Malls",
       "location": "HSR layout",
       "l_type": "Toyota",
       "last_ping": "18:20, 29-02-2023",
       "state": "California",
       "city": "Los Angeles",
-      "energy_disp": "2500 KWH"
+      "energy_disp": "2500 kWh",
+      "charger_type":"AC Charger"
     },
     {
       "charger_id": "CH001DC",
-      "status": "green",
+      "status": "Available",
       "c_type": "Highways",
-      "location": "MCC- Kanakpura rd ",
+      "location": "Orion Mall",
       "l_type": "Malls",
       "last_ping": "18:20, 24-02-2023",
       "state": "New York",
       "city": "New York City",
-      "energy_disp": "300 KWh"
+      "energy_disp": "300 kWh",
+      "charger_type":"AC Charger"
     },
     {
       "charger_id": "Ankit",
-      "status": "yellow",
+      "status": "Inuse",
       "c_type": "Malls",
       "location": "MCC- Kanakpura rd ",
       "l_type": "Malls",
       "last_ping": "18:20, 24-02-2023",
       "state": "New York",
       "city": "New York City",
-      "energy_disp": "300 KWh"
+      "energy_disp": "300 kWh",
+      "charger_type":"AC Charger"
     },
     {
       "charger_id": "CH001DC",
-      "status": "green",
+      "status": "Available",
       "c_type": "Highways",
       "location": "MCC- Kanakpura rd ",
       "l_type": "Malls",
       "last_ping": "18:20, 24-02-2023",
       "state": "New York",
       "city": "New York City",
-      "energy_disp": "300 KWh"
+      "energy_disp": "300 kWh",
+      "charger_type":"AC Charger"
     },
     {
       "charger_id": "CH001DC",
-      "status": "green",
+      "status": "Available",
       "c_type": "Highways",
       "location": "MCC- Kanakpura rd ",
       "l_type": "Malls",
       "last_ping": "18:20, 24-02-2023",
       "state": "New York",
       "city": "New York City",
-      "energy_disp": "300 KWh"
+      "energy_disp": "300 kWh",
+      "charger_type":"AC Charger"
     },
     {
       "charger_id": "CH001DC",
-      "status": "red",
+      "status": "Inactive",
       "c_type": "Highways",
       "location": "Hosur",
       "l_type": "Malls",
       "last_ping": "18:20, 24-02-2023",
       "state": "New York",
       "city": "New York City",
-      "energy_disp": "300 KWh"
+      "energy_disp": "300 kWh",
+      "charger_type":"AC Charger"
     },
     // ...more rows
   ];
@@ -137,13 +143,13 @@ function Charger_mgmt() {
       },
       Cell: (row) => (
         <div>
-          {(row.row.original.status === "red") ?
+          {(row.row.original.status === "Inactive") ?
             <CircleIcon style={{ color: "#DA1E28" }} />
             :
             // (row.row.original.status === "grey") ?
             //   <CircleIcon style={{ color: "#7B7B7B" }} />
             //   :
-            (row.row.original.status === "yellow") ?
+            (row.row.original.status === "Inuse") ?
               <CircleIcon style={{ color: "#F1C21B" }} />
               :
               <CircleIcon style={{ color: "#198038" }} />
@@ -256,7 +262,7 @@ function Charger_mgmt() {
   }, []);
   const handleEdit = (row_data) => {
     // navigate("/view/user", { state: row_data });
-    navigate("/charger/view");
+    navigate("/charger/view", { state: row_data });
   };
   const handleDelete = (row_data) => {
     var bodyFormData = new FormData();

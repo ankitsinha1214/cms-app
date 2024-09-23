@@ -30,6 +30,7 @@ const InfoCard = ({ value, label }) => {
         // padding: { xs: '5px', md: '6px', lg: '8px' }, 
         height: { xs: '120px', sm: '135px', xl: '150px' },
         // borderRadius: '10px',
+        borderRadius: '0px',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
@@ -37,6 +38,7 @@ const InfoCard = ({ value, label }) => {
       >
       <CardContent sx={{
           padding: '0.5rem 1rem',
+          borderRadius: '0px',
       }}>
         <Box
           sx={{

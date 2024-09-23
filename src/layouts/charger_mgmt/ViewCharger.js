@@ -8,30 +8,21 @@ import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 // import reportsLineChartData from "./components/reportsLineChartData";
 // import ReportsLineChart from "examples/Charts/LineCharts/ReportsLineChart/New";
-import first from "../../assets/images/demoLocation/1.png";
-import first2 from "../../assets/images/demoLocation/2.png";
-import first3 from "../../assets/images/demoLocation/3.png";
-import first4 from "../../assets/images/demoLocation/4.png";
-import first5 from "../../assets/images/demoLocation/5.png";
-import first6 from "../../assets/images/demoLocation/6.png";
-import WifiIcon from '@mui/icons-material/Wifi';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import WcIcon from '@mui/icons-material/Wc';
-import LocalGasStationIcon from '@mui/icons-material/LocalGasStation';
-import LocalParkingIcon from '@mui/icons-material/LocalParking';
-import HotelIcon from '@mui/icons-material/Hotel';
-import RestaurantIcon from '@mui/icons-material/Restaurant';
-import LocalAtmIcon from '@mui/icons-material/LocalAtm';
-import LocalCafeIcon from '@mui/icons-material/LocalCafe';
-import MedicationIcon from '@mui/icons-material/Medication';
-import LocalCarWashIcon from '@mui/icons-material/LocalCarWash';
-import StoreIcon from '@mui/icons-material/Store';
-import NatureIcon from '@mui/icons-material/Nature';
-import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
-import EngineeringIcon from '@mui/icons-material/Engineering';
-import TempleHinduIcon from '@mui/icons-material/TempleHindu';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import EmojiTransportationIcon from '@mui/icons-material/EmojiTransportation';
+import first from "../../assets/images/chrger.png";
+import PropTypes from 'prop-types';
+import { styled } from '@mui/material/styles';
+import Stack from '@mui/material/Stack';
+import Stepper from '@mui/material/Stepper';
+import Step from '@mui/material/Step';
+import StepLabel from '@mui/material/StepLabel';
+import Check from '@mui/icons-material/Check';
+import SettingsIcon from '@mui/icons-material/Settings';
+import ScheduleIcon from '@mui/icons-material/Schedule';
+import DoneIcon from '@mui/icons-material/Done';
+import GroupAddIcon from '@mui/icons-material/GroupAdd';
+import CloseIcon from '@mui/icons-material/Close';
+import VideoLabelIcon from '@mui/icons-material/VideoLabel';
+import StepConnector, { stepConnectorClasses } from '@mui/material/StepConnector';
 import { Divider } from 'antd';
 import InfoCard from '../location_mgmt/components/Infocard';
 import Tooltip from '@mui/material/Tooltip';
@@ -46,6 +37,184 @@ import {
 } from '@ant-design/icons';
 import { Flex, Tag } from 'antd';
 
+const QontoConnector = styled(StepConnector)(({ theme }) => ({
+  [`&.${stepConnectorClasses.alternativeLabel}`]: {
+    top: 10,
+    left: 'calc(-50% + 16px)',
+    right: 'calc(50% + 16px)',
+  },
+  [`&.${stepConnectorClasses.active}`]: {
+    [`& .${stepConnectorClasses.line}`]: {
+      borderColor: '#784af4',
+    },
+  },
+  [`&.${stepConnectorClasses.completed}`]: {
+    [`& .${stepConnectorClasses.line}`]: {
+      borderColor: '#784af4',
+    },
+  },
+  [`& .${stepConnectorClasses.line}`]: {
+    borderColor: '#eaeaf0',
+    borderTopWidth: 3,
+    borderRadius: 1,
+    ...theme.applyStyles('dark', {
+      borderColor: theme.palette.grey[800],
+    }),
+  },
+}));
+
+const QontoStepIconRoot = styled('div')(({ theme }) => ({
+  color: '#eaeaf0',
+  display: 'flex',
+  height: 22,
+  alignItems: 'center',
+  '& .QontoStepIcon-completedIcon': {
+    color: '#784af4',
+    zIndex: 1,
+    fontSize: 18,
+  },
+  '& .QontoStepIcon-circle': {
+    width: 8,
+    height: 8,
+    borderRadius: '50%',
+    backgroundColor: 'currentColor',
+  },
+  ...theme.applyStyles('dark', {
+    color: theme.palette.grey[700],
+  }),
+  variants: [
+    {
+      props: ({ ownerState }) => ownerState.active,
+      style: {
+        color: '#784af4',
+      },
+    },
+  ],
+}));
+
+function QontoStepIcon(props) {
+  const { active, completed, className } = props;
+
+  return (
+    <QontoStepIconRoot ownerState={{ active }} className={className}>
+      {completed ? (
+        <Check className="QontoStepIcon-completedIcon" />
+      ) : (
+        <div className="QontoStepIcon-circle" />
+      )}
+    </QontoStepIconRoot>
+  );
+}
+
+QontoStepIcon.propTypes = {
+  /**
+   * Whether this step is active.
+   * @default false
+   */
+  active: PropTypes.bool,
+  className: PropTypes.string,
+  /**
+   * Mark the step as completed. Is passed to child components.
+   * @default false
+   */
+  completed: PropTypes.bool,
+};
+
+const ColorlibConnector = styled(StepConnector)(({ theme }) => ({
+  [`&.${stepConnectorClasses.alternativeLabel}`]: {
+    top: 22,
+  },
+  [`&.${stepConnectorClasses.active}`]: {
+    [`& .${stepConnectorClasses.line}`]: {
+      backgroundImage:
+        'linear-gradient( 95deg,rgb(242,113,33) 0%,rgb(233,64,87) 50%,rgb(138,35,135) 100%)',
+    },
+  },
+  [`&.${stepConnectorClasses.completed}`]: {
+    [`& .${stepConnectorClasses.line}`]: {
+      backgroundImage:
+        'linear-gradient( 95deg,rgb(242,113,33) 0%,rgb(233,64,87) 50%,rgb(138,35,135) 100%)',
+    },
+  },
+  [`& .${stepConnectorClasses.line}`]: {
+    height: 3,
+    border: 0,
+    backgroundColor: '#eaeaf0',
+    borderRadius: 1,
+    ...theme.applyStyles('dark', {
+      backgroundColor: theme.palette.grey[800],
+    }),
+  },
+}));
+
+const ColorlibStepIconRoot = styled('div')(({ theme }) => ({
+  backgroundColor: '#ccc',
+  zIndex: 1,
+  color: '#fff',
+  width: 50,
+  height: 50,
+  display: 'flex',
+  borderRadius: '50%',
+  justifyContent: 'center',
+  alignItems: 'center',
+  ...theme.applyStyles('dark', {
+    backgroundColor: theme.palette.grey[700],
+  }),
+  variants: [
+    {
+      props: ({ ownerState }) => ownerState.active,
+      style: {
+        backgroundImage:
+          'linear-gradient( 136deg, rgb(242,113,33) 0%, rgb(233,64,87) 50%, rgb(138,35,135) 100%)',
+        boxShadow: '0 4px 10px 0 rgba(0,0,0,.25)',
+      },
+    },
+    {
+      props: ({ ownerState }) => ownerState.completed,
+      style: {
+        backgroundImage:
+          'linear-gradient( 136deg, rgb(242,113,33) 0%, rgb(233,64,87) 50%, rgb(138,35,135) 100%)',
+      },
+    },
+  ],
+}));
+
+function ColorlibStepIcon(props) {
+  const { active, completed, className } = props;
+
+  const icons = {
+    1: <DoneIcon />,
+    2: <ScheduleIcon />,
+    3: <ScheduleIcon />,
+    4: <CloseIcon />,
+  };
+
+  return (
+    <ColorlibStepIconRoot ownerState={{ completed, active }} className={className}>
+      {icons[String(props.icon)]}
+    </ColorlibStepIconRoot>
+  );
+}
+
+ColorlibStepIcon.propTypes = {
+  /**
+   * Whether this step is active.
+   * @default false
+   */
+  active: PropTypes.bool,
+  className: PropTypes.string,
+  /**
+   * Mark the step as completed. Is passed to child components.
+   * @default false
+   */
+  completed: PropTypes.bool,
+  /**
+   * The label displayed in the step icon.
+   */
+  icon: PropTypes.node,
+};
+
+const steps = ['Site survey', 'Installation', 'Commissioning', 'Maintanence'];
 const data = {
   locationName: 'MCC - Mysore road',
   address: 'Bangalore, Karnataka',
@@ -88,32 +257,10 @@ const data = {
   }
 };
 
-const iconMap = {
-  PetrolPumps: <LocalGasStationIcon />,
-  ShoppingCenters: <ShoppingCartIcon />,
-  Hotels: <HotelIcon />,
-  Cafes: <LocalCafeIcon />,
-  ATM: <LocalAtmIcon />,
-  Pharmacies: <MedicationIcon />,
-  "Wi-Fi Zones": <WifiIcon />,
-  GroceryStores: <StoreIcon />,
-  EVMaintenanceServices: <EngineeringIcon />,
-  CarWash: <LocalCarWashIcon />,
-  RecreationalAreas: <NatureIcon />,
-  FitnessCenters: <FitnessCenterIcon />,
-  CulturalSites: <TempleHinduIcon />,
-  PublicTransportationHubs: <EmojiTransportationIcon />,
-  Toilets: <WcIcon />,
-  Parking: <LocalParkingIcon />,
-  Restaurant: <RestaurantIcon />,
-  // Location: <LocationOnIcon />,
-};
-
 const ViewLocation = () => {
   // const { energyCons } = reportsLineChartData;
   const location = useLocation();
   console.log(location.state);
-  const additionalImages = [first2, first3, first4, first5, first6];
   const [content, setContent] = useState([]);
   useEffect(() => {
     setContent(location.state);
@@ -137,11 +284,11 @@ const ViewLocation = () => {
             {/* Header Section */}
             <Grid item xs={12} sm={7}>
               {/* <Flex gap="4px 0" wrap> */}
-              {content?.status === "Active" ?
+              {content?.status === "Available" ?
                 <Tag icon={<CheckCircleOutlined />} color="success">
-                  Live
+                  Available
                 </Tag>
-                : content?.status === "Pending" ?
+                : content?.status === "Inuse" ?
                   <Tag icon={<SyncOutlined spin />} color="warning">
                     Pending
                   </Tag>
@@ -149,13 +296,10 @@ const ViewLocation = () => {
                     <Tag icon={<CloseCircleOutlined />} color="error">
                       Inactive
                     </Tag>
-                    : content?.status === "Waitlisted" ?
-                      <Tag icon={<ClockCircleOutlined />} color="default">
-                        waiting
-                      </Tag> :
-                      <Tag icon={<MinusCircleOutlined />} color="default">
-                        {content?.status}
-                      </Tag>
+                    :
+                    <Tag icon={<MinusCircleOutlined />} color="default">
+                      {content?.status}
+                    </Tag>
               }
               {/* <Tag icon={<ExclamationCircleOutlined />} color="warning">
                   warning
@@ -163,13 +307,16 @@ const ViewLocation = () => {
               {/* {JSON.stringify(data)} */}
               {/* </Flex> */}
               <Typography variant="h4" component="h1" gutterBottom>
-                {content?.locationName}
+                {content?.charger_id}
               </Typography>
               <Typography variant="subtitle1">
-                {content?.city}, {content?.state}
+                {content?.charger_type} &nbsp; | &nbsp; {content?.energy_disp}
+              </Typography>
+              <Typography variant="subtitle1">
+                {content?.location} &nbsp;|&nbsp; {content?.l_type} &nbsp;|&nbsp; {data.accessibility}
               </Typography>
               <Typography variant="body2">
-                {content?.locationType} | {data.accessibility}
+                {content?.city}, {content?.state}
               </Typography>
               {/* Statistics Section */}
               <Grid item xs={12}
@@ -235,6 +382,14 @@ const ViewLocation = () => {
                     </Grid>
                   </Grid>
                 </Paper>
+                <br />
+                  <Stepper alternativeLabel activeStep={3} connector={<ColorlibConnector />}>
+                    {steps.map((label) => (
+                      <Step key={label}>
+                        <StepLabel StepIconComponent={ColorlibStepIcon}>{label}</StepLabel>
+                      </Step>
+                    ))}
+                  </Stepper>
               </Grid>
               <Divider dashed
                 style={{
@@ -304,69 +459,6 @@ const ViewLocation = () => {
                         />
                       </Box>
                     </Grid> */}
-                  </Box>
-                </Paper>
-              </Grid>
-            </Grid>
-            {/* placement of image */}
-            <Grid item xs={12} sm={5} display="flex" justifyContent="flex-end">
-              {/* <IconButton color="primary">
-                <LocationOnIcon />
-              </IconButton> */}
-              <Grid container spacing={3}>
-                <Grid item xs={12}>
-                  <Card>
-                    <CardMedia
-                      component="img"
-                      height="200"
-                      image={first}
-                      alt="main image"
-                      style={{ width: '100%', margin: 0, borderRadius: 0, objectFit: "fill" }}
-                    />
-                    <CardContent style={{ padding: 0 }}>
-                      <Grid container spacing={0.2}>
-                        {/* Additional images */}
-                        {additionalImages.map((image, index) => (
-                          <Grid item xs={2.4} key={index}>
-                            <CardMedia
-                              component="img"
-                              height="100"
-                              image={image}
-                              alt={`image ${index + 1}`}
-                              style={{ width: '100%', margin: 0, borderRadius: 0, objectFit: "fill" }}
-                            />
-                          </Grid>
-                        ))}
-                      </Grid>
-                    </CardContent>
-                    {/* Address and Phone Number */}
-                    <Box padding={4}>
-                      <Grid container spacing={1} >
-                        <Grid item xs={12}>
-                          <Typography variant="h6">Address</Typography>
-                          <Typography mb={2}>{content?.address}</Typography>
-                          <Typography variant="h6">Phone no</Typography>
-                          <Typography mb={3}>{data.contact.phone}</Typography>
-                          <Typography variant="h6">Hours</Typography>
-                          <Typography mb={3}>{content?.workingDays} {content?.workingHours}</Typography>
-                        </Grid>
-                        {/* Facilities */}
-                        <Grid item xs={12} mb={2}>
-                          <Typography variant="h6" mb={1.5}>Facilities</Typography>
-                          <Grid container spacing={2}>
-                            {Array.isArray(content?.facilities) && content?.facilities.map((facility, index) => (
-                              <Tooltip title={facility.name}>
-                                <Grid item xs={4} sm={2} key={index}>
-                                  <Avatar sx={{ bgcolor: green[500], width: 40, height: 40 }}>
-                                    {iconMap[facility.name] || <MoreHorizIcon />}
-                                  </Avatar>
-                                </Grid>
-                              </Tooltip>
-                            ))}
-                          </Grid>
-                        </Grid>
-                      </Grid>
-                    </Box>
                     {/* Personal Information */}
                     <Grid item xs={12}>
                       <Accordion>
@@ -433,6 +525,25 @@ const ViewLocation = () => {
                         </AccordionDetails>
                       </Accordion>
                     </Grid>
+                  </Box>
+                </Paper>
+              </Grid>
+            </Grid>
+            {/* placement of image */}
+            <Grid item xs={12} sm={5} display="flex" justifyContent="flex-end">
+              {/* <IconButton color="primary">
+                <LocationOnIcon />
+              </IconButton> */}
+              <Grid container spacing={3}>
+                <Grid item xs={12}>
+                  <Card>
+                    <CardMedia
+                      component="img"
+                      height="600"
+                      image={first}
+                      alt="main image"
+                      style={{ width: '100%', margin: 0, borderRadius: 0, objectFit: "fill" }}
+                    />
                   </Card>
                 </Grid>
               </Grid>
@@ -484,213 +595,3 @@ const ViewLocation = () => {
 };
 
 export default ViewLocation;
-
-// import React from 'react';
-// import {
-//   Box, Container, Grid, Typography, Paper, IconButton,
-//   Card, CardContent, CardMedia, Avatar
-// } from '@mui/material';
-// import LocationOnIcon from '@mui/icons-material/LocationOn';
-// import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
-// import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-// import './Viewlocation.css';
-
-// const data = {
-//   locationName: 'MCC - Mysore road',
-//   address: 'Bangalore, Karnataka',
-//   type: 'Mall',
-//   accessibility: 'Public',
-//   stats: {
-//     total: 5,
-//     ac: 2,
-//     dc: 1,
-//     twoWheelerDC: 1,
-//     energyDispersed: 3000,
-//     visits: 90,
-//     occupancyRate: 75,
-//     kmsPowered: 30000,
-//     co2Saved: 1245,
-//     uptimeRate: 90
-//   },
-//   contact: {
-//     phone: '+91 9090909090',
-//     spoc: {
-//       name: 'Visswanath',
-//       phone: '9876543210'
-//     },
-//     accounts: {
-//       name: 'Visswanath',
-//       phone: '9876543210'
-//     },
-//     maintenance: {
-//       name: 'Visswanath',
-//       phone: '9876543210'
-//     },
-//     gm: {
-//       name: 'Visswanath',
-//       phone: '9876543210'
-//     },
-//     siteEngineer: {
-//       name: 'Visswanath',
-//       phone: '9876543210'
-//     }
-//   }
-// };
-
-// const ViewLocation = () => {
-//   return (
-//     <DashboardLayout>
-//       <DashboardNavbar />
-//       <Container maxWidth="lg">
-//         <Box sx={{ my: 4 }}>
-//           <Grid container spacing={3}>
-//             {/* Header Section */}
-//             <Grid item xs={12} sm={8}>
-//               <Typography variant="h4" component="h1" gutterBottom>
-//                 {data.locationName}
-//               </Typography>
-//               <Typography variant="subtitle1">
-//                 {data.address}
-//               </Typography>
-//               <Typography variant="body2">
-//                 {data.type} | {data.accessibility}
-//               </Typography>
-//             </Grid>
-//             <Grid item xs={12} sm={4} display="flex" justifyContent="flex-end">
-//               <IconButton color="primary">
-//                 <LocationOnIcon />
-//               </IconButton>
-//             </Grid>
-
-//             {/* Statistics Section */}
-//             <Grid item xs={12}>
-//               <Paper elevation={3} className="card-header">
-//                 <Grid container spacing={2} className="card-content">
-//                   <Grid item xs={3} sm={2}>
-//                     <Typography variant="h6">{data.stats.total}</Typography>
-//                     <Typography variant="body2">Total</Typography>
-//                   </Grid>
-//                   <Grid item xs={3} sm={2}>
-//                     <Typography variant="h6">{data.stats.ac}</Typography>
-//                     <Typography variant="body2">AC</Typography>
-//                   </Grid>
-//                   <Grid item xs={3} sm={2}>
-//                     <Typography variant="h6">{data.stats.dc}</Typography>
-//                     <Typography variant="body2">DC</Typography>
-//                   </Grid>
-//                   <Grid item xs={3} sm={2}>
-//                     <Typography variant="h6">{data.stats.twoWheelerDC}</Typography>
-//                     <Typography variant="body2">2wDC</Typography>
-//                   </Grid>
-//                 </Grid>
-//               </Paper>
-//             </Grid>
-
-//             {/* Additional Stats */}
-//             <Grid item xs={12}>
-//               <Paper elevation={3} className="card-header">
-//                 <Grid container spacing={2} className="card-content">
-//                   <Grid item xs={6} sm={3}>
-//                     <Typography variant="h6">{data.stats.energyDispersed}</Typography>
-//                     <Typography variant="body2">Energy dispersed (kwh)</Typography>
-//                   </Grid>
-//                   <Grid item xs={6} sm={3}>
-//                     <Typography variant="h6">{data.stats.visits}</Typography>
-//                     <Typography variant="body2">Visits / Transactions</Typography>
-//                   </Grid>
-//                   <Grid item xs={6} sm={3}>
-//                     <Typography variant="h6">{data.stats.occupancyRate}%</Typography>
-//                     <Typography variant="body2">Occupancy rate</Typography>
-//                   </Grid>
-//                   <Grid item xs={6} sm={3}>
-//                     <Typography variant="h6">{data.stats.kmsPowered}</Typography>
-//                     <Typography variant="body2">KMS powered (km)</Typography>
-//                   </Grid>
-//                   <Grid item xs={6} sm={3}>
-//                     <Typography variant="h6">{data.stats.co2Saved}</Typography>
-//                     <Typography variant="body2">CO2 saved (kg)</Typography>
-//                   </Grid>
-//                   <Grid item xs={6} sm={3}>
-//                     <Typography variant="h6">{data.stats.uptimeRate}%</Typography>
-//                     <Typography variant="body2">Uptime rate</Typography>
-//                   </Grid>
-//                 </Grid>
-//               </Paper>
-//             </Grid>
-
-//             {/* Contact Section */}
-//             <Grid item xs={12}>
-//               <Paper elevation={3} className="contact-section">
-//                 <Typography variant="h6">Contact Information</Typography>
-//                 <Grid container spacing={2}>
-//                   <Grid item xs={12} sm={6}>
-//                     <Typography variant="body2">Phone: {data.contact.phone}</Typography>
-//                   </Grid>
-//                   <Grid item xs={12} sm={6}>
-//                     <Typography variant="h6">SPOC</Typography>
-//                     <Typography variant="body2">Name: {data.contact.spoc.name}</Typography>
-//                     <Typography variant="body2">Phone: {data.contact.spoc.phone}</Typography>
-//                   </Grid>
-//                   <Grid item xs={12} sm={6}>
-//                     <Typography variant="h6">Accounts</Typography>
-//                     <Typography variant="body2">Name: {data.contact.accounts.name}</Typography>
-//                     <Typography variant="body2">Phone: {data.contact.accounts.phone}</Typography>
-//                   </Grid>
-//                   <Grid item xs={12} sm={6}>
-//                     <Typography variant="h6">Maintenance</Typography>
-//                     <Typography variant="body2">Name: {data.contact.maintenance.name}</Typography>
-//                     <Typography variant="body2">Phone: {data.contact.maintenance.phone}</Typography>
-//                   </Grid>
-//                   <Grid item xs={12} sm={6}>
-//                     <Typography variant="h6">GM</Typography>
-//                     <Typography variant="body2">Name: {data.contact.gm.name}</Typography>
-//                     <Typography variant="body2">Phone: {data.contact.gm.phone}</Typography>
-//                   </Grid>
-//                   <Grid item xs={12} sm={6}>
-//                     <Typography variant="h6">Site Engineer</Typography>
-//                     <Typography variant="body2">Name: {data.contact.siteEngineer.name}</Typography>
-//                     <Typography variant="body2">Phone: {data.contact.siteEngineer.phone}</Typography>
-//                   </Grid>
-//                 </Grid>
-//               </Paper>
-//             </Grid>
-
-//             {/* Facilities Section */}
-//             <Grid item xs={12}>
-//               <Paper elevation={3} className="contact-section">
-//                 <Typography variant="h6">Facilities</Typography>
-//                 <Box className="facilities">
-//                   <Avatar className="facilities-icon avatar">
-//                     <LocationOnIcon className="avatar-icon" />
-//                   </Avatar>
-//                   <Avatar className="facilities-icon avatar">
-//                     <LocationOnIcon className="avatar-icon" />
-//                   </Avatar>
-//                   <Avatar className="facilities-icon avatar">
-//                     <LocationOnIcon className="avatar-icon" />
-//                   </Avatar>
-//                   <Avatar className="facilities-icon avatar">
-//                     <LocationOnIcon className="avatar-icon" />
-//                   </Avatar>
-//                 </Box>
-//               </Paper>
-//             </Grid>
-
-//             {/* Placeholder for Energy Consumed Graph */}
-//             <Grid item xs={12}>
-//               <Paper elevation={3} className="graph">
-//                 <Typography variant="h6">Energy Consumed</Typography>
-//                 <Box sx={{ height: 300 }}>
-//                   {/* Insert your graph component here */}
-//                 </Box>
-//               </Paper>
-//             </Grid>
-//           </Grid>
-//         </Box>
-//       </Container>
-//     </DashboardLayout>
-//   );
-// };
-
-// export default ViewLocation;
-

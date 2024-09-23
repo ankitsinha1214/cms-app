@@ -81,9 +81,9 @@ export const superAdminRoutes = [
   {
     type: "collapse",
     name: "Charger Mgmt",
-    key: "Charger-Management",
+    key: "charger",
     icon: <PowerIcon />,
-    route: "/Charger-Management",
+    route: "/charger",
     component: <ChargerMgmt />,
   },
   {
