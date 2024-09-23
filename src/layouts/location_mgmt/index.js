@@ -51,14 +51,15 @@ function Location_mgmt() {
   const [isLoading, setIsLoading] = useState(true);
   const { enqueueSnackbar } = useSnackbar();
   const [locations, setLocations] = useState([]);
-  const [viewState, setViewState] = useState({
-    longitude: 0,
-    latitude: 0,
-    zoom: 1,
-  });
+  const [showIncomplete, setShowIncomplete] = useState(false);
+  // const [viewState, setViewState] = useState({
+  //   longitude: 0,
+  //   latitude: 0,
+  //   zoom: 1,
+  // });
   // const mapboxApiKey = 'BkQdGUmSHFrZj1ph0zOioSjRYyWt64VSJlRZFrKb';
   const statusList = [
-    'Complete',
+    'Incomplete',
     'Inactive',
     'Active',
     'Pending',
@@ -73,7 +74,7 @@ function Location_mgmt() {
       city: "",
       status: "",
       freepaid: {
-        "parking": true, 
+        "parking": true,
         "charging": true
       },
       direction: {},
@@ -81,8 +82,8 @@ function Location_mgmt() {
       facilities: [],
       workingDays: "Everyday",
       workingHours: "",
-      salesManager: {name: '', phoneNumber: '', email: ''},
-      dealer: {name: '', phoneNumber: '', email: ''},
+      salesManager: { name: '', phoneNumber: '', email: '' },
+      dealer: { name: '', phoneNumber: '', email: '' },
       locationImage: []
     };
   };
@@ -130,7 +131,7 @@ function Location_mgmt() {
               chargers: charger.subtype,
               locationName: charger.name,
               energy_disp: charger.energyConsumptions,
-              status: charger.status === "Available"? "Active" : charger.status === "Inuse" ? "Pending" : "Inactive",
+              status: charger.status === "Available" ? "Active" : charger.status === "Inuse" ? "Pending" : "Inactive",
               c_type: charger.type,
             }));
             return { ...location, energy_disp: energyDisp, chargers: location.chargerInfo.length, c_type: `AC: ${acCount}, DC: ${dcCount}`, chargerInfoRep: chargerInfoRep };
@@ -170,6 +171,15 @@ function Location_mgmt() {
   const [rows, setRows] = useState([]);
   // console.log(rows);
 
+  const handleIncompleteClick = () => {
+    const tableElement = document.getElementById('tble');
+    if (tableElement) {
+      tableElement.scrollIntoView({ behavior: 'smooth' }); // Smooth scroll to table
+    }
+    setShowIncomplete(true); // Show "Incomplete" status when clicked
+  };
+  console.log(showIncomplete);
+
   const column = [
     {
       header: "Status",
@@ -183,11 +193,14 @@ function Location_mgmt() {
       }, accessorKey: "status",
       align: "center",
       fixed: "true",
-      filterFn: (row, columnFilterValue) => {
-        if (columnFilterValue === 'Complete') {
+      filterFn: (row, id, columnFilterValue) => {
+        if (!showIncomplete && row.original.status === 'Incomplete') {
+          return false; // Hide "Incomplete" status
+        }
+        if (columnFilterValue === 'Incomplete') {
           return row.original.status !== 'Active';
         }
-        return row.row.original.status === columnFilterValue; 
+        return row.original.status === columnFilterValue;
       },
       Cell: (row) => (
         <div>
@@ -201,9 +214,9 @@ function Location_mgmt() {
                 <CircleIcon style={{ color: "#F1C21B" }} />
                 :
                 (row.row.original.status === "Active") ?
-                <CircleIcon style={{ color: "#198038" }} />
-                :
-                <CircleIcon style={{ color: "#198038" }} />
+                  <CircleIcon style={{ color: "#198038" }} />
+                  :
+                  <CircleIcon style={{ color: "#198038" }} />
           }
         </div>
       ),
@@ -276,32 +289,32 @@ function Location_mgmt() {
       align: "center",
       Cell: (row) => (
         row.row.depth === 0 ? (
-        <div style={{
-          position: 'sticky',
-          right: '0',
-          zIndex: '111',
-        }}>
-          <MDButton
-            onClick={(e) => handleEdit(row.row.original)}
-            variant="gradient"
-            color="info"
-            iconOnly
-          >
-            <LaunchIcon />
-          </MDButton>
-          <MDButton
-            sx={{
-              marginLeft: 2,
-            }}
-            onClick={(e) => handleDelete(row.row.original)}
-            variant="gradient"
-            color="info"
-            // color="secondary"
-            iconOnly
-          >
-            <DeleteIcon />
-          </MDButton>
-        </div>
+          <div style={{
+            position: 'sticky',
+            right: '0',
+            zIndex: '111',
+          }}>
+            <MDButton
+              onClick={(e) => handleEdit(row.row.original)}
+              variant="gradient"
+              color="info"
+              iconOnly
+            >
+              <LaunchIcon />
+            </MDButton>
+            <MDButton
+              sx={{
+                marginLeft: 2,
+              }}
+              onClick={(e) => handleDelete(row.row.original)}
+              variant="gradient"
+              color="info"
+              // color="secondary"
+              iconOnly
+            >
+              <DeleteIcon />
+            </MDButton>
+          </div>
         ) : null
       ),
     },
@@ -375,7 +388,7 @@ function Location_mgmt() {
 
   const SubRow = ({ row }) => {
     // console.log(row); 
-  
+
     return (
       <Card elevation={3} variant="outlined" sx={{ p: 2 }}>
         <MDTypography variant="subtitle1" fontWeight="bold" mb={1}>
@@ -393,9 +406,9 @@ function Location_mgmt() {
       </Card>
     );
   };
-  
+
   useEffect(() => {
-    if(localStorage.getItem("maploaded") === "true"){
+    if (localStorage.getItem("maploaded") === "true") {
       setMapDisabled(false);
     }
   }, [localStorage.getItem("maploaded")]);
@@ -425,7 +438,7 @@ function Location_mgmt() {
               </Box>
               <Box style={{ display: "flex", alignItems: "center" }}>
                 <span >{total - countActive}</span>
-                <IconButton aria-label="delete">
+                <IconButton aria-label="delete" onClick={handleIncompleteClick}>
                   <ArrowForwardIosIcon />
                 </IconButton>
               </Box>
@@ -548,7 +561,7 @@ function Location_mgmt() {
               backgroundRepeat: "no-repeat",
             }}
           /> */}
-          <MapComponent locations={locations}/>
+          <MapComponent locations={locations} />
         </MDBox>
         <MDBox mt={8}>
           <Card>
@@ -568,14 +581,18 @@ function Location_mgmt() {
               </Grid>
             </MDBox>
             {isLoading ? (
-                  <Loader />
-                ) : (<MaterialReactTable
+              <Loader />
+            ) : (<MaterialReactTable
+              id="tble"
               columns={columns}
               data={rows}
               enableExpanding={true}
               getSubRows={(originalRow) => originalRow.chargerInfoRep}
               SubComponent={({ row }) => <SubRow row={row} />}
               initialState={{ showColumnFilters: true }}
+              muiTableContainerProps={{
+                id: 'tble', // Attach the ID here to the container of the table
+              }}
               muiTableProps={{
                 sx: darkMode ?
                   {

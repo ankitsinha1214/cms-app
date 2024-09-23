@@ -256,6 +256,7 @@ function Charger_mgmt() {
   }, []);
   const handleEdit = (row_data) => {
     // navigate("/view/user", { state: row_data });
+    navigate("/charger/view");
   };
   const handleDelete = (row_data) => {
     var bodyFormData = new FormData();

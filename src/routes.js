@@ -45,6 +45,7 @@ import SignIn from "layouts/SignIn/SignIn";
 import Icon from "@mui/material/Icon";
 import HomeIcon from '@mui/icons-material/Home';
 // import LocationOnIcon from '@mui/icons-material/LocationOn';
+import ViewCharger from "layouts/charger_mgmt/ViewCharger";
 import ViewLocation from "layouts/location_mgmt/ViewLocation";
 import ViewSitesurvey from "layouts/site_servey_mgmt/ViewSitesurvey";
 import ViewPreinstallation from "layouts/pre_installation_mgmt/ViewPreinstallation";
@@ -108,6 +109,14 @@ export const superAdminRoutes = [
     // icon: <Icon fontSize="small">receipt_long</Icon>,
     route: "/location/view",
     component: <ViewLocation />,
+  },
+  {
+    // type: "collapse",
+    // name: "Update User",
+    key: "Charger-View",
+    // icon: <Icon fontSize="small">receipt_long</Icon>,
+    route: "/charger/view",
+    component: <ViewCharger />,
   },
   {
     type: "collapse",
