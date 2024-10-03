@@ -11,6 +11,7 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import first from "../../assets/images/chrger.png";
 import PropTypes from 'prop-types';
 import { styled } from '@mui/material/styles';
+import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
@@ -36,32 +37,7 @@ import {
   SyncOutlined,
 } from '@ant-design/icons';
 import { Flex, Tag } from 'antd';
-
-const QontoConnector = styled(StepConnector)(({ theme }) => ({
-  [`&.${stepConnectorClasses.alternativeLabel}`]: {
-    top: 10,
-    left: 'calc(-50% + 16px)',
-    right: 'calc(50% + 16px)',
-  },
-  [`&.${stepConnectorClasses.active}`]: {
-    [`& .${stepConnectorClasses.line}`]: {
-      borderColor: '#784af4',
-    },
-  },
-  [`&.${stepConnectorClasses.completed}`]: {
-    [`& .${stepConnectorClasses.line}`]: {
-      borderColor: '#784af4',
-    },
-  },
-  [`& .${stepConnectorClasses.line}`]: {
-    borderColor: '#eaeaf0',
-    borderTopWidth: 3,
-    borderRadius: 1,
-    ...theme.applyStyles('dark', {
-      borderColor: theme.palette.grey[800],
-    }),
-  },
-}));
+import './somestyle.css';
 
 const QontoStepIconRoot = styled('div')(({ theme }) => ({
   color: '#eaeaf0',
@@ -123,32 +99,19 @@ QontoStepIcon.propTypes = {
 const ColorlibConnector = styled(StepConnector)(({ theme }) => ({
   [`&.${stepConnectorClasses.alternativeLabel}`]: {
     top: 22,
+    color: '#42424a'
   },
-  [`&.${stepConnectorClasses.active}`]: {
-    [`& .${stepConnectorClasses.line}`]: {
-      backgroundImage:
-        'linear-gradient( 95deg,rgb(242,113,33) 0%,rgb(233,64,87) 50%,rgb(138,35,135) 100%)',
-    },
-  },
-  [`&.${stepConnectorClasses.completed}`]: {
-    [`& .${stepConnectorClasses.line}`]: {
-      backgroundImage:
-        'linear-gradient( 95deg,rgb(242,113,33) 0%,rgb(233,64,87) 50%,rgb(138,35,135) 100%)',
-    },
-  },
-  [`& .${stepConnectorClasses.line}`]: {
+  [`&.${stepConnectorClasses.line}`]: {
     height: 3,
-    border: 0,
-    backgroundColor: '#eaeaf0',
-    borderRadius: 1,
-    ...theme.applyStyles('dark', {
-      backgroundColor: theme.palette.grey[800],
-    }),
+    border: `1px dashed grey`,
+    // border: 0,
+    // borderStyle: 'dashed', // Dashed line for the connector
+    // borderColor: 'grey', // Grey color for the connector
+    backgroundColor: 'transparent', // Making the background transparent
   },
 }));
 
-const ColorlibStepIconRoot = styled('div')(({ theme }) => ({
-  backgroundColor: '#ccc',
+const ColorlibStepIconRoot = styled('div')(({ theme, ownerState }) => ({
   zIndex: 1,
   color: '#fff',
   width: 50,
@@ -157,41 +120,26 @@ const ColorlibStepIconRoot = styled('div')(({ theme }) => ({
   borderRadius: '50%',
   justifyContent: 'center',
   alignItems: 'center',
-  ...theme.applyStyles('dark', {
-    backgroundColor: theme.palette.grey[700],
-  }),
-  variants: [
-    {
-      props: ({ ownerState }) => ownerState.active,
-      style: {
-        backgroundImage:
-          'linear-gradient( 136deg, rgb(242,113,33) 0%, rgb(233,64,87) 50%, rgb(138,35,135) 100%)',
-        boxShadow: '0 4px 10px 0 rgba(0,0,0,.25)',
-      },
-    },
-    {
-      props: ({ ownerState }) => ownerState.completed,
-      style: {
-        backgroundImage:
-          'linear-gradient( 136deg, rgb(242,113,33) 0%, rgb(233,64,87) 50%, rgb(138,35,135) 100%)',
-      },
-    },
-  ],
+  backgroundColor: ownerState.completed
+    ? green[500] // Green for completed (tick)
+    : ownerState.active
+      ? 'yellow' // Yellow for active (clock)
+      : 'red', // Red for failed (cross)
 }));
 
 function ColorlibStepIcon(props) {
-  const { active, completed, className } = props;
+  const { active, completed, icon, className } = props;
 
   const icons = {
-    1: <DoneIcon />,
-    2: <ScheduleIcon />,
-    3: <ScheduleIcon />,
-    4: <CloseIcon />,
+    1: <DoneIcon />, // Tick
+    2: <ScheduleIcon />, // Clock
+    3: <ScheduleIcon />, // Clock
+    4: <CloseIcon />, // Cross
   };
 
   return (
     <ColorlibStepIconRoot ownerState={{ completed, active }} className={className}>
-      {icons[String(props.icon)]}
+      {icons[String(icon)]}
     </ColorlibStepIconRoot>
   );
 }
@@ -265,16 +213,6 @@ const ViewLocation = () => {
   useEffect(() => {
     setContent(location.state);
   }, []);
-  const renderContactDetails = (contact) => (
-    Object.keys(contact).map((key) => (
-      key !== 'phone' && (
-        <Box key={key} display="flex" justifyContent="space-between" my={1}>
-          <Typography variant="body2" fontWeight="bold">{key.charAt(0).toUpperCase() + key.slice(1)}:</Typography>
-          <Typography variant="body2">{contact[key].name} - {contact[key].phone}</Typography>
-        </Box>
-      )
-    ))
-  );
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -282,22 +220,22 @@ const ViewLocation = () => {
         <Box sx={{ my: 4 }}>
           <Grid container spacing={3}>
             {/* Header Section */}
-            <Grid item xs={12} sm={7}>
+            <Grid item xs={12} sm={8}>
               {/* <Flex gap="4px 0" wrap> */}
               {content?.status === "Available" ?
-                <Tag icon={<CheckCircleOutlined />} color="success">
+                <Tag icon={<CheckCircleOutlined />} color="success" style={{ marginBottom: "1rem" }}>
                   Available
                 </Tag>
                 : content?.status === "Inuse" ?
-                  <Tag icon={<SyncOutlined spin />} color="warning">
+                  <Tag icon={<SyncOutlined spin />} color="warning" style={{ marginBottom: "1rem" }}>
                     Pending
                   </Tag>
                   : content?.status === "Inactive" ?
-                    <Tag icon={<CloseCircleOutlined />} color="error">
+                    <Tag icon={<CloseCircleOutlined />} color="error" style={{ marginBottom: "1rem" }}>
                       Inactive
                     </Tag>
                     :
-                    <Tag icon={<MinusCircleOutlined />} color="default">
+                    <Tag icon={<MinusCircleOutlined />} color="default" style={{ marginBottom: "1rem" }}>
                       {content?.status}
                     </Tag>
               }
@@ -309,96 +247,50 @@ const ViewLocation = () => {
               <Typography variant="h4" component="h1" gutterBottom>
                 {content?.charger_id}
               </Typography>
-              <Typography variant="subtitle1">
+              <Typography variant="subtitle1" sx={{ lineHeight: "36px" }}>
                 {content?.charger_type} &nbsp; | &nbsp; {content?.energy_disp}
               </Typography>
-              <Typography variant="subtitle1">
+              <Typography variant="subtitle1" sx={{ lineHeight: "36px" }}>
                 {content?.location} &nbsp;|&nbsp; {content?.l_type} &nbsp;|&nbsp; {data.accessibility}
               </Typography>
-              <Typography variant="body2">
+              <Typography variant="body2" sx={{ lineHeight: "36px" }}>
                 {content?.city}, {content?.state}
               </Typography>
               {/* Statistics Section */}
               <Grid item xs={12}
-                // md={6}
-                style={{ marginTop: "2rem" }}
+              // md={6}
+              // style={{ marginTop: "2rem" }}
               >
-                <Paper elevation={3} sx={{ p: 2 }}>
-                  <Grid container spacing={2}>
-                    <Grid item xs={2.5} style={{ textAlign: 'center' }}>
-                      <Typography variant="h6">{data.stats.total}</Typography>
-                      <Typography variant="body2">Total</Typography>
-                    </Grid>
-                    <Grid item xs={2 / 3} >
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          height: '100%', // Ensure the Box takes full height of the Grid item
-                        }}
-                      >
-                        <Divider type="vertical" style={{
-                          borderColor: '#D9D9D9', height: '50%',
-                        }} />
-                      </Box>
-                    </Grid>
-                    <Grid item xs={2.5} style={{ textAlign: 'center' }}>
-                      <Typography variant="h6">{data.stats.ac}</Typography>
-                      <Typography variant="body2">AC</Typography>
-                    </Grid>
-                    <Grid item xs={2 / 3} >
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          height: '100%', // Ensure the Box takes full height of the Grid item
-                        }}
-                      >
-                        <Divider type="vertical" style={{
-                          borderColor: '#D9D9D9', height: '50%',
-                        }} />
-                      </Box>
-                    </Grid>
-                    <Grid item xs={2.5} style={{ textAlign: 'center' }}>
-                      <Typography variant="h6">{data.stats.dc}</Typography>
-                      <Typography variant="body2">DC</Typography>
-                    </Grid>
-                    <Grid item xs={2 / 3} >
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          height: '100%', // Ensure the Box takes full height of the Grid item
-                        }}
-                      >
-                        <Divider type="vertical" style={{
-                          borderColor: '#D9D9D9', height: '50%',
-                        }} />
-                      </Box>
-                    </Grid>
-                    <Grid item xs={2.5} style={{ textAlign: 'center' }}>
-                      <Typography variant="h6">{data.stats.twoWheelerDC}</Typography>
-                      <Typography variant="body2">2wDC</Typography>
-                    </Grid>
-                  </Grid>
-                </Paper>
                 <br />
-                  <Stepper alternativeLabel activeStep={3} connector={<ColorlibConnector />}>
-                    {steps.map((label) => (
-                      <Step key={label}>
-                        <StepLabel StepIconComponent={ColorlibStepIcon}>{label}</StepLabel>
-                      </Step>
-                    ))}
-                  </Stepper>
+                <Stepper alternativeLabel activeStep={4} connector={<ColorlibConnector />}
+                  style={{ background: "none", boxShadow: "none" }}
+                >
+                  {steps.map((label) => (
+                    <Step key={label}>
+                      <StepLabel StepIconComponent={ColorlibStepIcon} style={{ color: 'black !important', textTransform: "none" }}
+                        sx={{
+                          '& .MuiStepLabel-label': {
+                            color: 'black !important', // Enforce black color for all labels
+                            fontWeight: 'bold', // Optional: Make the text bold
+                            textTransform: 'none', // Optional: Disable automatic text transform
+                          },
+                          '& .MuiStepLabel-label.Mui-active': {
+                            color: 'black !important', // Override the default active color
+                          },
+                          '& .MuiStepLabel-label.Mui-completed': {
+                            color: 'black !important', // Override the completed color
+                          },
+                        }}
+                      >{label}</StepLabel>
+                    </Step>
+                  ))}
+                </Stepper>
               </Grid>
-              <Divider dashed
-                style={{
-                  borderColor: '#D9D9D9',
-                }}
-              />
+
               {/* Additional Stats */}
               <Grid item
                 xs={12}
+                mt={6}
               // xs={12} md={8} lg={6}
               // md={6}
               >
@@ -413,130 +305,13 @@ const ViewLocation = () => {
                     <InfoCard value='90%' label="Uptime rate (%)" />
                   </Grid>
                 </Grid>
-                {/* <Paper elevation={3} sx={{ p: 2 }}>
-                  <Grid container spacing={2}>
-                    <Grid item xs={6}>
-                      <Typography variant="h6">{data.stats.energyDispersed}</Typography>
-                      <Typography variant="body2">Energy dispersed (kwh)</Typography>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Typography variant="h6">{data.stats.visits}</Typography>
-                      <Typography variant="body2">Visits / Transactions</Typography>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Typography variant="h6">{data.stats.occupancyRate}%</Typography>
-                      <Typography variant="body2">Occupancy rate</Typography>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Typography variant="h6">{data.stats.kmsPowered}</Typography>
-                      <Typography variant="body2">KMS powered (km)</Typography>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Typography variant="h6">{data.stats.co2Saved}</Typography>
-                      <Typography variant="body2">CO2 saved (kg)</Typography>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Typography variant="h6">{data.stats.uptimeRate}%</Typography>
-                      <Typography variant="body2">Uptime rate</Typography>
-                    </Grid>
-                  </Grid>
-                </Paper> */}
-              </Grid>
-              {/* Placeholder for Energy Consumed Graph */}
-              <Grid item xs={12} sx={{ my: 4 }}>
-                <Paper elevation={3} sx={{ p: 2 }}>
-                  {/* <Typography variant="h6">Energy Consumed</Typography> */}
-                  <Box sx={{ height: 300 }}>
-                    {/* Insert your graph component here */}
-                    {/* <Grid item xs={12}>
-                      <Box mb={3}>
-                        <ReportsLineChart
-                          color="success"
-                          title="Energy Consumed"
-                          // description="Last Campaign Performance"
-                          // date="just updated"
-                          chart={energyCons}
-                        />
-                      </Box>
-                    </Grid> */}
-                    {/* Personal Information */}
-                    <Grid item xs={12}>
-                      <Accordion>
-                        <AccordionSummary
-                          expandIcon={<ExpandMoreIcon />}
-                          aria-controls="panel1a-content"
-                          id="panel1a-header"
-                          sx={{ backgroundColor: "#E4F4D9" }}
-                        >
-                          <Typography variant="h6">Personal Information</Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                          <Box my={2}>
-                            <Box display="flex" justifyContent="space-between" my={1}>
-                              <Typography variant="body2" fontWeight="bold">First Name:</Typography>
-                              <Typography variant="body2">Visswanath</Typography>
-                            </Box>
-                            <Box display="flex" justifyContent="space-between" my={1}>
-                              <Typography variant="body2" fontWeight="bold">Last Name:</Typography>
-                              <Typography variant="body2">Baskaran</Typography>
-                            </Box>
-                            <Box display="flex" justifyContent="space-between" my={1}>
-                              <Typography variant="body2" fontWeight="bold">Phone No:</Typography>
-                              <Typography variant="body2">XXXXXX5035</Typography>
-                            </Box>
-                            <Box display="flex" justifyContent="space-between" my={1}>
-                              <Typography variant="body2" fontWeight="bold">Email ID:</Typography>
-                              <Typography variant="body2">vissxxxx02@gmail.com</Typography>
-                            </Box>
-                            <Box display="flex" justifyContent="space-between" my={1}>
-                              <Typography variant="body2" fontWeight="bold">Gender:</Typography>
-                              <Typography variant="body2">Male</Typography>
-                            </Box>
-                            <Box display="flex" justifyContent="space-between" my={1}>
-                              <Typography variant="body2" fontWeight="bold">Date of Birth:</Typography>
-                              <Typography variant="body2">04-06-1999</Typography>
-                            </Box>
-                            <Box display="flex" justifyContent="space-between" my={1}>
-                              <Typography variant="body2" fontWeight="bold">State:</Typography>
-                              <Typography variant="body2">Karnataka</Typography>
-                            </Box>
-                            <Box display="flex" justifyContent="space-between" my={1}>
-                              <Typography variant="body2" fontWeight="bold">City:</Typography>
-                              <Typography variant="body2">Bangalore</Typography>
-                            </Box>
-                          </Box>
-                        </AccordionDetails>
-                      </Accordion>
-                    </Grid>
-
-                    {/* Contact Information */}
-                    <Grid item xs={12} mt={0}>
-                      <Accordion>
-                        <AccordionSummary
-                          expandIcon={<ExpandMoreIcon />}
-                          aria-controls="panel2a-content"
-                          id="panel2a-header"
-                          sx={{ backgroundColor: "#E4F4D9" }}
-                        >
-                          <Typography variant="h6">Contact Information</Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                          {renderContactDetails(data.contact)}
-                        </AccordionDetails>
-                      </Accordion>
-                    </Grid>
-                  </Box>
-                </Paper>
               </Grid>
             </Grid>
             {/* placement of image */}
-            <Grid item xs={12} sm={5} display="flex" justifyContent="flex-end">
-              {/* <IconButton color="primary">
-                <LocationOnIcon />
-              </IconButton> */}
+            <Grid item xs={12} sm={4} display="flex" justifyContent="flex-end">
               <Grid container spacing={3}>
                 <Grid item xs={12}>
-                  <Card>
+                  <Card style={{ padding: "0 4rem" }}>
                     <CardMedia
                       component="img"
                       height="600"
@@ -548,45 +323,327 @@ const ViewLocation = () => {
                 </Grid>
               </Grid>
             </Grid>
+            <Divider dashed
+              style={{
+                borderColor: 'rgba(0, 0, 0, 0.15)',
+              }}
+            />
+            <Grid item xs={12} sm={8} sx={{ my: 4 }}>
+              <Box sx={{ height: 300 }}>
+                <Grid item xs={12}>
+                  <Accordion>
+                    <AccordionSummary
+                      expandIcon={<ExpandMoreIcon />}
+                      aria-controls="panel1a-content"
+                      id="panel1a-header"
+                      sx={{ backgroundColor: "#E4F4D9" }}
+                    >
+                      <Typography variant="h6">Maintenance</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <Box my={2}>
+                        {/* First Section */}
+                        <Box display="flex" flexDirection="column" gap={2}>
+                          <Box display="flex" justifyContent="space-between">
+                            <Box display="flex" justifyContent="space-between" width={"80%"}
+                              sx={{
+                                flexDirection: {
+                                  xs: 'column',
+                                  sm: 'row'
+                                }
+                              }}
+                            >
+                              <Typography variant="body2" fontWeight="bold">Charge Status:</Typography>
+                              <Typography variant="body2" width={"60%"}>Offline</Typography>
+                            </Box>
+                            <Link style={{ textDecoration: "underline !important", cursor: "pointer" }}>Edit</Link>
+                          </Box>
+                          <Box display="flex" justifyContent="space-between">
+                            <Box display="flex" justifyContent="space-between" width={"80%"}
+                              sx={{
+                                flexDirection: {
+                                  xs: 'column',
+                                  sm: 'row'
+                                }
+                              }}
+                            >
+                              <Typography variant="body2" fontWeight="bold">Registration State:</Typography>
+                              <Typography variant="body2" width={"60%"}>Accepted</Typography>
+                            </Box>
+                            <Link style={{cursor: "pointer"}}>Edit</Link>
+                          </Box>
+                          <Box display="flex" justifyContent="space-between">
+                            <Box display="flex" justifyContent="space-between" width={"80%"}
+                              sx={{
+                                flexDirection: {
+                                  xs: 'column',
+                                  sm: 'row'
+                                }
+                              }}
+                            >
+                              <Typography variant="body2" fontWeight="bold">Heartbeat Interval:</Typography>
+                              <Typography variant="body2" width={"60%"}>5 sec</Typography>
+                            </Box>
+                            <Link style={{cursor: "pointer"}}>Edit</Link>
+                          </Box>
+                          <Box display="flex" justifyContent="space-between">
+                            <Box display="flex" justifyContent="space-between" width={"80%"}
+                              sx={{
+                                flexDirection: {
+                                  xs: 'column',
+                                  sm: 'row'
+                                }
+                              }}
+                            >
+                              <Typography variant="body2" fontWeight="bold">Site Survey Team:</Typography>
+                              <Typography variant="body2" width={"60%"}>Lorem ipsum</Typography>
+                            </Box>
+                            <Link style={{cursor: "pointer"}}>Edit</Link>
+                          </Box>
+                          <Box display="flex" justifyContent="space-between">
+                            <Box display="flex" justifyContent="space-between" width={"80%"}
+                              sx={{
+                                flexDirection: {
+                                  xs: 'column',
+                                  sm: 'row'
+                                }
+                              }}
+                            >
+                              <Typography variant="body2" fontWeight="bold">Diagnostics:</Typography>
+                              <Typography variant="body2" width={"60%"}>Lorem ipsum</Typography>
+                            </Box>
+                            <Link style={{cursor: "pointer"}}>Edit</Link>
+                          </Box>
+                          <Box display="flex" justifyContent="space-between">
+                            <Box display="flex" justifyContent="space-between" width={"80%"}
+                              sx={{
+                                flexDirection: {
+                                  xs: 'column',
+                                  sm: 'row'
+                                }
+                              }}
+                            >
+                              <Typography variant="body2" fontWeight="bold">Firmware Update:</Typography>
+                              <Typography variant="body2" width={"60%"}>Lorem ipsum</Typography>
+                            </Box>
+                            <Link style={{cursor: "pointer"}}>Edit</Link>
+                          </Box>
+                          <Box display="flex" justifyContent="space-between">
+                            <Box display="flex" justifyContent="space-between" width={"80%"}
+                              sx={{
+                                flexDirection: {
+                                  xs: 'column',
+                                  sm: 'row'
+                                }
+                              }}
+                            >
+                              <Typography variant="body2" fontWeight="bold">Installation Team:</Typography>
+                              <Typography variant="body2" width={"60%"}>Lorem ipsum</Typography>
+                            </Box>
+                            <Link style={{cursor: "pointer"}}>Edit</Link>
+                          </Box>
+                        </Box>
+                      </Box>
+                    </AccordionDetails>
+                  </Accordion>
 
-            {/* Contact Section */}
-            {/* <Grid item xs={12}>
-              <Paper elevation={3} sx={{ p: 2 }}>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6}>
-                    <Typography variant="h6">Contact Information</Typography>
-                    <Typography variant="body2">Phone: {data.contact.phone}</Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Typography variant="h6">SPOC</Typography>
-                    <Typography variant="body2">Name: {data.contact.spoc.name}</Typography>
-                    <Typography variant="body2">Phone: {data.contact.spoc.phone}</Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Typography variant="h6">Accounts</Typography>
-                    <Typography variant="body2">Name: {data.contact.accounts.name}</Typography>
-                    <Typography variant="body2">Phone: {data.contact.accounts.phone}</Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Typography variant="h6">Maintenance</Typography>
-                    <Typography variant="body2">Name: {data.contact.maintenance.name}</Typography>
-                    <Typography variant="body2">Phone: {data.contact.maintenance.phone}</Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Typography variant="h6">GM</Typography>
-                    <Typography variant="body2">Name: {data.contact.gm.name}</Typography>
-                    <Typography variant="body2">Phone: {data.contact.gm.phone}</Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Typography variant="h6">Site Engineer</Typography>
-                    <Typography variant="body2">Name: {data.contact.siteEngineer.name}</Typography>
-                    <Typography variant="body2">Phone: {data.contact.siteEngineer.phone}</Typography>
-                  </Grid>
+                  <Accordion>
+                    <AccordionSummary
+                      expandIcon={<ExpandMoreIcon />}
+                      aria-controls="panel2a-content"
+                      id="panel2a-header"
+                      sx={{ backgroundColor: "#E4F4D9" }}
+                    >
+                      <Typography variant="h6">Location</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <Box my={2}>
+                        {/* Second Section */}
+                        <Box display="flex" flexDirection="column" gap={2}>
+                          <Box display="flex" justifyContent="space-between">
+                            <Box display="flex" justifyContent="space-between" width={"80%"}
+                              sx={{
+                                flexDirection: {
+                                  xs: 'column',
+                                  sm: 'row'
+                                }
+                              }}
+                            >
+                              <Typography variant="body2" fontWeight="bold">Location Name:</Typography>
+                              <Typography variant="body2" width={"60%"}>Orion Mall Brigade Gateway</Typography>
+                            </Box>
+                            <Link style={{cursor: "pointer"}}>Edit</Link>
+                          </Box>
+                          <Box display="flex" justifyContent="space-between">
+                            <Box display="flex" justifyContent="space-between" width={"80%"}
+                              sx={{
+                                flexDirection: {
+                                  xs: 'column',
+                                  sm: 'row'
+                                }
+                              }}
+                            >
+                              <Typography variant="body2" fontWeight="bold">Location Type:</Typography>
+                              <Typography variant="body2" width={"60%"}>Mall</Typography>
+                            </Box>
+                            <Link style={{cursor: "pointer"}}>Edit</Link>
+                          </Box>
+                          <Box display="flex" justifyContent="space-between">
+                            <Box display="flex" justifyContent="space-between" width={"80%"}
+                              sx={{
+                                flexDirection: {
+                                  xs: 'column',
+                                  sm: 'row'
+                                }
+                              }}
+                            >
+                              <Typography variant="body2" fontWeight="bold">Location Address:</Typography>
+                              {/* <Typography variant="body2">Lorem ipsum dolor sit amet consectetur...</Typography> */}
+                              <Typography variant="body2" width={"60%"}>Lorem ipsum dolor sit amet consectetur.ipsum dolor sit amet consectetur.</Typography>
+                            </Box>
+                            <Link style={{cursor: "pointer"}}>Edit</Link>
+                          </Box>
+                          <Link href="#">View Location</Link>
+                        </Box>
+                      </Box>
+                    </AccordionDetails>
+                  </Accordion>
+
+                  <Accordion>
+                    <AccordionSummary
+                      expandIcon={<ExpandMoreIcon />}
+                      aria-controls="panel3a-content"
+                      id="panel3a-header"
+                      sx={{ backgroundColor: "#E4F4D9" }}
+                    >
+                      <Typography variant="h6">More info</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <Box my={2}>
+                        {/* Third Section */}
+                        <Box display="flex" flexDirection="column" gap={2}>
+                          <Box display="flex" justifyContent="space-between">
+                            <Box display="flex" justifyContent="space-between" width={"80%"}
+                              sx={{
+                                flexDirection: {
+                                  xs: 'column',
+                                  sm: 'row'
+                                }
+                              }}
+                            >
+                              <Typography variant="body2" fontWeight="bold">Charger Name/ID:</Typography>
+                              <Typography variant="body2" width={"60%"}>Offline</Typography>
+                            </Box>
+                            <Link style={{cursor: "pointer"}}>Edit</Link>
+                          </Box>
+                          <Box display="flex" justifyContent="space-between">
+                            <Box display="flex" justifyContent="space-between" width={"80%"}
+                              sx={{
+                                flexDirection: {
+                                  xs: 'column',
+                                  sm: 'row'
+                                }
+                              }}
+                            >
+                              <Typography variant="body2" fontWeight="bold">Charger Type:</Typography>
+                              <Typography variant="body2" width={"60%"}>Lorem ipsum</Typography>
+                            </Box>
+                            <Link style={{cursor: "pointer"}}>Edit</Link>
+                          </Box>
+                          <Box display="flex" justifyContent="space-between" >
+                            <Box display="flex" justifyContent="space-between" width={"80%"}
+                              sx={{
+                                flexDirection: {
+                                  xs: 'column',
+                                  sm: 'row'
+                                }
+                              }}
+                            >
+                              <Typography variant="body2" fontWeight="bold">Charger Power:</Typography>
+                              <Typography variant="body2" width={"60%"}>5 sec</Typography>
+                            </Box>
+                            <Link style={{cursor: "pointer"}}>Edit</Link>
+                          </Box>
+                          <Box display="flex" justifyContent="space-between">
+                            <Box display="flex" justifyContent="space-between" width={"80%"}
+                              sx={{
+                                flexDirection: {
+                                  xs: 'column',
+                                  sm: 'row'
+                                }
+                              }}
+                            >
+                              <Typography variant="body2" fontWeight="bold">Make:</Typography>
+                              <Typography variant="body2" width={"60%"}>Lorem ipsum</Typography>
+                            </Box>
+                            <Link style={{cursor: "pointer"}}>Edit</Link>
+                          </Box>
+                          <Box display="flex" justifyContent="space-between">
+                            <Box display="flex" justifyContent="space-between" width={"80%"}
+                              sx={{
+                                flexDirection: {
+                                  xs: 'column',
+                                  sm: 'row'
+                                }
+                              }}
+                            >
+                              <Typography variant="body2" fontWeight="bold">Model:</Typography>
+                              <Typography variant="body2" width={"60%"}>Lorem ipsum</Typography>
+                            </Box>
+                            <Link style={{cursor: "pointer"}}>Edit</Link>
+                          </Box>
+                          <Box display="flex" justifyContent="space-between">
+                            <Box display="flex" justifyContent="space-between" width={"80%"}
+                              sx={{
+                                flexDirection: {
+                                  xs: 'column',
+                                  sm: 'row'
+                                }
+                              }}
+                            >
+                              <Typography variant="body2" fontWeight="bold">OCPP Version:</Typography>
+                              <Typography variant="body2" width={"60%"}>5 sec</Typography>
+                            </Box>
+                            <Link style={{cursor: "pointer"}}>Edit</Link>
+                          </Box>
+                          <Box display="flex" justifyContent="space-between">
+                            <Box display="flex" justifyContent="space-between" width={"80%"}
+                              sx={{
+                                flexDirection: {
+                                  xs: 'column',
+                                  sm: 'row'
+                                }
+                              }}
+                            >
+                              <Typography variant="body2" fontWeight="bold">Firmware Version:</Typography>
+                              <Typography variant="body2" width={"60%"}>Lorem ipsum</Typography>
+                            </Box>
+                            <Link style={{cursor: "pointer"}}>Edit</Link>
+                          </Box>
+                          <Box display="flex" justifyContent="space-between">
+                            <Box display="flex" justifyContent="space-between" width={"80%"}
+                              sx={{
+                                flexDirection: {
+                                  xs: 'column',
+                                  sm: 'row'
+                                }
+                              }}
+                            >
+                              <Typography variant="body2" fontWeight="bold">Serial Number:</Typography>
+                              <Typography variant="body2" width={"60%"}>Lorem ipsum</Typography>
+                            </Box>
+                            <Link style={{cursor: "pointer"}}>Edit</Link>
+                          </Box>
+                        </Box>
+                      </Box>
+                    </AccordionDetails>
+                  </Accordion>
                 </Grid>
-              </Paper>
-            </Grid> */}
-
-
+              </Box>
+            </Grid>
+            <Grid item xs={12} sm={4} sx={{ my: 4, textAlign: 'right' }}>
+              <Link href="#" sx={{textDecoration: 'underlined !important'}}>Activity log</Link>
+            </Grid>
           </Grid>
         </Box>
       </Container>

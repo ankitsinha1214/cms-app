@@ -63,7 +63,7 @@ const MapComponent = ({ locations }) => {
   const API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
 
 
-  // Trigger map load after locations1 is set
+  // Trigger map load after locations is set
   useEffect(() => {
     if (mapInstance && locations1.length > 0) {
       handleMapLoad(mapInstance);
@@ -104,8 +104,22 @@ const MapComponent = ({ locations }) => {
     });
     console.log("Markers created:", markers);
     setIsMapLoaded(true);
-    new MarkerClusterer({ map, markers });
-
+    // Define custom cluster styles
+    const clusterStyles = [
+      {
+        textColor: 'white', // Cluster text color
+        url: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m1.png',
+        height: 50,
+        width: 50,
+        anchorText: [-10, 0],
+        backgroundColor: 'green',
+      },
+    ];
+    new MarkerClusterer({
+      map,
+      markers,
+      // styles: clusterStyles
+    });
   };
 
   const handleMarkerClick = (location) => {

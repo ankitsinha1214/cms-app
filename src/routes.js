@@ -53,6 +53,7 @@ import ViewChargerandDcbox from "layouts/charger_and_dcbox_mgmt/ViewChargerandDc
 import Pre_delivery_mgmt from "layouts/pre_delivery_mgmt";
 import ViewPreDelivery from "layouts/pre_delivery_mgmt/ViewPreDelivery";
 import User_service_maintenace_mgmt from "layouts/user_service_maintenace_mgmt";
+import Reports from "layouts/reports";
 import Notification_service_maintenace_mgmt from "layouts/notification_service_maintenance";
 import EvStationIcon from '@mui/icons-material/EvStation';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
@@ -241,11 +242,19 @@ export const superAdminRoutes = [
   {
     type: "collapse",
     name: "Reports",
-    key: "profile",
+    key: "reports",
     icon: <TextSnippetIcon />,
-    route: "/profile",
-    component: <Profile />,
+    route: "/reports",
+    component: <Reports />,
   },
+  // {
+  //   type: "collapse",
+  //   name: "Reports",
+  //   key: "profile",
+  //   icon: <TextSnippetIcon />,
+  //   route: "/profile",
+  //   component: <Profile />,
+  // },
   // {
   //   type: "collapse",
   //   name: "Sign Up",
