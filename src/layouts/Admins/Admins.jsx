@@ -5,16 +5,22 @@ import { useSelector } from "react-redux";
 import { useSnackbar } from "notistack";
 import axios from "axios";
 // Material components
+import PopAddBasic from "./PopAddBasic";
 import MDLoading from "components/MDLoading/MDLoading";
 import MDTypography from "components/MDTypography";
 import MDButton from "components/MDButton";
 import MDInput from "components/MDInput";
 import MDBox from "components/MDBox";
+import { useMaterialUIController } from "context";
 
+import { format } from 'date-fns';
+import { toZonedTime } from 'date-fns-tz';
 // Material example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 // import DataTable from "examples/Tables/DataTable";
+import Loader from "components/custom/Loader";
+import { MaterialReactTable } from 'material-react-table';
 
 // ICONS
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -22,17 +28,53 @@ import EditIcon from "@mui/icons-material/Edit";
 
 function Admin() {
     useEffect(() => {
-      if (
-        localStorage.getItem("login_status") !== "true"
-      ) {
-        navigate("/sign-in");
-      }
+        if (localStorage.getItem("login_status") !== "true") {
+            navigate("/sign-in");
+        }
+        axios({
+            method: "get",
+            url: process.env.REACT_APP_BASEURL + "user-service-and-maintenance",
+            headers: {
+                "Authorization": `Bearer ${localStorage.getItem("token")}`
+            },
+        })
+            .then((response) => {
+                if (response.data.success === true) {
+                    const filteredUsers = response.data.data.filter(user => {
+                        const excludedRoles = ['User', 'Manager']; 
+                        return !excludedRoles.includes(user.role); // Filters out users with the specified roles
+                    });
+                    setRows(filteredUsers);
+                    // setRows(response.data.data);
+                    setIsLoading(false);
+                } else {
+                    enqueueSnackbar(response.data.message, { variant: 'error' });
+                    setIsLoading(false);
+                    // console.log("status is false ");
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+            });
     }, []);
+  const [controller] = useMaterialUIController();
+  const { darkMode } = controller;
     const { auth } = useSelector(s => s.user.userData)
     const { enqueueSnackbar } = useSnackbar();
+    const [rows, setRows] = useState([]);
     const navigate = useNavigate();
-
-    const [loading, setLoading] = useState(false);
+    const getValues1 = () => {
+        return {
+            username: "",
+            password: "",
+            company: "",
+            department: ""
+        };
+    };
+    const [isDisabled, setIsDisabled] = useState(false);
+    const [columns, setColumns] = useState([]);
+    const [values1, setValues1] = useState(getValues1);
+    const [isLoading, setIsLoading] = useState(true);
     const [deleteLoading, setDeleteLoading] = useState(false);
 
     const [allUsers, setAllUsers] = useState([])
@@ -42,28 +84,12 @@ function Admin() {
     const [openDialog, setOpenDialog] = useState(false);
     const [editLoading, setEditLoading] = useState(false);
     const [dialogEditData, setDialogEditData] = useState({ user_id: null, name: '' });
-
-    // useEffect(() => {
-    //     fetchAllUsers();
-    // }, [])
-
-    // const fetchAllUsers = async () => {
-    //     setLoading(true);
-    //     await axios.get(`${process.env.REACT_APP_BASEURL}/admin/users/all-admins`, { headers: { Authorization: `Bearer ${auth}` } })
-    //         .then(res => {
-    //             if (!res.data?.success) return enqueueSnackbar('Error Fetching Areas !!!', { variant: 'error' })
-
-    //             createTableRowData(res.data.users);
-    //             setAllUsers(res.data.users);
-    //             setLoading(false);
-    //         })
-    //         .catch(err => {
-    //             console.log(err);
-    //             setLoading(false);
-    //             enqueueSnackbar('Error Fetching Areas !!!', { variant: 'error' })
-    //         })
-    // }
-
+  // Function to convert UTC to IST and format it
+  const convertUTCtoIST = (utcDate) => {
+    const timeZone = 'Asia/Kolkata'; // IST time zone
+    const zonedDate = toZonedTime(new Date(utcDate), timeZone); // Convert UTC to IST
+    return format(zonedDate, 'yyyy-MM-dd HH:mm:ss'); // Format the date as desired
+  };
     const createTableRowData = (usersArr) => {
         const rowDataObjArr = [];
 
@@ -137,62 +163,227 @@ function Admin() {
     };
 
     const onUpdate = async () => {
-    //     setEditLoading(true);
-    //     const body = { ...dialogEditData }
+        //     setEditLoading(true);
+        //     const body = { ...dialogEditData }
 
-    //     await axios.put(`${process.env.REACT_APP_BASEURL}/admin/users/update-admin`, body, {
-    //         headers: { Authorization: `Bearer ${auth}` }
-    //     })
-    //         .then(res => {
-    //             if (res.data?.success) {
-    //                 const updateIndex = allUsers?.findIndex(u => u.user_id === body.user_id)
-    //                 if (updateIndex === -1) return enqueueSnackbar('Error Admin Not Found !!!', { variant: 'error' })
+        //     await axios.put(`${process.env.REACT_APP_BASEURL}/admin/users/update-admin`, body, {
+        //         headers: { Authorization: `Bearer ${auth}` }
+        //     })
+        //         .then(res => {
+        //             if (res.data?.success) {
+        //                 const updateIndex = allUsers?.findIndex(u => u.user_id === body.user_id)
+        //                 if (updateIndex === -1) return enqueueSnackbar('Error Admin Not Found !!!', { variant: 'error' })
 
-    //                 const allUsersArrTemp = [...allUsers];
-    //                 const userObj = { ...allUsers[updateIndex], name: body.name }
-    //                 allUsersArrTemp[updateIndex] = userObj;
+        //                 const allUsersArrTemp = [...allUsers];
+        //                 const userObj = { ...allUsers[updateIndex], name: body.name }
+        //                 allUsersArrTemp[updateIndex] = userObj;
 
-    //                 setAllUsers(allUsersArrTemp);
-    //                 createTableRowData(allUsersArrTemp);
-    //                 enqueueSnackbar('Admin Updated Successfully !!!', { variant: 'success' })
-    //             } else {
-    //                 enqueueSnackbar('Error Updating Admin !!!', { variant: 'error' })
-    //             }
+        //                 setAllUsers(allUsersArrTemp);
+        //                 createTableRowData(allUsersArrTemp);
+        //                 enqueueSnackbar('Admin Updated Successfully !!!', { variant: 'success' })
+        //             } else {
+        //                 enqueueSnackbar('Error Updating Admin !!!', { variant: 'error' })
+        //             }
 
-    //             setOpenDialog(false);
-    //             setEditLoading(false);
-    //         })
-    //         .catch(err => {
-    //             console.log(err);
-    //             setLoading(false);
-    //             setEditLoading(false);
-    //             enqueueSnackbar('Error Updating Admin !!!', { variant: 'error' })
-    //         })
+        //             setOpenDialog(false);
+        //             setEditLoading(false);
+        //         })
+        //         .catch(err => {
+        //             console.log(err);
+        //             setLoading(false);
+        //             setEditLoading(false);
+        //             enqueueSnackbar('Error Updating Admin !!!', { variant: 'error' })
+        //         })
     }
-
-    const columns = [
-        { Header: "Name", accessor: "name", width: '30%' },
-        { Header: "Email", accessor: "email" },
+    const column = [
+        // {
+        //   header: "Status",
+        //   size: 200,
+        //   filterVariant: 'select',
+        //   filterSelectOptions: statusList,
+        //   muiTableHeadCellProps: {
+        //     align: 'center',
+        //     style: { width: '200px !important' },
+        //   },
+        //   muiTableBodyCellProps: {
+        //     align: 'center',
+        //     style: { width: '200px !important' },
+        //   }, accessorKey: "status",
+        //   align: "center",
+        //   fixed: "true",
+        //   Cell: (row) => (
+        //     <div>
+        //       {(row.row.original.status === "Inactive") ?
+        //         <CircleIcon style={{ color: "#DA1E28" }} />
+        //         :
+        //         (row.row.original.status === "Active") ?
+        //           <CircleIcon style={{ color: "#198038" }} />
+        //           :
+        //           <CircleIcon style={{ color: "#198038" }} />
+        //       }
+        //     </div>
+        //   ),
+        // },
         {
-            Header: "Action",
-            accessor: "action",
-            align: "center",
-            width: '10%',
-            Cell: (row) => (
-                <div>
-                    <MDButton onClick={(e) => onDeleteClick(row)} variant="gradient" color="info" style={{ minWidth: 'unset', padding: '2px 12px' }} >
-                        <DeleteIcon />
-                    </MDButton >
-
-                    <MDButton onClick={(e) => onEditClick(row)} variant="gradient" color="info" iconOnly sx={{ marginLeft: 1 }} >
-                        <EditIcon />
-                    </MDButton>
-                </div >
-            ),
+          header: "Name", muiTableHeadCellProps: {
+            align: 'center',
+          },
+          muiTableBodyCellProps: {
+            align: 'center',
+          }, accessorKey: "name", align: "center"
         },
-    ]
+        {
+          header: "Username", muiTableHeadCellProps: {
+            align: 'center',
+          },
+          muiTableBodyCellProps: {
+            align: 'center',
+          }, accessorKey: "username", align: "center"
+        },
+        {
+          header: "Email", muiTableHeadCellProps: {
+            align: 'center',
+          },
+          muiTableBodyCellProps: {
+            align: 'center',
+          }, accessorKey: "email", align: "center"
+        },
+        {
+          header: "Company", muiTableHeadCellProps: {
+            align: 'center',
+          },
+          muiTableBodyCellProps: {
+            align: 'center',
+          }, accessorKey: "company", align: "center"
+        },
+        {
+          header: "Department", muiTableHeadCellProps: {
+            align: 'center',
+          },
+          muiTableBodyCellProps: {
+            align: 'center',
+          }, accessorKey: "department", align: "center"
+        },
+        {
+          header: "Phone", align: "center", filterVariant: 'text',
+          muiTableHeadCellProps: {
+            align: 'center',
+          },
+          muiTableBodyCellProps: {
+            align: 'center',
+          },
+          Cell: (row) => (
+            <div>
+              {`${row.row.original.phone?.prefix} ${row.row.original.phone?.number}`}
+            </div>
+          ),
+        },
+        {
+          header: "Created At",
+          muiTableHeadCellProps: { align: 'center' },
+          muiTableBodyCellProps: { align: 'center' },
+          accessorKey: "createdAt",
+          Cell: ({ cell }) => {
+            return convertUTCtoIST(cell.getValue());
+          },
+          align: "center",
+        },
+        // {
+        //   header: "Action",
+        //   enableColumnFilter: false,
+        //   muiTableHeadCellProps: {
+        //     align: 'center',
+        //   },
+        //   muiTableBodyCellProps: {
+        //     align: 'center',
+        //   }, accessorKey: "action",
+        //   align: "center",
+        //   Cell: (row) => (
+        //     // row.row.depth === 0 ? (
+        //     <div style={{
+        //       position: 'sticky',
+        //       right: '0',
+        //       zIndex: '111',
+        //     }}>
+        //       <MDButton
+        //         onClick={(e) => handleEdit(row.row.original)}
+        //         // onClick={showModal}
+        //         variant="gradient"
+        //         color="info"
+        //         iconOnly
+        //       >
+        //         <EditIcon />
+        //       </MDButton>
+        //       {
+        //         (row.row.original.status === "Inactive") ?
+        //           <Tooltip title="Activate This User">
+        //             <MDButton
+        //               sx={{
+        //                 marginLeft: 2,
+        //               }}
+        //               onClick={(e) => handleDelete(row.row.original)}
+        //               variant="gradient"
+        //               // color="info"
+        //               color="success"
+        //               iconOnly
+        //             >
+        //               <AccountCircleIcon />
+        //             </MDButton>
+        //           </Tooltip>
+        //           :
+        //           <Tooltip title="Deactivate This User">
+        //             <MDButton
+        //               sx={{
+        //                 marginLeft: 2,
+        //               }}
+        //               onClick={(e) => handleDelete(row.row.original)}
+        //               variant="gradient"
+        //               // color="info"
+        //               color="error"
+        //               iconOnly
+        //             >
+        //               <NoAccountsIcon />
+        //             </MDButton>
+        //           </Tooltip>
+        //       }
+        //       {/* <DeleteIcon /> */}
+        //     </div>
+        //     // ) : null
+        //   ),
+        // },
+      ];
+    // const columns = [
+    //     { Header: "Name", accessor: "name", width: '30%' },
+    //     { Header: "Email", accessor: "email" },
+    //     {
+    //         Header: "Action",
+    //         accessor: "action",
+    //         align: "center",
+    //         width: '10%',
+    //         Cell: (row) => (
+    //             <div>
+    //                 <MDButton onClick={(e) => onDeleteClick(row)} variant="gradient" color="info" style={{ minWidth: 'unset', padding: '2px 12px' }} >
+    //                     <DeleteIcon />
+    //                 </MDButton >
+
+    //                 <MDButton onClick={(e) => onEditClick(row)} variant="gradient" color="info" iconOnly sx={{ marginLeft: 1 }} >
+    //                     <EditIcon />
+    //                 </MDButton>
+    //             </div >
+    //         ),
+    //     },
+    // ]
+    useEffect(() => {
+        setColumns(column);
+      }, []);
     return (
         <DashboardLayout>
+            <PopAddBasic
+                isDialog={isDisabled}
+                onClose={setIsDisabled}
+                value={values1}
+            // onHandleChange={handleChange}
+            />
             <DashboardNavbar hidebreadcrumbTitle />
             <MDBox pt={3} pb={3}>
                 <Grid container spacing={6}>
@@ -203,11 +394,15 @@ function Admin() {
                             >
                                 <Grid container direction="row" justifyContent="space-between" alignItems="center">
                                     <MDTypography variant="h6" color="white">
-                                        Admin Table
+                                        All Admins
                                     </MDTypography>
 
                                     <MDBox className="admin_btnsHeaderCont">
-                                        <MDButton onClick={() => navigate('/admins/create')} variant="outlined" color="white">
+                                        <MDButton
+                                            // onClick={() => navigate('/admins/create')} 
+                                            onClick={() => setIsDisabled(!isDisabled)}
+                                            variant="outlined"
+                                            color="white">
                                             Add Admin
                                         </MDButton>
                                     </MDBox>
@@ -226,6 +421,90 @@ function Admin() {
                                     />
                                 )}
                             </MDBox> */}
+                            {isLoading ? (
+                                <Loader />
+                            ) : (<MaterialReactTable
+                                columns={columns}
+                                data={rows}
+                                initialState={{ showColumnFilters: true }}
+                                muiTableProps={{
+                                    sx: darkMode ?
+                                        {
+                                            backgroundColor: "#202940", color: "#ffffff",
+                                            '& td': {
+                                                fontFamily: "Montserrat",
+                                                fontSize: "14px",
+                                                fontWeight: "500",
+                                                lineHeight: "17.07px",
+                                                color: "#ffffff"
+                                                // backgroundColor: '#f5f5f5',
+                                            },
+                                        } :
+                                        {
+                                            '& td': {
+                                                fontFamily: "Montserrat",
+                                                fontSize: "14px",
+                                                fontWeight: "500",
+                                                lineHeight: "17.07px",
+                                                backgroundColor: '#f5f5f5',
+                                            },
+                                        },
+                                }}
+                                muiTopToolbarProps={{
+                                    sx: darkMode ?
+                                        {
+                                            color: "#ffffff",
+                                            '& svg': {
+                                                fontFamily: "Montserrat",
+                                                fontSize: "14px",
+                                                fontWeight: "500",
+                                                lineHeight: "17.07px",
+                                                color: "#ffffff"
+                                                // backgroundColor: '#f5f5f5',
+                                            },
+                                        } : {
+                                            backgroundColor: '#f5f5f5',
+                                        }
+                                }}
+                                muiTableHeadCellProps={{
+                                    sx: darkMode ?
+                                        {
+                                            color: "#ffffff",
+                                            '& svg': {
+                                                fontFamily: "Montserrat",
+                                                fontSize: "14px",
+                                                fontWeight: "500",
+                                                lineHeight: "17.07px",
+                                                color: "#ffffff"
+                                                // backgroundColor: '#f5f5f5',
+                                            },
+                                        } : {
+                                            backgroundColor: '#f5f5f5',
+                                        }
+                                }}
+                                muiBottomToolbarProps={{
+                                    sx: darkMode ?
+                                        {
+                                            color: "#ffffff",
+                                            '& p,button,div': {
+                                                fontFamily: "Montserrat",
+                                                // fontSize : "14px",
+                                                fontWeight: "500",
+                                                lineHeight: "17.07px",
+                                                color: "#ffffff"
+                                                // backgroundColor: '#f5f5f5',
+                                            },
+                                        } : {
+                                            backgroundColor: '#f5f5f5',
+                                        }
+                                }}
+                                muiTableBodyCellProps={{
+                                    sx: {
+                                        borderBottom: '2px solid #e0e0e0', //add a border between columns
+
+                                    },
+                                }}
+                            />)}
                         </Card>
                     </Grid>
                 </Grid>

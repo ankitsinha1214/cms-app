@@ -84,7 +84,12 @@ function User_service_maintenace_mgmt() {
     })
       .then((response) => {
         if (response.data.success === true) {
-          setRows(response.data.data);
+          const filteredUsers = response.data.data.filter(user => {
+            const excludedRoles = ['Admin', 'Manager']; 
+            return !excludedRoles.includes(user.role); // Filters out users with the specified roles
+          });
+          setRows(filteredUsers);
+          // setRows(response.data.data);
           setIsLoading(false);
         } else {
           enqueueSnackbar(response.data.message, { variant: 'error' });
