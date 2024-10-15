@@ -35,30 +35,56 @@ const Reports = () => {
         const payload = {
             "fromDate": isoDate,
             "toDate": isoDate1,
-            "type": type,
+            "filter": type,
         };
         axios({
             method: "post",
             url: process.env.REACT_APP_BASEURL + "reports/generate-report",
             data: payload, // JSON payload
+            responseType: "blob", 
             headers: {
                 "Content-Type": "application/json", // Set the Content-Type header
             },
         })
             .then((response) => {
                 console.log(response);
-
-                if (response.data.success === true) {
-                    console.log(response);
-                    setIsDisabled(!isDisabled)
-                } else {
-                    enqueueSnackbar(response.data.message, { variant: 'error' })
-                    // window.location.reload();
+                const contentDisposition = response.headers['content-disposition'];
+                let fileName = 'report.xlsx'; // Default file name
+        
+                // Extract file name from content-disposition header if available
+                if (contentDisposition) {
+                    const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
+                    if (fileNameMatch.length === 2) fileName = fileNameMatch[1];
                 }
+        
+                // Create a new Blob object using the response data
+                const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', fileName); // Set filename for download
+                document.body.appendChild(link);
+                link.click();
+                link.remove(); // Clean up after download
+                // if (response.data.success === true) {
+                // if (response.data) {
+                //     console.log(response);
+                //     const url = window.URL.createObjectURL(new Blob([response.data])); // Create blob URL
+                //     const link = document.createElement('a');
+                //     link.href = url;
+                //     link.setAttribute('download', 'report.xlsx'); // Set the desired file name
+                //     document.body.appendChild(link);
+                //     link.click(); // Programmatically click the link to trigger the download
+                //     link.remove(); // Clean up after download
+                //     setIsDisabled(!isDisabled)
+                // } else {
+                //     enqueueSnackbar(response.data.message, { variant: 'error' })
+                //     // window.location.reload();
+                // }
             })
             .catch((error) => {
                 console.log(error);
-                enqueueSnackbar(error.response.data.message, { variant: 'error' })
+                // enqueueSnackbar(error.response.data.message, { variant: 'error' })
                 // alert("Error Occured! " + error);
                 // window.location.reload();
             });
@@ -73,17 +99,17 @@ const Reports = () => {
                     <Grid item xs={12}>
                         <MDBox my={4} mx={4}>
                             <Typography.Title level={5}>Time Range</Typography.Title>
-                            <RangePicker 
-                            showTime={{
-                                format: 'HH:mm:ss',
-                            }}
-                            size="large"
-                            format="YYYY-MM-DD HH:mm:ss"
-                            onChange={(value, dateString) => {
-                                console.log('Formatted Selected Time: ', dateString);
-                                setFromDate(dateString[0]);
-                                setToDate(dateString[1]);
-                              }}
+                            <RangePicker
+                                showTime={{
+                                    format: 'HH:mm:ss',
+                                }}
+                                size="large"
+                                format="YYYY-MM-DD HH:mm:ss"
+                                onChange={(value, dateString) => {
+                                    console.log('Formatted Selected Time: ', dateString);
+                                    setFromDate(dateString[0]);
+                                    setToDate(dateString[1]);
+                                }}
                             />
                         </MDBox>
                         <FormControl fullWidth>
@@ -100,16 +126,16 @@ const Reports = () => {
                                 onChange={handleTypeChange}
                                 input={<OutlinedInput label="Type" />}
                             >
-                                <MenuItem value={"Users"}>Users</MenuItem>
-                                <MenuItem value={"Locations"}>Locations</MenuItem>
-                                <MenuItem value={"Chargers"}>Chargers</MenuItem>
+                                <MenuItem value={"users"}>Users</MenuItem>
+                                <MenuItem value={"locations"}>Locations</MenuItem>
+                                <MenuItem value={"chargers"}>Chargers</MenuItem>
                             </Select>
                         </FormControl>
                     </Grid>
 
                     {/* Submit Button */}
                     <Grid item xs={12}>
-                        <Button type="submit" variant="contained" color="primary" fullWidth style={{color:"white", cursor:"pointer"}}>
+                        <Button type="submit" variant="contained" color="primary" fullWidth style={{ color: "white", cursor: "pointer" }}>
                             Submit
                         </Button>
                     </Grid>

@@ -9,6 +9,7 @@ import MDTypography from "components/MDTypography";
 import './EnergyCard.css';
 import React, { useState, useEffect } from "react";
 import MDButton from "components/MDButton";
+import Loader from "components/custom/Loader";
 import { useNavigate } from "react-router-dom";
 // Material Dashboard 2 React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
@@ -32,6 +33,10 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import CircleIcon from '@mui/icons-material/Circle';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ComplexStatisticsCard from "examples/Cards/StatisticsCards/ComplexStatisticsCard1";
+import { useSnackbar } from "notistack";
+import { DownOutlined } from '@ant-design/icons';
+import { Dropdown, Space } from 'antd';
+
 function Charger_mgmt() {
   // const navigate = useNavigate();
   // useEffect(() => {
@@ -44,8 +49,11 @@ function Charger_mgmt() {
   // const { columns, rows } = authorsTableData();
   // const { columns: pColumns, rows: pRows } = projectsTableData();
   const [isDisabled2, setIsDisabled2] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isDisabled, setIsDisabled] = useState(false);
+  const [selected, setSelected] = useState("All Chargers");
   const [columns, setColumns] = useState([]);
+  const { enqueueSnackbar } = useSnackbar();
   const statusList = [
     'Inactive',
     'Available',
@@ -53,81 +61,132 @@ function Charger_mgmt() {
   ];
   const [controller] = useMaterialUIController();
   const { darkMode } = controller;
-  const rows = [
+
+  const [rows, setRows] = useState([]);
+  const onClick = ({ key }) => {
+    console.log(`Click on item ${key}`);
+    console.log(key);
+    if(key === '0'){
+      handleDropdownSelect('All Chargers');
+    }
+    else{
+      handleDropdownSelect('All Transactions');
+    }
+  };
+  const items = [
     {
-      "charger_id": "CH001AC",
-      "status": "Inactive",
-      "c_type": "Malls",
-      "location": "HSR layout",
-      "l_type": "Toyota",
-      "last_ping": "18:20, 29-02-2023",
-      "state": "California",
-      "city": "Los Angeles",
-      "energy_disp": "2500 kWh",
-      "charger_type":"AC Charger"
+      label: 'All Chargers',
+      key: '0',
+    },
+    // {
+    //   label: <a href="https://www.aliyun.com">2nd menu item</a>,
+    //   key: '1',
+    // },
+    {
+      type: 'divider',
     },
     {
-      "charger_id": "CH001DC",
-      "status": "Available",
-      "c_type": "Highways",
-      "location": "Orion Mall",
-      "l_type": "Malls",
-      "last_ping": "18:20, 24-02-2023",
-      "state": "New York",
-      "city": "New York City",
-      "energy_disp": "300 kWh",
-      "charger_type":"AC Charger"
+      label: 'All Transactions',
+      key: '2',
     },
-    {
-      "charger_id": "Ankit",
-      "status": "Inuse",
-      "c_type": "Malls",
-      "location": "MCC- Kanakpura rd ",
-      "l_type": "Malls",
-      "last_ping": "18:20, 24-02-2023",
-      "state": "New York",
-      "city": "New York City",
-      "energy_disp": "300 kWh",
-      "charger_type":"AC Charger"
-    },
-    {
-      "charger_id": "CH001DC",
-      "status": "Available",
-      "c_type": "Highways",
-      "location": "MCC- Kanakpura rd ",
-      "l_type": "Malls",
-      "last_ping": "18:20, 24-02-2023",
-      "state": "New York",
-      "city": "New York City",
-      "energy_disp": "300 kWh",
-      "charger_type":"AC Charger"
-    },
-    {
-      "charger_id": "CH001DC",
-      "status": "Available",
-      "c_type": "Highways",
-      "location": "MCC- Kanakpura rd ",
-      "l_type": "Malls",
-      "last_ping": "18:20, 24-02-2023",
-      "state": "New York",
-      "city": "New York City",
-      "energy_disp": "300 kWh",
-      "charger_type":"AC Charger"
-    },
-    {
-      "charger_id": "CH001DC",
-      "status": "Inactive",
-      "c_type": "Highways",
-      "location": "Hosur",
-      "l_type": "Malls",
-      "last_ping": "18:20, 24-02-2023",
-      "state": "New York",
-      "city": "New York City",
-      "energy_disp": "300 kWh",
-      "charger_type":"AC Charger"
-    },
-    // ...more rows
   ];
+  useEffect(() => {
+    if (
+      localStorage.getItem("login_status") !== "true"
+    ) {
+      navigate("/sign-in");
+    }
+    axios({
+      method: "get",
+      url: process.env.REACT_APP_BASEURL + "charger-locations/chargers/all",
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`
+      },
+    })
+      .then((response) => {
+        if (response.data.success === true) {
+          // const filteredUsers = response.data.data.filter(user => {
+          // });
+          const transformedData = response.data.data.flatMap(location =>
+            location.chargerInfo.map(charger => ({
+              status: charger.status,
+              charger_id: charger.name,
+              // charger_id: charger._id,
+              c_type: `${charger.type}`,
+              location: location.locationName,
+              l_type: location.locationType,
+              city: location.city,
+              state: location.state,
+              energy_disp: charger.energyConsumptions,
+              last_ping: "N/A" // Placeholder if you want to add last ping data
+            }))
+          );
+          console.log(transformedData)
+          setRows(transformedData);
+          // setRows(response.data.data);
+          setIsLoading(false);
+        } else {
+          enqueueSnackbar(response.data.message, { variant: 'error' });
+          setIsLoading(false);
+          // console.log("status is false ");
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+  const handleDropdownSelect = (selectedValue) => {
+    setSelected(selectedValue);
+    console.log(selectedValue);
+    if (selectedValue === "All Chargers") {
+      // Fetch or filter all chargers data
+      fetchAllChargers();
+    } else if (selectedValue === "All Transactions") {
+      // Fetch or filter all transactions data
+      // fetchAllTransactions();
+    }
+  };
+  const fetchAllChargers = () => {
+    axios.get(process.env.REACT_APP_BASEURL + "charger-locations/chargers/all", {
+      headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
+    }).then((response) => {
+      if (response.data.success) {
+        const transformedData = response.data.data.flatMap(location =>
+          location.chargerInfo.map(charger => ({
+            status: charger.status,
+            charger_id: charger.name,
+            c_type: `${charger.type}`,
+            location: location.locationName,
+            l_type: location.locationType,
+            city: location.city,
+            state: location.state,
+            energy_disp: charger.energyConsumptions,
+            last_ping: "N/A"
+          }))
+        );
+        setRows(transformedData);
+      } else {
+        enqueueSnackbar(response.data.message, { variant: 'error' });
+      }
+    }).catch(error => {
+      console.error(error);
+    });
+  };
+
+  const fetchAllTransactions = () => {
+    axios.get(process.env.REACT_APP_BASEURL + "transactions/all", {
+      headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
+    }).then((response) => {
+      if (response.data.success) {
+        setRows(response.data.data);  // Assuming transactions data can be mapped similarly
+      } else {
+        enqueueSnackbar(response.data.message, { variant: 'error' });
+      }
+    }).catch(error => {
+      console.error(error);
+    });
+  };
+
   const column = [
     {
       header: "Status",
@@ -135,7 +194,7 @@ function Charger_mgmt() {
       filterVariant: 'select',
       filterSelectOptions: statusList,
       align: "center",
-      fixed: "true",muiTableHeadCellProps: {
+      fixed: "true", muiTableHeadCellProps: {
         align: 'center',
       },
       muiTableBodyCellProps: {
@@ -157,59 +216,75 @@ function Charger_mgmt() {
         </div>
       ),
     },
-    { header: "Charger ID", accessorKey: "charger_id", align: "center",muiTableHeadCellProps: {
+    {
+      header: "Charger ID", accessorKey: "charger_id", align: "center", muiTableHeadCellProps: {
         align: 'center',
       },
       muiTableBodyCellProps: {
         align: 'center',
-      }, },
-    { header: "C type", accessorKey: "c_type", align: "center",muiTableHeadCellProps: {
-        align: 'center',
       },
-      muiTableBodyCellProps: {
-        align: 'center',
-      }, },
-    { header: "Location", accessorKey: "location", align: "center",muiTableHeadCellProps: {
-        align: 'center',
-      },
-      muiTableBodyCellProps: {
-        align: 'center',
-      }, },
-    { header: "L Type", accessorKey: "l_type", align: "center",muiTableHeadCellProps: {
-        align: 'center',
-      },
-      muiTableBodyCellProps: {
-        align: 'center',
-      }, },
-    { header: "City", accessorKey: "city", align: "center",muiTableHeadCellProps: {
-        align: 'center',
-      },
-      muiTableBodyCellProps: {
-        align: 'center',
-      }, },
-    { header: "State", accessorKey: "state", align: "center",muiTableHeadCellProps: {
-      align: 'center',
     },
-    muiTableBodyCellProps: {
-      align: 'center',
-    }, },
-    { header: "Energy disp", accessorKey: "energy_disp", align: "center" ,muiTableHeadCellProps: {
+    {
+      header: "C type", accessorKey: "c_type", align: "center", muiTableHeadCellProps: {
         align: 'center',
       },
       muiTableBodyCellProps: {
         align: 'center',
-      },},
-    { header: "Last ping", accessorKey: "last_ping", align: "center",muiTableHeadCellProps: {
+      },
+    },
+    {
+      header: "Location", accessorKey: "location", align: "center", muiTableHeadCellProps: {
         align: 'center',
       },
       muiTableBodyCellProps: {
         align: 'center',
-      }, },
+      },
+    },
+    {
+      header: "L Type", accessorKey: "l_type", align: "center", muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      },
+    },
+    {
+      header: "City", accessorKey: "city", align: "center", muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      },
+    },
+    {
+      header: "State", accessorKey: "state", align: "center", muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      },
+    },
+    {
+      header: "Energy disp", accessorKey: "energy_disp", align: "center", muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      },
+    },
+    {
+      header: "Last ping", accessorKey: "last_ping", align: "center", muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      },
+    },
     {
       header: "Action",
       accessorKey: "action",
       enableColumnFilter: false,
-      align: "center",muiTableHeadCellProps: {
+      align: "center", muiTableHeadCellProps: {
         align: 'center',
       },
       muiTableBodyCellProps: {
@@ -301,12 +376,12 @@ function Charger_mgmt() {
   };
   return (
     <DashboardLayout>
-       <PopAddMain
+      <PopAddMain
         isDialog={isDisabled}
         onClose={setIsDisabled}
         // value={values}
         onStateChange={handleStateChange}
-        // onHandleChange={handleChange}
+      // onHandleChange={handleChange}
       />
       <DashboardNavbar />
       <Box sx={{ flexGrow: 1 }} mt={2}>
@@ -410,18 +485,58 @@ function Charger_mgmt() {
             </MDBox>
           </Grid>
         </Grid>
-        </MDBox>
-        <MDTypography variant="h6" px={1} mb={1} style={{ fontFamily: "Montserrat",fontSize:"24px", fontWeight: "600", lineHeight: "36px" }}>
+      </MDBox>
+      <MDTypography variant="h6" px={1} mb={1} style={{ fontFamily: "Montserrat", fontSize: "24px", fontWeight: "600", lineHeight: "36px" }}>
         Energy dispersed
-              </MDTypography>
-        <EnergyCard />
-        <MDBox mt={8}>
+      </MDTypography>
+      <EnergyCard />
+      <MDBox mt={8}>
         <Card>
           <MDBox mx={2} mt={-3} py={3} px={2} variant="gradient" bgColor="info" borderRadius="lg" coloredShadow="info">
             <Grid container direction="row" justifyContent="space-between" alignItems="center">
-              <MDTypography variant="h6" color="white" style={{ fontFamily: "Montserrat", fontWeight: "600", lineHeight: "29.26px" }}>
+              {/* <MDTypography variant="h6" color="white" style={{ fontFamily: "Montserrat", fontWeight: "600", lineHeight: "29.26px" }}>
                 All Chargers
-              </MDTypography>
+              </MDTypography> */}
+              <Dropdown
+                menu={{
+                  items,
+                  onClick,
+                  selectable: true,
+                  defaultSelectedKeys: ['0'],
+                }}
+                trigger={['click']}
+              >
+                <a onClick={(e) => e.preventDefault()}>
+                  <Space>
+                    <MDTypography variant="h6" color="white" style={{ fontFamily: "Montserrat", fontWeight: "600", lineHeight: "29.26px" }}>
+                      {selected}
+                    </MDTypography>
+                    <DownOutlined style={{ color: "white", cursor: "pointer" }} />
+                  </Space>
+                </a>
+              </Dropdown>
+              {/* <Dropdown
+                overlay={
+                  <Space direction="vertical">
+                    {items.map((item) => (
+                      <div
+                        key={item.key}
+                        onClick={() => handleDropdownSelect(item.label)}
+                        style={{ cursor: "pointer" }}
+                      >
+                        {item.label}
+                      </div>
+                    ))}
+                  </Space>
+                }
+              >
+                <a onClick={(e) => e.preventDefault()}>
+                  <Space>
+                    {selected} <DownOutlined />
+                  </Space>
+                </a>
+              </Dropdown> */}
+
               <MDButton
                 onClick={() => setIsDisabled(!isDisabled)}
                 variant="outlined"
@@ -432,87 +547,94 @@ function Charger_mgmt() {
               </MDButton>
             </Grid>
           </MDBox>
-          <MaterialReactTable
-              columns={columns}
-              data={rows}
-              initialState={{ showColumnFilters: true }}
-              muiTableProps={{
-                sx: darkMode ?
-                { backgroundColor: "#202940", color: "#ffffff",
-                '& td': {
-                  fontFamily:"Montserrat",
-            fontSize : "14px",
-            fontWeight:"500",
-             lineHeight : "17.07px",
-             color: "#ffffff"
-                  // backgroundColor: '#f5f5f5',
-                }, } :
+          {isLoading ? (
+            <Loader />
+          ) : (<MaterialReactTable
+            columns={columns}
+            data={rows}
+            initialState={{ showColumnFilters: true }}
+            muiTableProps={{
+              sx: darkMode ?
+                {
+                  backgroundColor: "#202940", color: "#ffffff",
+                  '& td': {
+                    fontFamily: "Montserrat",
+                    fontSize: "14px",
+                    fontWeight: "500",
+                    lineHeight: "17.07px",
+                    color: "#ffffff"
+                    // backgroundColor: '#f5f5f5',
+                  },
+                } :
                 {
                   '& td': {
-                    fontFamily:"Montserrat",
-              fontSize : "14px",
-              fontWeight:"500",
-               lineHeight : "17.07px",
+                    fontFamily: "Montserrat",
+                    fontSize: "14px",
+                    fontWeight: "500",
+                    lineHeight: "17.07px",
                     backgroundColor: '#f5f5f5',
                   },
                 },
-              }}
-              muiTopToolbarProps={{
-                sx: darkMode ?
-                {  color: "#ffffff",
-                '& svg': {
-                  fontFamily:"Montserrat",
-            fontSize : "14px",
-            fontWeight:"500",
-             lineHeight : "17.07px",
-             color: "#ffffff"
-                  // backgroundColor: '#f5f5f5',
-                },
-              }:{
-                backgroundColor: '#f5f5f5',
-              }
-              }}
-              muiTableHeadCellProps={{
-                sx: darkMode ?
-                {  color: "#ffffff",
-                '& svg': {
-                  fontFamily:"Montserrat",
-            fontSize : "14px",
-            fontWeight:"500",
-             lineHeight : "17.07px",
-             color: "#ffffff"
-                  // backgroundColor: '#f5f5f5',
-                },
-              }:{
-                backgroundColor: '#f5f5f5',
-              }
-              }}
-              muiBottomToolbarProps={{
-                sx: darkMode ?
-                {  color: "#ffffff",
-                '& p,button,div': {
-                  fontFamily:"Montserrat",
-            // fontSize : "14px",
-            fontWeight:"500",
-             lineHeight : "17.07px",
-             color: "#ffffff"
-                  // backgroundColor: '#f5f5f5',
-                },
-              }:{
-                backgroundColor: '#f5f5f5',
-              }
-              }}
-              muiTableBodyCellProps={{
-                sx: {
-                  borderBottom: '2px solid #e0e0e0', //add a border between columns
-                  
-                },
-              }}
-            />
+            }}
+            muiTopToolbarProps={{
+              sx: darkMode ?
+                {
+                  color: "#ffffff",
+                  '& svg': {
+                    fontFamily: "Montserrat",
+                    fontSize: "14px",
+                    fontWeight: "500",
+                    lineHeight: "17.07px",
+                    color: "#ffffff"
+                    // backgroundColor: '#f5f5f5',
+                  },
+                } : {
+                  backgroundColor: '#f5f5f5',
+                }
+            }}
+            muiTableHeadCellProps={{
+              sx: darkMode ?
+                {
+                  color: "#ffffff",
+                  '& svg': {
+                    fontFamily: "Montserrat",
+                    fontSize: "14px",
+                    fontWeight: "500",
+                    lineHeight: "17.07px",
+                    color: "#ffffff"
+                    // backgroundColor: '#f5f5f5',
+                  },
+                } : {
+                  backgroundColor: '#f5f5f5',
+                }
+            }}
+            muiBottomToolbarProps={{
+              sx: darkMode ?
+                {
+                  color: "#ffffff",
+                  '& p,button,div': {
+                    fontFamily: "Montserrat",
+                    // fontSize : "14px",
+                    fontWeight: "500",
+                    lineHeight: "17.07px",
+                    color: "#ffffff"
+                    // backgroundColor: '#f5f5f5',
+                  },
+                } : {
+                  backgroundColor: '#f5f5f5',
+                }
+            }}
+            muiTableBodyCellProps={{
+              sx: {
+                borderBottom: '2px solid #e0e0e0', //add a border between columns
+
+              },
+            }}
+          />
+          )}
         </Card>
       </MDBox>
       {/* </MDBox> */}
-
     </DashboardLayout>
   );
 }
