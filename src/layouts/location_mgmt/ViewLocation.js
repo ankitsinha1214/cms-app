@@ -1,8 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Container, Grid, Typography, Paper, Avatar, IconButton, Card, CardContent, CardMedia, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
+import {
+  Box, Container, Grid, Typography, Paper, Avatar, IconButton, Card, CardContent, CardMedia, Accordion, AccordionSummary, AccordionDetails,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
+} from '@mui/material';
+import axios from "axios";
+import { useSnackbar } from "notistack";
+import { useNavigate } from "react-router-dom";
+import { Card as AntCard, Form, Input, Radio, InputNumber, Select } from 'antd';
+import MDTypography from "components/MDTypography";
+import MDBox from "components/MDBox";
 import { green } from '@mui/material/colors';
+import CircleIcon from '@mui/icons-material/Circle';
+import { Button } from 'antd';
+import AddIcon from '@mui/icons-material/Add';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import { useMaterialUIController } from "context";
 // import LocationOnIcon from '@mui/icons-material/LocationOn';
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
@@ -14,6 +31,7 @@ import first3 from "../../assets/images/demoLocation/3.png";
 import first4 from "../../assets/images/demoLocation/4.png";
 import first5 from "../../assets/images/demoLocation/5.png";
 import first6 from "../../assets/images/demoLocation/6.png";
+import { CloseOutlined } from '@ant-design/icons';
 import WifiIcon from '@mui/icons-material/Wifi';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import WcIcon from '@mui/icons-material/Wc';
@@ -32,6 +50,8 @@ import EngineeringIcon from '@mui/icons-material/Engineering';
 import TempleHinduIcon from '@mui/icons-material/TempleHindu';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import EmojiTransportationIcon from '@mui/icons-material/EmojiTransportation';
+import Loader from "components/custom/Loader";
+import { MaterialReactTable } from 'material-react-table';
 import { Divider } from 'antd';
 import InfoCard from './components/Infocard';
 import Tooltip from '@mui/material/Tooltip';
@@ -45,6 +65,7 @@ import {
   SyncOutlined,
 } from '@ant-design/icons';
 import { Flex, Tag } from 'antd';
+import './Somecss.css'
 
 const data = {
   locationName: 'MCC - Mysore road',
@@ -110,13 +131,168 @@ const iconMap = {
 };
 
 const ViewLocation = () => {
+  const [form] = Form.useForm();
+  const { enqueueSnackbar } = useSnackbar();
+  const [formValues, setFormValues] = useState({
+    chargerInfo: [{}],
+  });
+  const navigate = useNavigate();
+  const [controller] = useMaterialUIController();
   const { energyCons } = reportsLineChartData;
+  const [isLoading, setIsLoading] = useState(true);
+  const { darkMode } = controller;
+  const [columns, setColumns] = useState([]);
+  const [rows, setRows] = useState([]);
   const location = useLocation();
   console.log(location.state);
   const additionalImages = [first2, first3, first4, first5, first6];
   const [content, setContent] = useState([]);
+  const [openDialog, setOpenDialog] = useState(false);
+  const handleCloseDialog = () => {
+    // Close the dialog
+    setOpenDialog(false);
+  };
+  const statusList = [
+    'Inactive',
+    'Available',
+    'Inuse'
+  ];
+  const handleTypeChange = (key, e) => {
+    const value = e.target.value;
+    const chargerInfo = form.getFieldValue('chargerInfo') || [];
+    const updatedChargerInfo = chargerInfo.map((info, index) => {
+      if (index === key) {
+        return {
+          ...info,
+          type: value,
+          subtype: value === "AC" ? "CCS" : "CC-T6",
+        };
+      }
+      return info;
+    });
+
+    form.setFieldsValue({ chargerInfo: updatedChargerInfo });
+  };
+  const handleAddCharger = () => {
+    form.validateFields()  // Validate the form before submitting
+      .then(() => {
+        const chargerData = form.getFieldValue("chargerInfo")[0];  // Get the single charger entry from the form
+
+        const payload = {
+          location_id: content._id,
+          newChargerInfo: chargerData,
+        };
+        // console.log(chargerData);
+        // return;
+        axios({
+          method: "post",
+          url: process.env.REACT_APP_BASEURL + "charger-locations/add-charger",
+          data: payload,
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
+          },
+        })
+          .then((response) => {
+            if (response.data.success === true) {
+              console.log(response.data);
+              enqueueSnackbar('Charger Added Successfully.', { variant: 'success' });
+              form.resetFields(["chargerInfo"]);  // Reset the form after successful addition
+              navigate("/location");
+            } else {
+              enqueueSnackbar(response.data.message, { variant: 'error' });
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+            enqueueSnackbar('Error Occurred while Adding Charger.', { variant: 'error' });
+          });
+
+        setOpenDialog(false);  // Close the dialog
+      })
+      .catch((error) => {
+        console.log("Validation Failed:", error);
+        enqueueSnackbar('Please fill in all required fields.', { variant: 'warning' });
+      });
+  };
+
+  const column = [
+    {
+      header: "Status",
+      accessorKey: "status",
+      filterVariant: 'select',
+      filterSelectOptions: statusList,
+      align: "center",
+      fixed: "true", muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      },
+      Cell: (row) => (
+        <div>
+          {(row.row.original.status === "Inactive") ?
+            <CircleIcon style={{ color: "#DA1E28" }} />
+            :
+            // (row.row.original.status === "grey") ?
+            //   <CircleIcon style={{ color: "#7B7B7B" }} />
+            //   :
+            (row.row.original.status === "Inuse") ?
+              <CircleIcon style={{ color: "#F1C21B" }} />
+              :
+              <CircleIcon style={{ color: "#198038" }} />
+          }
+        </div>
+      ),
+    },
+    {
+      header: "Charger Name", muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      }, accessorKey: "name", align: "center"
+    },
+    {
+      header: "Charger Type", muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      }, accessorKey: "type", align: "center"
+    },
+    {
+      header: "Power Output", muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      }, accessorKey: "powerOutput", align: "center"
+    },
+    {
+      header: "Enery Consumptions", muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      }, accessorKey: "energyConsumptions", align: "center"
+    },
+    {
+      header: "Charger Subtype", muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      }, accessorKey: "subtype", align: "center"
+    },
+  ];
+  useEffect(() => {
+    setColumns(column);
+  }, []);
   useEffect(() => {
     setContent(location.state);
+    setRows(location.state.chargerInfo);
+    setIsLoading(false);
   }, []);
   const renderContactDetails = (contact) => (
     Object.keys(contact).map((key) => (
@@ -364,13 +540,13 @@ const ViewLocation = () => {
                           <Typography variant="h6" mb={1.5}>Facilities</Typography>
                           <Grid container spacing={2}>
                             {Array.isArray(content?.facilities) && content?.facilities.map((facility, index) => (
-                            <Tooltip title={facility.name}>
-                              <Grid item xs={4} sm={2} key={index}>
-                                <Avatar sx={{ bgcolor: green[500], width: 40, height: 40 }}>
+                              <Tooltip title={facility.name} key={facility.name || index}>
+                                <Grid item xs={4} sm={2} key={index}>
+                                  <Avatar sx={{ bgcolor: green[500], width: 40, height: 40 }}>
                                     {iconMap[facility.name] || <MoreHorizIcon />}
-                                </Avatar>
-                              </Grid>
-                            </Tooltip>
+                                  </Avatar>
+                                </Grid>
+                              </Tooltip>
                             ))}
                           </Grid>
                         </Grid>
@@ -443,6 +619,12 @@ const ViewLocation = () => {
                       </Accordion>
                     </Grid>
                   </Card>
+                  {/* <Button variant="outlined">Outlined</Button> */}
+                  {/* <Grid item>
+                    <Button icon={<AddIcon />} iconPosition="start" variant="outlined" size="large">
+                      Add Charger
+                    </Button>
+                  </Grid> */}
                 </Grid>
               </Grid>
             </Grid>
@@ -488,6 +670,314 @@ const ViewLocation = () => {
           </Grid>
         </Box>
       </Container>
+      {/* modal for add charger */}
+      <Dialog
+        open={openDialog}
+        // maxWidth="md"
+        fullWidth
+        onClose={handleCloseDialog}>
+        <DialogTitle className="dialogtitle">Add a Charger</DialogTitle>
+        <DialogContent>
+          {/* <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                label="Charger Name"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="Power Output"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+              />
+            </Grid>
+            <Grid item xs={12}>
+
+              <TextField
+                label="Energy Consumptions"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                defaultValue={data1?.phone_number}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="Charger Type"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                defaultValue={data1?.contact_person}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="Connector Type"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                defaultValue={data1?.organization_category}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="Status"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                defaultValue={data1?.status}
+              />
+            </Grid>
+          </Grid> */}
+          <Form
+            labelCol={{
+              span: 6,
+            }}
+            wrapperCol={{
+              span: 18,
+            }}
+            form={form}
+            name="dynamic_form_complex"
+            style={{
+              maxWidth: 700,
+            }}
+            autoComplete="off"
+            initialValues={{
+              chargerInfo: [{}],
+              // chargerInfo: [{}],
+            }}
+            onValuesChange={(changedValues, allValues) => {
+              setFormValues(allValues);
+            }}
+          // initialValues={formValues}
+          >
+            <Form.List name="chargerInfo">
+              {(fields) => (
+                <div
+                  style={{
+                    display: 'flex',
+                    rowGap: 16,
+                    flexDirection: 'column',
+                  }}
+                >
+                  {fields.map((field) => (
+                    <AntCard
+                      // size="small"
+                      size="default"
+                      title={`Charger Details`}
+                      style={{
+                        width: '100%', // Set width to 100% to make it full width of the container
+                        minHeight: 200, // Set a minimum height or specify an exact height
+                        padding: '16px',
+                        maxWidth: '700px',
+                      }}
+                    >
+                      <Form.Item label="Name" name={[field.name, 'name']}
+                        rules={[
+                          {
+                            required: true,
+                            message: 'Please Enter a value',
+                          },
+                        ]}
+                      >
+                        <Input variant="filled" />
+                      </Form.Item>
+
+                      {/* New Status Field */}
+                      <Form.Item label="Status" name={[field.name, 'status']}
+                        rules={[
+                          { required: true, message: 'Please select a status' },
+                        ]}
+                      >
+                        {/* <Select placeholder="Select Status">
+                          <Select.Option value="Available">Available</Select.Option>
+                          <Select.Option value="Inactive">Inactive</Select.Option>
+                        </Select> */}
+                        <Radio.Group>
+                          <Radio value="Available"> Available </Radio>
+                          <Radio value="Inactive"> Inactive </Radio>
+                        </Radio.Group>
+                      </Form.Item>
+                      <Form.Item label="Power Output" name={[field.name, 'powerOutput']} labelCol={{ xs: 24, sm: 12, md: 8 }}
+                        rules={[
+                          {
+                            required: true,
+                            message: 'Please Enter a value',
+                          },
+                        ]}
+                      >
+                        <InputNumber addonAfter="w" variant="filled" />
+                      </Form.Item>
+                      <Form.Item label="Enery Consumptions" name={[field.name, 'energyConsumptions']}
+                        labelCol={{ xs: 24, sm: 12, md: 8 }}
+                        // labelCol={{ span: 8 }}
+                        rules={[
+                          {
+                            required: true,
+                            message: 'Please Enter a value',
+                          },
+                        ]}
+                      >
+                        <InputNumber addonAfter="kWh" variant="filled" />
+                      </Form.Item>
+                      <Form.Item label="Charger Type" name={[field.name, 'type']} labelCol={{ xs: 24, sm: 12, md: 8 }} rules={[
+                        {
+                          required: true,
+                          message: 'Select something!',
+                        },
+                      ]}
+                      >
+                        <Radio.Group onChange={(e) => handleTypeChange(field.name, e)}>
+                          <Radio value="AC"> AC </Radio>
+                          <Radio value="DC"> DC </Radio>
+                        </Radio.Group>
+                      </Form.Item>
+                      {form.getFieldValue(['chargerInfo', field.name, 'type']) && (<Form.Item label="Connector Type" name={[field.name, 'subtype']} labelCol={{ xs: 24, sm: 12, md: 8 }} rules={[
+                        {
+                          required: true,
+                          message: 'Select something!',
+                        },
+                      ]}
+                        initialValue="CCS"
+                      >
+                        <Radio.Group>
+                          <Radio value="CCS"> CCS </Radio>
+                          <Radio value="CC-T6" disabled={form.getFieldValue(['chargerInfo', field.name, 'type']) === "AC"}> CC-T6 </Radio>
+                          <Radio value="Type2" disabled={form.getFieldValue(['chargerInfo', field.name, 'type']) === "DC"}> Type2 </Radio>
+                          <Radio value="Ather" disabled={form.getFieldValue(['chargerInfo', field.name, 'type']) === "DC"}> Ather </Radio>
+                        </Radio.Group>
+                      </Form.Item>)}
+                    </AntCard>
+                  ))}
+                </div>
+              )}
+            </Form.List>
+
+            <Form.Item noStyle shouldUpdate>
+              {() => (
+                <Typography>
+                  {/* <pre>{JSON.stringify(form.getFieldsValue(), null, 2)}</pre>
+                  <pre>{JSON.stringify(formValues, null, 2)}</pre> */}
+                  {/* <pre>{JSON.stringify(values.chargerInfo, null, 2)}</pre> */}
+                </Typography>
+              )}
+            </Form.Item>
+          </Form>
+          <div style={{ marginTop: '16px', textAlign: 'end' }}>
+            <Button variant="outlined" danger color="error" onClick={handleCloseDialog} style={{ marginRight: "1rem" }}>
+              Cancel
+            </Button>
+            <Button variant="outlined" color="error" onClick={handleAddCharger}>
+              Add
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+      <Card>
+        <MDBox mx={2} mt={-3} py={3} px={2} variant="gradient" bgColor="info" borderRadius="lg" coloredShadow="info">
+          <Grid container direction="row" justifyContent="space-between" alignItems="center">
+            <MDTypography variant="h6" color="white">
+              All Chargers of {content.locationName}
+            </MDTypography>
+            <Button icon={<AddIcon />} iconPosition="start" variant="outlined" size="large" onClick={() => setOpenDialog(true)}>
+              Add Charger
+            </Button>
+          </Grid>
+        </MDBox>
+        {isLoading ? (
+          <Loader />
+        ) : (<MaterialReactTable
+          id="tble"
+          columns={columns}
+          data={rows}
+          initialState={{ showColumnFilters: true }}
+          muiTableContainerProps={{
+            id: 'tble', // Attach the ID here to the container of the table
+          }}
+          muiTableProps={{
+            sx: darkMode ?
+              {
+                backgroundColor: "#202940", color: "#ffffff",
+                '& td': {
+                  fontFamily: "Montserrat",
+                  fontSize: "14px",
+                  fontWeight: "500",
+                  lineHeight: "17.07px",
+                  color: "#ffffff"
+                  // backgroundColor: '#f5f5f5',
+                },
+              } :
+              {
+                '& td': {
+                  fontFamily: "Montserrat",
+                  fontSize: "14px",
+                  fontWeight: "500",
+                  lineHeight: "17.07px",
+                  backgroundColor: '#f5f5f5',
+                },
+              },
+          }}
+          muiTopToolbarProps={{
+            sx: darkMode ?
+              {
+                color: "#ffffff",
+                '& svg': {
+                  fontFamily: "Montserrat",
+                  fontSize: "14px",
+                  fontWeight: "500",
+                  lineHeight: "17.07px",
+                  color: "#ffffff"
+                  // backgroundColor: '#f5f5f5',
+                },
+              } : {
+                backgroundColor: '#f5f5f5',
+              }
+          }}
+          muiTableHeadCellProps={{
+            sx: darkMode ?
+              {
+                color: "#ffffff",
+                '& svg': {
+                  fontFamily: "Montserrat",
+                  fontSize: "14px",
+                  fontWeight: "500",
+                  lineHeight: "17.07px",
+                  color: "#ffffff"
+                  // backgroundColor: '#f5f5f5',
+                },
+              } : {
+                backgroundColor: '#f5f5f5',
+              }
+          }}
+          muiBottomToolbarProps={{
+            sx: darkMode ?
+              {
+                color: "#ffffff",
+                '& p,button,div': {
+                  fontFamily: "Montserrat",
+                  // fontSize : "14px",
+                  fontWeight: "500",
+                  lineHeight: "17.07px",
+                  color: "#ffffff"
+                  // backgroundColor: '#f5f5f5',
+                },
+              } : {
+                backgroundColor: '#f5f5f5',
+              }
+          }}
+          muiTableBodyCellProps={{
+            sx: {
+              borderBottom: '2px solid #e0e0e0', //add a border between columns
+
+            },
+          }}
+        />)}
+      </Card>
+
     </DashboardLayout>
   );
 };

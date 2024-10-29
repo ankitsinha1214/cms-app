@@ -34,8 +34,9 @@ import { useMaterialUIController, setMiniSidenav, setSidenavColor, setOpenConfig
 // Images
 // import brandWhite from "assets/images/chargedock-icon.png";
 // import brandDark from "assets/images/chargedock-icon.png";
-import brandWhite from "assets/images/asa.png";
-import brandDark from "assets/images/asa.png";
+// import brandWhite from "assets/images/asa.png";
+import brandWhite from "assets/images/12.png";
+import brandDark from "assets/images/112.png";
 
 export default function App() {
   const [controller, dispatch] = useMaterialUIController();
