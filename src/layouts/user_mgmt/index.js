@@ -29,6 +29,13 @@ import { useSnackbar } from "notistack";
 
 function User_mgmt() {
   const [controller] = useMaterialUIController();
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalRows, setTotalRows] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [dataRec, setDataRec] = useState([]);
   const { darkMode } = controller;
@@ -37,6 +44,15 @@ function User_mgmt() {
     'active',
     'Inactive',
   ];
+  // Step 3: Handle pagination change
+  const handlePageChange = (newPageIndex) => {
+    setPagination((prev) => ({ ...prev, pageIndex: newPageIndex }));
+  };
+
+  const handlePageSizeChange = (newPageSize) => {
+    setPagination({ pageIndex: 0, pageSize: newPageSize });
+  };
+
   const getValues = () => {
     return {
       first_name: "",
@@ -55,16 +71,55 @@ function User_mgmt() {
       vehicle_img: "",
     };
   };
+  // useEffect(() => {
+  //   if (
+  //     localStorage.getItem("login_status") !== "true"
+  //   ) {
+  //     navigate("/sign-in");
+  //   }
+  //   console.log(process.env.REACT_APP_BASEURL);
+  //   axios({
+  //     method: "get",
+  //     url: process.env.REACT_APP_BASEURL + "users",
+  //     headers: {
+  //       "Authorization": `Bearer ${localStorage.getItem("token")}`,
+  //     },
+  //   })
+  //     .then((response) => {
+  //       console.log(response.data.data);
+
+  //       if (response.data.success === true) {
+  //         console.log(response.data);
+  //         setDataRec(response.data.data);
+  //         // setTotalRows(response.data.pagination.totalRecords);
+  //         setIsLoading(false);
+  //       } else {
+  //         console.log("status is false ");
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //     });
+  // }, []);
+  // }, [page, pageSize]);
+  console.log(page);
+  console.log(pageSize);
+  console.log(pagination);
+  useEffect(() => {
+    setPage(pagination.pageIndex);
+    setPageSize(pagination.pageSize);
+  }, [pagination]);
   useEffect(() => {
     if (
       localStorage.getItem("login_status") !== "true"
     ) {
       navigate("/sign-in");
     }
-    console.log(process.env.REACT_APP_BASEURL);
+    setIsLoading(true);
+    // console.log(process.env.REACT_APP_BASEURL);
     axios({
       method: "get",
-      url: process.env.REACT_APP_BASEURL + "users",
+      url: `${process.env.REACT_APP_BASEURL}users/get/pagination?page=${page + 1}&limit=${pageSize}`,
       headers: {
         "Authorization": `Bearer ${localStorage.getItem("token")}`,
       },
@@ -75,6 +130,7 @@ function User_mgmt() {
         if (response.data.success === true) {
           console.log(response.data);
           setDataRec(response.data.data);
+          setTotalRows(response.data.pagination.totalRecords);
           setIsLoading(false);
         } else {
           console.log("status is false ");
@@ -83,7 +139,7 @@ function User_mgmt() {
       .catch((error) => {
         console.log(error);
       });
-  }, []);
+  }, [page, pageSize]);
   const [isDisabled, setIsDisabled] = useState(false);
   const [columns, setColumns] = useState([]);
   const [values, setValues] = useState(getValues);
@@ -97,10 +153,10 @@ function User_mgmt() {
       method: "delete",
       url: process.env.REACT_APP_BASEURL + "users/" + row_data.phoneNumber,
       // data: payload, // JSON payload
-    headers: {
-      "Content-Type": "application/json", // Set the Content-Type header
+      headers: {
+        "Content-Type": "application/json", // Set the Content-Type header
         "Authorization": `Bearer ${localStorage.getItem("token")}`,
-    },
+      },
     })
       .then((response) => {
         if (response.data.success === true) {
@@ -146,93 +202,105 @@ function User_mgmt() {
         </div>
       ),
     },
-    { header: "Full Name", align: "center",filterVariant: 'text',
-    muiTableHeadCellProps: {
-      align: 'center',
-    },
-    muiTableBodyCellProps: {
-      align: 'center',
-    }, // default
-    Cell: (row) => (
-      <div>
-        {`${row.row.original.firstName} ${row.row.original.lastName}`}
-      </div>
-    ),
-     },
-    { header: "Gender", accessorKey: "gender", align: "center" ,
+    {
+      header: "Full Name", align: "center", filterVariant: 'text',
       muiTableHeadCellProps: {
-      align: 'center',
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      }, // default
+      Cell: (row) => (
+        <div>
+          {`${row.row.original.firstName} ${row.row.original.lastName}`}
+        </div>
+      ),
     },
-    muiTableBodyCellProps: {
-      align: 'center',
-    },},
-    { header: "Vehicle type", filterVariant: 'text', align: "center",
+    {
+      header: "Gender", accessorKey: "gender", align: "center",
       muiTableHeadCellProps: {
-      align: 'center',
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      },
     },
-    muiTableBodyCellProps: {
-      align: 'center',
-    },
-    Cell: (row) => (
-      <div>
-      {row.row.original.user_vehicle.map((vehicle, index) => (
-        <div key={index}>
-          {vehicle.vehicle_reg}
+    {
+      header: "Vehicle type", filterVariant: 'text', align: "center",
+      muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      },
+      Cell: (row) => (
+        <div>
+          {row.row.original.user_vehicle.map((vehicle, index) => (
+            <div key={index}>
+              {vehicle.vehicle_reg}
+            </div>
+          ))}
         </div>
-      ))}
-    </div>
-    ),
-  },
-    { header: "Make", filterVariant: 'text', align: "center",muiTableHeadCellProps: {
-      align: 'center',
+      ),
     },
-    muiTableBodyCellProps: {
-      align: 'center',
-    },
-    Cell: (row) => (
-      <div>
-      {row.row.original.user_vehicle.map((vehicle, index) => (
-        <div key={index}>
-          {vehicle.make}
+    {
+      header: "Make", filterVariant: 'text', align: "center", muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      },
+      Cell: (row) => (
+        <div>
+          {row.row.original.user_vehicle.map((vehicle, index) => (
+            <div key={index}>
+              {vehicle.make}
+            </div>
+          ))}
         </div>
-      ))}
-    </div>
-    ),
-  },
-    { header: "Model", filterVariant: 'text', align: "center" ,muiTableHeadCellProps: {
-      align: 'center',
+      ),
     },
-    muiTableBodyCellProps: {
-      align: 'center',
-    },
-    Cell: (row) => (
-      <div>
-      {row.row.original.user_vehicle.map((vehicle, index) => (
-        <div key={index}>
-          {vehicle.model}
+    {
+      header: "Model", filterVariant: 'text', align: "center", muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      },
+      Cell: (row) => (
+        <div>
+          {row.row.original.user_vehicle.map((vehicle, index) => (
+            <div key={index}>
+              {vehicle.model}
+            </div>
+          ))}
         </div>
-      ))}
-    </div>
-    ),
-  },
-    { header: "State", accessorKey: "state", align: "center",muiTableHeadCellProps: {
-      align: 'center',
+      ),
     },
-    muiTableBodyCellProps: {
-      align: 'center',
-    }, },
-    { header: "City", accessorKey: "city", align: "center" ,muiTableHeadCellProps: {
-      align: 'center',
+    {
+      header: "State", accessorKey: "state", align: "center", muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      },
     },
-    muiTableBodyCellProps: {
-      align: 'center',
-    },},
-    { header: "Energy cons", accessorKey: "energy_cons", align: "center" ,muiTableHeadCellProps: {
-      align: 'center',
+    {
+      header: "City", accessorKey: "city", align: "center", muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      },
     },
-    muiTableBodyCellProps: {
-      align: 'center',
-    },},
+    {
+      header: "Energy cons", accessorKey: "energy_cons", align: "center", muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      },
+    },
     {
       header: "Action",
       accessorKey: "action",
@@ -297,6 +365,13 @@ function User_mgmt() {
   const handleStateChange = (newState) => {
     setIsDisabled(newState);
   };
+  const handlePaginationChange = (newPage) => {
+    let pg = newPage;
+    console.log(pg);
+    // setPage(newPage.pageIndex);
+    // setPageSize(newPage.pageSize)
+    // setIsDisabled(newState);
+  };
   const handleChange = (event) => {
     setValues((prevValues) => ({
       ...prevValues,
@@ -328,11 +403,11 @@ function User_mgmt() {
                 icon="functions"
                 title="Total"
                 count={total}
-                // percentage={{
-                //   color: "success",
-                //   amount: "+55%",
-                //   label: "than lask week",
-                // }}
+              // percentage={{
+              //   color: "success",
+              //   amount: "+55%",
+              //   label: "than lask week",
+              // }}
               />
             </MDBox>
           </Grid>
@@ -400,85 +475,119 @@ function User_mgmt() {
               </Grid>
             </MDBox>
             {isLoading ? (
-                  <Loader />
-                ) : (
-            <MaterialReactTable
-              columns={columns}
-              data={dataRec}
-              initialState={{ showColumnFilters: true }}
-              muiTableProps={{
-                sx: darkMode ?
-                { backgroundColor: "#202940", color: "#ffffff",
-                '& td': {
-                  fontFamily:"Montserrat",
-            fontSize : "14px",
-            fontWeight:"500",
-             lineHeight : "17.07px",
-             color: "#ffffff"
-                  // backgroundColor: '#f5f5f5',
-                }, } :
-                {
-                  '& td': {
-                    fontFamily:"Montserrat",
-              fontSize : "14px",
-              fontWeight:"500",
-               lineHeight : "17.07px",
-                    backgroundColor: '#f5f5f5',
+              <Loader />
+            ) : (
+              <MaterialReactTable
+                columns={columns}
+                data={dataRec}
+                manualPagination={true}
+                rowCount={totalRows}
+                //       onPaginationChange={(updater) => {
+                //   const { pageIndex, pageSize } = updater;
+                //   handlePageChange(pageIndex);
+                //   handlePageSizeChange(pageSize);
+                // }}
+                onPaginationChange={(newPage) => setPagination(newPage)}
+                // onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+                page={page}
+                pageSize={pageSize}
+                setPagination={pagination}
+                // manualSorting
+                // enableSorting
+                // onSortingChange={(newSorting) => {
+                //   const [sort] = newSorting;
+                //   console.log(sort)
+                //   setSortField(sort.id);
+                //   setSortOrder(sort.desc ? "desc" : "asc");
+                // }}
+                // pageCount={Math.ceil(totalRows / pageSize)}
+                muiTablePaginationProps={{
+                  rowsPerPageOptions: [5, 10, 20, 50],
+                  showFirstButton: true,
+                  showLastButton: true,
+                  count: totalRows,
+                  page: page,
+                  rowsPerPage: pageSize,
+                }}
+                // initialState={{ showColumnFilters: true }}
+                muiTableProps={{
+                  sx: darkMode ?
+                    {
+                      backgroundColor: "#202940", color: "#ffffff",
+                      '& td': {
+                        fontFamily: "Montserrat",
+                        fontSize: "14px",
+                        fontWeight: "500",
+                        lineHeight: "17.07px",
+                        color: "#ffffff"
+                        // backgroundColor: '#f5f5f5',
+                      },
+                    } :
+                    {
+                      '& td': {
+                        fontFamily: "Montserrat",
+                        fontSize: "14px",
+                        fontWeight: "500",
+                        lineHeight: "17.07px",
+                        backgroundColor: '#f5f5f5',
+                      },
+                    },
+                }}
+                muiTopToolbarProps={{
+                  sx: darkMode ?
+                    {
+                      color: "#ffffff",
+                      '& svg': {
+                        fontFamily: "Montserrat",
+                        fontSize: "14px",
+                        fontWeight: "500",
+                        lineHeight: "17.07px",
+                        color: "#ffffff"
+                        // backgroundColor: '#f5f5f5',
+                      },
+                    } : {
+                      backgroundColor: '#f5f5f5',
+                    }
+                }}
+                muiTableHeadCellProps={{
+                  sx: darkMode ?
+                    {
+                      color: "#ffffff",
+                      '& svg': {
+                        fontFamily: "Montserrat",
+                        fontSize: "14px",
+                        fontWeight: "500",
+                        lineHeight: "17.07px",
+                        color: "#ffffff"
+                        // backgroundColor: '#f5f5f5',
+                      },
+                    } : {
+                      backgroundColor: '#f5f5f5',
+                    }
+                }}
+                muiBottomToolbarProps={{
+                  sx: darkMode ?
+                    {
+                      color: "#ffffff",
+                      '& p,button,div': {
+                        fontFamily: "Montserrat",
+                        // fontSize : "14px",
+                        fontWeight: "500",
+                        lineHeight: "17.07px",
+                        color: "#ffffff"
+                        // backgroundColor: '#f5f5f5',
+                      },
+                    } : {
+                      backgroundColor: '#f5f5f5',
+                    }
+                }}
+                muiTableBodyCellProps={{
+                  sx: {
+                    borderBottom: '2px solid #e0e0e0', //add a border between columns
+
                   },
-                },
-              }}
-              muiTopToolbarProps={{
-                sx: darkMode ?
-                {  color: "#ffffff",
-                '& svg': {
-                  fontFamily:"Montserrat",
-            fontSize : "14px",
-            fontWeight:"500",
-             lineHeight : "17.07px",
-             color: "#ffffff"
-                  // backgroundColor: '#f5f5f5',
-                },
-              }:{
-                backgroundColor: '#f5f5f5',
-              }
-              }}
-              muiTableHeadCellProps={{
-                sx: darkMode ?
-                {  color: "#ffffff",
-                '& svg': {
-                  fontFamily:"Montserrat",
-            fontSize : "14px",
-            fontWeight:"500",
-             lineHeight : "17.07px",
-             color: "#ffffff"
-                  // backgroundColor: '#f5f5f5',
-                },
-              }:{
-                backgroundColor: '#f5f5f5',
-              }
-              }}
-              muiBottomToolbarProps={{
-                sx: darkMode ?
-                {  color: "#ffffff",
-                '& p,button,div': {
-                  fontFamily:"Montserrat",
-            // fontSize : "14px",
-            fontWeight:"500",
-             lineHeight : "17.07px",
-             color: "#ffffff"
-                  // backgroundColor: '#f5f5f5',
-                },
-              }:{
-                backgroundColor: '#f5f5f5',
-              }
-              }}
-              muiTableBodyCellProps={{
-                sx: {
-                  borderBottom: '2px solid #e0e0e0', //add a border between columns
-                  
-                },
-              }}
-            />)}
+                }}
+              />)}
           </Card>
         </MDBox>
       </MDBox>
