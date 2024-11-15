@@ -34,6 +34,7 @@ function User_mgmt() {
     pageSize: 10,
   });
   const [page, setPage] = useState(0);
+  const [searchText, setSearchText] = useState("");
   const [pageSize, setPageSize] = useState(10);
   const [totalRows, setTotalRows] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -119,7 +120,7 @@ function User_mgmt() {
     // console.log(process.env.REACT_APP_BASEURL);
     axios({
       method: "get",
-      url: `${process.env.REACT_APP_BASEURL}users/get/pagination?page=${page + 1}&limit=${pageSize}`,
+      url: `${process.env.REACT_APP_BASEURL}users/get/pagination?page=${page + 1}&limit=${pageSize}&search=${searchText}`,
       headers: {
         "Authorization": `Bearer ${localStorage.getItem("token")}`,
       },
@@ -139,7 +140,15 @@ function User_mgmt() {
       .catch((error) => {
         console.log(error);
       });
-  }, [page, pageSize]);
+  }, [page, pageSize, searchText]);
+
+  // Handle search input change
+  const handleSearchChange = (event) => {
+    console.log(event.target.value);
+    setSearchText(event.target.value);
+    setPage(0); // Reset to first page when search is updated
+  };
+
   const [isDisabled, setIsDisabled] = useState(false);
   const [columns, setColumns] = useState([]);
   const [values, setValues] = useState(getValues);
@@ -492,6 +501,10 @@ function User_mgmt() {
                 page={page}
                 pageSize={pageSize}
                 setPagination={pagination}
+                // globalFilter={searchText}
+                // onGlobalFilterChange={setSearchText}
+
+                enableGlobalFilter={false}
                 // manualSorting
                 // enableSorting
                 // onSortingChange={(newSorting) => {
@@ -509,6 +522,21 @@ function User_mgmt() {
                   page: page,
                   rowsPerPage: pageSize,
                 }}
+                renderTopToolbarCustomActions={() => (
+                  <input
+                    type="text"
+                    placeholder="Search..."
+                    value={searchText}
+                    onChange={handleSearchChange}
+                    style={{
+                      padding: "8px",
+                      marginBottom: "16px",
+                      border: "1px solid #ddd",
+                      borderRadius: "4px",
+                      width: "20%"
+                    }}
+                  />
+                )}
                 // initialState={{ showColumnFilters: true }}
                 muiTableProps={{
                   sx: darkMode ?
