@@ -33,10 +33,13 @@ function User_mgmt() {
     pageIndex: 0,
     pageSize: 10,
   });
+  // const [sorting, setSorting] = useState({ column: null, direction: 'asc' });
+  const [sorting, setSorting] = useState([]);
   const [page, setPage] = useState(0);
   const [searchText, setSearchText] = useState("");
   const [pageSize, setPageSize] = useState(10);
   const [totalRows, setTotalRows] = useState(0);
+  const [totalActive, setTotalActive] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [dataRec, setDataRec] = useState([]);
   const { darkMode } = controller;
@@ -45,14 +48,33 @@ function User_mgmt() {
     'active',
     'Inactive',
   ];
-  // Step 3: Handle pagination change
-  const handlePageChange = (newPageIndex) => {
-    setPagination((prev) => ({ ...prev, pageIndex: newPageIndex }));
-  };
+  const [debouncedSearchText, setDebouncedSearchText] = useState(searchText);
 
-  const handlePageSizeChange = (newPageSize) => {
-    setPagination({ pageIndex: 0, pageSize: newPageSize });
+  // Debounce function: delays updating `debouncedSearchText` state
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      setDebouncedSearchText(searchText);
+    }, 1000); // Delay of 500ms
+
+    return () => clearTimeout(delayDebounce);
+  }, [searchText]);
+  // Step 3: Handle pagination change
+  // const handlePageChange = (newPageIndex) => {
+  //   setPagination((prev) => ({ ...prev, pageIndex: newPageIndex }));
+  // };
+
+  // const handleSortChange = (column) => {
+  //   const newDirection = sorting.column === column && sorting.direction === 'asc' ? 'desc' : 'asc';
+  //   setSorting({ column, direction: newDirection });
+  // };
+  // Handle sorting change
+  const handleSortingChange = (newSorting) => {
+    console.log(newSorting);
+    setSorting(newSorting);
   };
+  // const handlePageSizeChange = (newPageSize) => {
+  //   setPagination({ pageIndex: 0, pageSize: newPageSize });
+  // };
 
   const getValues = () => {
     return {
@@ -117,10 +139,12 @@ function User_mgmt() {
       navigate("/sign-in");
     }
     setIsLoading(true);
+    // const sortBy = sorting[0].id ? sorting[0].id : '';  // Get column name for sorting
+    // const sortDirection = sorting?[0]?.desc ? 'desc' : 'asc';  // Get sort direction (asc/desc)
     // console.log(process.env.REACT_APP_BASEURL);
     axios({
       method: "get",
-      url: `${process.env.REACT_APP_BASEURL}users/get/pagination?page=${page + 1}&limit=${pageSize}&search=${searchText}`,
+      url: `${process.env.REACT_APP_BASEURL}users/get/pagination?page=${page + 1}&limit=${pageSize}&search=${debouncedSearchText}&sortField=${sorting[0]?.id || ''}&sortOrder=${sorting[0]?.desc ? 'desc' : 'asc'}`,
       headers: {
         "Authorization": `Bearer ${localStorage.getItem("token")}`,
       },
@@ -132,6 +156,7 @@ function User_mgmt() {
           console.log(response.data);
           setDataRec(response.data.data);
           setTotalRows(response.data.pagination.totalRecords);
+          setTotalActive(response.data.pagination.totalActiveRecords);
           setIsLoading(false);
         } else {
           console.log("status is false ");
@@ -140,12 +165,12 @@ function User_mgmt() {
       .catch((error) => {
         console.log(error);
       });
-  }, [page, pageSize, searchText]);
+  }, [page, pageSize, debouncedSearchText, sorting]);
 
   // Handle search input change
   const handleSearchChange = (event) => {
-    console.log(event.target.value);
-    setSearchText(event.target.value);
+    // console.log(event);
+    setSearchText(event);
     setPage(0); // Reset to first page when search is updated
   };
 
@@ -411,7 +436,8 @@ function User_mgmt() {
                 color="dark"
                 icon="functions"
                 title="Total"
-                count={total}
+                count={totalRows}
+              // count={total}
               // percentage={{
               //   color: "success",
               //   amount: "+55%",
@@ -426,7 +452,8 @@ function User_mgmt() {
                 color="success"
                 icon="leaderboard"
                 title="Active"
-                count={countActive}
+                count={totalActive}
+                // count={countActive}
                 percentage={{
                   color: "success",
                   amount: `${percentageApproved}%`,
@@ -502,11 +529,17 @@ function User_mgmt() {
                 pageSize={pageSize}
                 setPagination={pagination}
                 // globalFilter={searchText}
+                // onGlobalFilterChange={handleSearchChange}
+                muiSearchTextFieldProps={{
+                  placeholder: "Search by name, email, etc.",
+                  value: searchText,
+                  onChange: (event) => handleSearchChange(event.target.value),
+                }}
                 // onGlobalFilterChange={setSearchText}
-
-                enableGlobalFilter={false}
-                // manualSorting
-                // enableSorting
+                onSortingChange={handleSortingChange}
+                // enableGlobalFilter={false}
+                manualSorting
+                enableSorting
                 // onSortingChange={(newSorting) => {
                 //   const [sort] = newSorting;
                 //   console.log(sort)
@@ -522,21 +555,22 @@ function User_mgmt() {
                   page: page,
                   rowsPerPage: pageSize,
                 }}
-                renderTopToolbarCustomActions={() => (
-                  <input
-                    type="text"
-                    placeholder="Search..."
-                    value={searchText}
-                    onChange={handleSearchChange}
-                    style={{
-                      padding: "8px",
-                      marginBottom: "16px",
-                      border: "1px solid #ddd",
-                      borderRadius: "4px",
-                      width: "20%"
-                    }}
-                  />
-                )}
+                // renderTopToolbarCustomActions={() => (
+                //   <input
+                //     type="text"
+                //     placeholder="Search..."
+                //     value={searchText}
+                //     onChange={handleSearchChange}
+                //     style={{
+                //       padding: "8px",
+                //       marginBottom: "16px",
+                //       marginLeft: "16px",
+                //       border: "1px solid #ddd",
+                //       borderRadius: "4px",
+                //       width: "20%"
+                //     }}
+                //   />
+                // )}
                 // initialState={{ showColumnFilters: true }}
                 muiTableProps={{
                   sx: darkMode ?
