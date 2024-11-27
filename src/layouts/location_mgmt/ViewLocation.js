@@ -8,6 +8,8 @@ import {
   TextField,
 } from '@mui/material';
 import axios from "axios";
+import { Avatar as Avatar1 } from 'antd';
+import { Rate } from 'antd';
 import { useSnackbar } from "notistack";
 import { useNavigate } from "react-router-dom";
 import { Card as AntCard, Form, Input, Radio, InputNumber, Select } from 'antd';
@@ -32,6 +34,7 @@ import first4 from "../../assets/images/demoLocation/4.png";
 import first5 from "../../assets/images/demoLocation/5.png";
 import first6 from "../../assets/images/demoLocation/6.png";
 import { CloseOutlined } from '@ant-design/icons';
+import { UserOutlined } from '@ant-design/icons';
 import WifiIcon from '@mui/icons-material/Wifi';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import WcIcon from '@mui/icons-material/Wc';
@@ -140,9 +143,12 @@ const ViewLocation = () => {
   const [controller] = useMaterialUIController();
   const { energyCons } = reportsLineChartData;
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoading1, setIsLoading1] = useState(true);
   const { darkMode } = controller;
   const [columns, setColumns] = useState([]);
+  const [columns1, setColumns1] = useState([]);
   const [rows, setRows] = useState([]);
+  const [rows1, setRows1] = useState([]);
   const location = useLocation();
   console.log(location.state);
   const additionalImages = [first2, first3, first4, first5, first6];
@@ -215,6 +221,38 @@ const ViewLocation = () => {
         enqueueSnackbar('Please fill in all required fields.', { variant: 'warning' });
       });
   };
+  useEffect(() => {
+    if (
+      localStorage.getItem("login_status") !== "true") {
+      navigate("/sign-in");
+    }
+    axios({
+      method: "get",
+      url: process.env.REACT_APP_BASEURL + "reviews/location/" + location.state._id,
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`
+      },
+    })
+      .then((response) => {
+        // console.log(response.data.data);
+
+        if (response.data.success === true) {
+          // console.log(response.data);
+
+          // console.log(element);
+          // console.log(dataWithChargerCount);
+          setRows1(response.data.data);
+          setIsLoading1(false);
+        } else {
+          enqueueSnackbar(response.data.message, { variant: 'error' });
+          setIsLoading1(false);
+          // console.log("status is false ");
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
 
   const column = [
     {
@@ -286,8 +324,111 @@ const ViewLocation = () => {
       }, accessorKey: "subtype", align: "center"
     },
   ];
+  const column1 = [
+    {
+      header: "Full Name", align: "center", filterVariant: 'text',
+      muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      }, // default
+      Cell: (row) => (
+        <div>
+          {
+            row.row.original.user.status === 'active'?
+          //   <Avatar1
+          //   style={{
+          //     backgroundColor: '#fde3cf',
+          //     color: '#f56a00',
+          //     marginRight: '1rem'
+          //   }}
+          // >
+          //   U
+          // </Avatar1>
+          <Avatar1 icon={<UserOutlined />} style={{
+            backgroundColor: '#87d068',
+            // color: '#f56a00',
+            marginRight: '1rem'
+          }} />
+          :
+          <Avatar1 icon={<UserOutlined />} style={{
+            // backgroundColor: '#fde3cf',
+            // color: '#f56a00',
+            marginRight: '1rem'
+          }} />
+          }
+          
+          {`${row.row.original.user.firstName} ${row.row.original.user.lastName}`}
+        </div>
+      ),
+    },
+    {
+      header: "Rating of Charging Exprience",
+      accessorKey: "charging_exp",
+      // filterVariant: 'select',
+      // filterSelectOptions: statusList,
+      align: "center",
+      fixed: "true", muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      },
+      Cell: (row) => (
+        <div>
+          <Rate style={{ color: "#ADDD8C" }} disabled defaultValue={row.row.original.charging_exp} />
+        </div>
+      ),
+    },
+    {
+      header: "Rating of Charging Location",
+      accessorKey: "charging_location",
+      // filterVariant: 'select',
+      // filterSelectOptions: statusList,
+      align: "center",
+      fixed: "true", muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      },
+      Cell: (row) => (
+        <div>
+          <Rate style={{ color: "#ADDD8C" }} disabled defaultValue={row.row.original.charging_location} />
+        </div>
+      ),
+    },
+    {
+      header: "Review", muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      }, accessorKey: "review", align: "center"
+    },
+    // {
+    //   header: "Power Output", muiTableHeadCellProps: {
+    //     align: 'center',
+    //   },
+    //   muiTableBodyCellProps: {
+    //     align: 'center',
+    //   }, accessorKey: "powerOutput", align: "center"
+    // },
+    // {
+    //   header: "Enery Consumptions", muiTableHeadCellProps: {
+    //     align: 'center',
+    //   },
+    //   muiTableBodyCellProps: {
+    //     align: 'center',
+    //   }, accessorKey: "energyConsumptions", align: "center"
+    // },
+  ];
   useEffect(() => {
     setColumns(column);
+  }, []);
+  useEffect(() => {
+    setColumns1(column1);
   }, []);
   useEffect(() => {
     setContent(location.state);
@@ -894,6 +1035,106 @@ const ViewLocation = () => {
           id="tble"
           columns={columns}
           data={rows}
+          initialState={{ showColumnFilters: true }}
+          muiTableContainerProps={{
+            id: 'tble', // Attach the ID here to the container of the table
+          }}
+          muiTableProps={{
+            sx: darkMode ?
+              {
+                backgroundColor: "#202940", color: "#ffffff",
+                '& td': {
+                  fontFamily: "Montserrat",
+                  fontSize: "14px",
+                  fontWeight: "500",
+                  lineHeight: "17.07px",
+                  color: "#ffffff"
+                  // backgroundColor: '#f5f5f5',
+                },
+              } :
+              {
+                '& td': {
+                  fontFamily: "Montserrat",
+                  fontSize: "14px",
+                  fontWeight: "500",
+                  lineHeight: "17.07px",
+                  backgroundColor: '#f5f5f5',
+                },
+              },
+          }}
+          muiTopToolbarProps={{
+            sx: darkMode ?
+              {
+                color: "#ffffff",
+                '& svg': {
+                  fontFamily: "Montserrat",
+                  fontSize: "14px",
+                  fontWeight: "500",
+                  lineHeight: "17.07px",
+                  color: "#ffffff"
+                  // backgroundColor: '#f5f5f5',
+                },
+              } : {
+                backgroundColor: '#f5f5f5',
+              }
+          }}
+          muiTableHeadCellProps={{
+            sx: darkMode ?
+              {
+                color: "#ffffff",
+                '& svg': {
+                  fontFamily: "Montserrat",
+                  fontSize: "14px",
+                  fontWeight: "500",
+                  lineHeight: "17.07px",
+                  color: "#ffffff"
+                  // backgroundColor: '#f5f5f5',
+                },
+              } : {
+                backgroundColor: '#f5f5f5',
+              }
+          }}
+          muiBottomToolbarProps={{
+            sx: darkMode ?
+              {
+                color: "#ffffff",
+                '& p,button,div': {
+                  fontFamily: "Montserrat",
+                  // fontSize : "14px",
+                  fontWeight: "500",
+                  lineHeight: "17.07px",
+                  color: "#ffffff"
+                  // backgroundColor: '#f5f5f5',
+                },
+              } : {
+                backgroundColor: '#f5f5f5',
+              }
+          }}
+          muiTableBodyCellProps={{
+            sx: {
+              borderBottom: '2px solid #e0e0e0', //add a border between columns
+
+            },
+          }}
+        />)}
+      </Card>
+      <Card style={{ marginTop: '4rem' }}>
+        <MDBox mx={2} mt={-3} py={3} px={2} variant="gradient" bgColor="info" borderRadius="lg" coloredShadow="info">
+          <Grid container direction="row" justifyContent="space-between" alignItems="center">
+            <MDTypography variant="h6" color="white">
+              All Reviews of {content.locationName}
+            </MDTypography>
+            {/* <Button icon={<AddIcon />} iconPosition="start" variant="outlined" size="large" onClick={() => setOpenDialog(true)}>
+              Add Charger
+            </Button> */}
+          </Grid>
+        </MDBox>
+        {isLoading1 ? (
+          <Loader />
+        ) : (<MaterialReactTable
+          id="tble"
+          columns={columns1}
+          data={rows1}
           initialState={{ showColumnFilters: true }}
           muiTableContainerProps={{
             id: 'tble', // Attach the ID here to the container of the table
