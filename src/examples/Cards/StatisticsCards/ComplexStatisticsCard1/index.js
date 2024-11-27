@@ -1,4 +1,4 @@
- 
+
 
 // prop-types is a library for typechecking of props
 import PropTypes from "prop-types";
@@ -12,45 +12,56 @@ import Icon from "@mui/material/Icon";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 
-function ComplexStatisticsCard1({ color, title,title1,title2, count,count1,count2, percentage, icon }) {
+function ComplexStatisticsCard1({ color, title, title1, title2, colorcount1, colorcount2, count, count1, count2, percentage, icon }) {
   return (
     <Card>
       <MDBox display="flex" justifyContent="space-between" pt={1} px={2}>
-        <MDBox
-          variant="gradient"
-          bgColor={color}
-          color={color === "light" ? "dark" : "white"}
-          coloredShadow={color}
-          borderRadius="xl"
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          width="4rem"
-          height="4rem"
-          mt={-3}
-        >
-          <Icon fontSize="medium" color="inherit">
-            {icon}
-          </Icon>
-        </MDBox>
+        {
+          icon ?
+            <MDBox
+              variant="gradient"
+              bgColor={color}
+              color={color === "light" ? "dark" : "white"}
+              coloredShadow={color}
+              borderRadius="xl"
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              width="4rem"
+              height="4rem"
+              mt={-3}
+            >
+              <Icon fontSize="medium" color="inherit">
+                {icon}
+              </Icon>
+            </MDBox>
+            : null
+        }
         <MDBox textAlign="right" lineHeight={1.25}>
-          <MDTypography variant="button" fontWeight="light" color="text">
-            {title}
-          </MDTypography>
-          <MDTypography variant="h4">{count}</MDTypography>
+          {
+            icon ?
+              <MDTypography variant="button" fontWeight="light" color="text">
+                {title}
+              </MDTypography>
+              :
+              <MDTypography variant="h5" fontWeight="medium" py={1} >
+                {title}
+              </MDTypography>
+          }
+          <MDTypography variant="h3">{count}</MDTypography>
         </MDBox>
       </MDBox>
       <Divider />
-      <MDBox pb={2} px={2} style={{display : "flex", justifyContent : "space-evenly"}}>
+      <MDBox pb={2} px={2} style={{ display: "flex", justifyContent: "space-evenly" }}>
         <MDBox textAlign="center" lineHeight={1.25}>
-          <MDTypography style={{color : "#198038"}} variant="h4">{count1}</MDTypography>
+          <MDTypography style={{ color: colorcount1 ? colorcount1 : "#198038" }} variant="h3">{count1}</MDTypography>
           <MDTypography variant="button" fontWeight="light" color="text">
             {title1}
           </MDTypography>
         </MDBox>
-        <Divider orientation="vertical" style={{minHeight : "9vh", color : "rgba(0, 0, 0, 0.11)"}} flexItem />
+        <Divider orientation="vertical" style={{ minHeight: "9vh", color: "rgba(0, 0, 0, 0.11)" }} flexItem />
         <MDBox textAlign="center" lineHeight={1.25}>
-          <MDTypography style={{color : "#DA1E28"}} variant="h4">{count2}</MDTypography>
+          <MDTypography style={{ color: colorcount2 ? colorcount2 : "#DA1E28" }} variant="h3">{count2}</MDTypography>
           <MDTypography variant="button" fontWeight="light" color="text">
             {title2}
           </MDTypography>

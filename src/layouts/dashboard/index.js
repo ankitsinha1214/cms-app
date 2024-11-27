@@ -1,16 +1,20 @@
 // @mui material components
+import axios from "axios";
 import Grid from "@mui/material/Grid";
 import { useEffect, useState } from "react";
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
-
 // Material Dashboard 2 React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import ReportsBarChart from "examples/Charts/BarCharts/ReportsBarChart";
 import ReportsLineChart from "examples/Charts/LineCharts/ReportsLineChart";
+import StackedBarCard from "examples/Cards/StatisticsCards/StackedBarCard";
 import ComplexStatisticsCard from "examples/Cards/StatisticsCards/ComplexStatisticsCard";
+import ComplexStatisticsCard1 from "examples/Cards/StatisticsCards/ComplexStatisticsCard1";
+import LocationVisitsCard from "examples/Cards/StatisticsCards/ComplexStatisticsCard2";
 
+import MapComponent from "../location_mgmt/components/MapComponent";
 import { useNavigate } from "react-router-dom";
 // Data
 import reportsBarChartData from "layouts/dashboard/data/reportsBarChartData";
@@ -19,17 +23,107 @@ import reportsLineChartData from "layouts/dashboard/data/reportsLineChartData";
 // Dashboard components
 import Projects from "layouts/dashboard/components/Projects";
 import OrdersOverview from "layouts/dashboard/components/OrdersOverview";
+import { useSnackbar } from "notistack";
 
 function Dashboard() {
   const { sales, tasks } = reportsLineChartData;
+  const [locations, setLocations] = useState([]);
   const navigate = useNavigate();
-
+  const { enqueueSnackbar } = useSnackbar();
+  const sampleData = [
+    { name: "Orion mall", visits: 15, color: 'purple' },
+    { name: "Metro kanakpura rd", visits: 10, color: 'purple' },
+    { name: "Metro whitefield", visits: 9, color: 'purple' },
+    { name: "1 MG mall", visits: 9, color: 'purple' },
+    { name: "Mantri mall", visits: 9, color: 'purple' },
+  ];
+  const headers = [
+    { label: "#", flex: 1, index:0},
+    { label: "Vehicle", flex: 4, index:1 },
+    { label: "Visits", flex: 1 ,index:2},
+  ];
+  const sampleData1 = [
+    { name: "Ather 450X",type: "2w", visits: 755, color: 'purple' },
+    { name: "Tata Nexon EV max",type: "2w", visits: 755, color: 'purple' },
+    { name: "Tata Tigor EV",type: "2w", visits: 755, color: 'magenta' },
+    { name: "Audi etron GT",type: "2w", visits: 755, color: 'magenta' },
+    { name: "Tata Piago",type: "2w", visits: 755, color: 'gold' },
+  ];
+  const headers1 = [
+    { label: "#", flex: 1, index:0 },
+    { label: "Type", flex: 1 , index:1},
+    { label: "Vehicle", flex: 4, index:2},
+    { label: "Sales", flex: 1, index:3},
+  ];
+  const data = [
+    { name: "4 Wheeler", count: 70, color: "#4E57CE" },
+    { name: "3 Wheeler", count: 20, color: "#FF3F6D" },
+    { name: "2 Wheeler", count: 10, color: "#FFDC82" },
+  ];
   useEffect(() => {
     if (
       localStorage.getItem("login_status") !== "true"
     ) {
       navigate("/sign-in");
     }
+    axios({
+      method: "get",
+      url: process.env.REACT_APP_BASEURL + "charger-locations",
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`
+      },
+    })
+      .then((response) => {
+        // console.log(response.data.data);
+
+        if (response.data.success === true) {
+          // console.log(response.data);
+          const element = [];
+          const dataWithChargerCount = response.data.data.map(location => {
+            const availCount = location.chargerInfo.filter(charger => charger.status === 'Available').length;
+            const inuseCount = location.chargerInfo.filter(charger => charger.status === 'Inuse').length;
+            const inactiveCount = location.chargerInfo.filter(charger => charger.status === 'Inactive').length;
+            const ele = {
+              name: location.locationName,
+              direction: location.direction,
+              availCount: availCount,
+              inuseCount: inuseCount,
+              inactiveCount: inactiveCount,
+              data: location
+            };
+            element.push(ele);
+            const acCount = location.chargerInfo.filter(charger => charger.type === 'AC').length;
+            const dcCount = location.chargerInfo.filter(charger => charger.type === 'DC').length;
+            const energyDisp = location.chargerInfo.reduce((total, charger) => {
+              // console.log(charger);
+              const energyValue = parseFloat(charger.energyConsumptions.replace(' kWh', ''));
+              return total + energyValue;
+            }, 0).toFixed(1) + ' kWh';
+            const chargerInfoRep = location.chargerInfo.map(charger => ({
+              locationType: charger.powerOutput,
+              chargers: charger.subtype,
+              locationName: charger.name,
+              energy_disp: charger.energyConsumptions,
+              status: charger.status === "Available" ? "Active" : charger.status === "Inuse" ? "Pending" : "Inactive",
+              c_type: charger.type,
+            }));
+            return { ...location, energy_disp: energyDisp, chargers: location.chargerInfo.length, c_type: `AC: ${acCount}, DC: ${dcCount}`, chargerInfoRep: chargerInfoRep };
+            // ...location,
+            // ac: location.chargerInfo
+          });
+          // console.log(element);
+          setLocations(element);
+          // console.log(dataWithChargerCount);
+          // setRows(dataWithChargerCount);
+          // setIsLoading(false);
+        } else {
+          enqueueSnackbar(response.data.message, { variant: 'error' });
+          // setIsLoading(false);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }, []);
   return (
     <DashboardLayout>
@@ -43,11 +137,11 @@ function Dashboard() {
                 icon="weekend"
                 title="Total Chargers"
                 count={300}
-                percentage={{
-                  color: "success",
-                  amount: "+55%",
-                  label: "than lask week",
-                }}
+              // percentage={{
+              //   color: "success",
+              //   amount: "+55%",
+              //   label: "than lask week",
+              // }}
               />
             </MDBox>
           </Grid>
@@ -80,21 +174,59 @@ function Dashboard() {
               />
             </MDBox>
           </Grid>
-          {/* <Grid item xs={12} md={6} lg={3}>
+          <Grid item xs={12} md={6} lg={3}>
             <MDBox mb={1.5}>
-              <ComplexStatisticsCard
-                color="primary"
-                icon="person_add"
-                title="Followers"
-                count="+91"
-                percentage={{
-                  color: "success",
-                  amount: "",
-                  label: "Just updated",
-                }}
+              <ComplexStatisticsCard1
+                color="dark"
+                // icon="weekend"
+                title="Active Chargers"
+                title1="Inuse"
+                title2="Available"
+                // count={300}
+                count1={240}
+                colorcount1="#C19B16"
+                count2={60}
+                colorcount2="#198038"
+              // percentage={{
+              //   color: "success",
+              //   amount: "+55%",
+              //   label: "than lask week",
+              // }}
               />
             </MDBox>
-          </Grid> */}
+          </Grid>
+        </Grid>
+
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={6} lg={8}
+            // mt={4}
+            mb={8}
+          >
+            <MapComponent locations={locations} />
+          </Grid>
+          <Grid item xs={12} md={6} lg={4} >
+            <MDBox mb={1.5}>
+              <LocationVisitsCard
+                title="Location visits"
+                items={sampleData}
+                headers={headers}
+              />
+            </MDBox>
+            <MDBox mb={1.5}>
+              <LocationVisitsCard
+                title="Vehicle data"
+                items={sampleData1}
+                headers={headers1}
+              />
+            </MDBox>
+            <MDBox mb={1.5}>
+              <StackedBarCard
+                title="Vehicle Type"
+                data={data}
+                // headers={headers1}
+              />
+            </MDBox>
+          </Grid>
         </Grid>
         <MDBox mt={4.5}>
           <Grid container spacing={3}>
@@ -137,7 +269,7 @@ function Dashboard() {
             </Grid>
           </Grid>
         </MDBox>
-        <MDBox>
+        {/* <MDBox>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6} lg={8}>
               <Projects />
@@ -146,9 +278,9 @@ function Dashboard() {
               <OrdersOverview />
             </Grid>
           </Grid>
-        </MDBox>
+        </MDBox> */}
       </MDBox>
-       
+
     </DashboardLayout>
   );
 }

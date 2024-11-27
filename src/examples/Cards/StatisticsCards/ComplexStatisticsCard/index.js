@@ -1,4 +1,4 @@
- 
+
 
 // prop-types is a library for typechecking of props
 import PropTypes from "prop-types";
@@ -29,19 +29,19 @@ function ComplexStatisticsCard({ color, title, count, percentage, icon, labelico
           height="4rem"
           mt={-3}
         >
-          {(labelicon)?
-          React.createElement(labelicon)
-          :
-          <Icon fontSize="medium" color="inherit">
-            {icon}
-          </Icon>
+          {(labelicon) ?
+            React.createElement(labelicon)
+            :
+            <Icon fontSize="medium" color="inherit">
+              {icon}
+            </Icon>
           }
         </MDBox>
         <MDBox textAlign="right" lineHeight={1.25}>
           <MDTypography variant="button" fontWeight="light" color="text">
             {title}
           </MDTypography>
-          <MDTypography variant="h4">{count}</MDTypography>
+          <MDTypography variant="h3">{count}</MDTypography>
         </MDBox>
       </MDBox>
       <Divider />
