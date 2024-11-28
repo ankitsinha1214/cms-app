@@ -4,11 +4,13 @@ import Grid from "@mui/material/Grid";
 import { useEffect, useState } from "react";
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
+import { BarChart, CartesianGrid, XAxis, YAxis, Legend, Bar, Tooltip, ResponsiveContainer } from "recharts";
 // Material Dashboard 2 React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import ReportsBarChart from "examples/Charts/BarCharts/ReportsBarChart";
 import ReportsLineChart from "examples/Charts/LineCharts/ReportsLineChart";
+import Card from "@mui/material/Card";
 import StackedBarCard from "examples/Cards/StatisticsCards/StackedBarCard";
 import ComplexStatisticsCard from "examples/Cards/StatisticsCards/ComplexStatisticsCard";
 import ComplexStatisticsCard1 from "examples/Cards/StatisticsCards/ComplexStatisticsCard1";
@@ -30,6 +32,68 @@ function Dashboard() {
   const [locations, setLocations] = useState([]);
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
+  const data1 = [
+    {
+      "name": "Jan",
+      "This Year": 650,
+      "Last Year": 600
+    },
+    {
+      "name": "Feb",
+      "This Year": 700,
+      "Last Year": 550
+    },
+    {
+      "name": "Mar",
+      "This Year": 200,
+      "Last Year": 980
+    },
+    {
+      "name": "Apr",
+      "This Year": 278,
+      "Last Year": 390
+    },
+    {
+      "name": "May",
+      "This Year": 189,
+      "Last Year": 480
+    },
+    {
+      "name": "Jun",
+      "This Year": 239,
+      "Last Year": 380
+    },
+    {
+      "name": "Jul",
+      "This Year": 349,
+      "Last Year": 430
+    },
+    {
+      "name": "Aug",
+      "This Year": 390,
+      "Last Year": 410
+    },
+    {
+      "name": "Sep",
+      "This Year": 490,
+      "Last Year": 430
+    },
+    {
+      "name": "Oct",
+      "This Year": 430,
+      "Last Year": 320
+    },
+    {
+      "name": "Nov",
+      "This Year": 430,
+      "Last Year": 320
+    },
+    {
+      "name": "Dec",
+      "This Year": 430,
+      "Last Year": 320
+    },
+  ]
   const sampleData = [
     { name: "Orion mall", visits: 15, color: 'purple' },
     { name: "Metro kanakpura rd", visits: 10, color: 'purple' },
@@ -38,22 +102,22 @@ function Dashboard() {
     { name: "Mantri mall", visits: 9, color: 'purple' },
   ];
   const headers = [
-    { label: "#", flex: 1, index:0},
-    { label: "Vehicle", flex: 4, index:1 },
-    { label: "Visits", flex: 1 ,index:2},
+    { label: "#", flex: 1, index: 0 },
+    { label: "Vehicle", flex: 4, index: 1 },
+    { label: "Visits", flex: 1, index: 2 },
   ];
   const sampleData1 = [
-    { name: "Ather 450X",type: "2w", visits: 755, color: 'purple' },
-    { name: "Tata Nexon EV max",type: "2w", visits: 755, color: 'purple' },
-    { name: "Tata Tigor EV",type: "2w", visits: 755, color: 'magenta' },
-    { name: "Audi etron GT",type: "2w", visits: 755, color: 'magenta' },
-    { name: "Tata Piago",type: "2w", visits: 755, color: 'gold' },
+    { name: "Ather 450X", type: "2w", visits: 755, color: 'purple' },
+    { name: "Tata Nexon EV max", type: "2w", visits: 755, color: 'purple' },
+    { name: "Tata Tigor EV", type: "2w", visits: 755, color: 'magenta' },
+    { name: "Audi etron GT", type: "2w", visits: 755, color: 'magenta' },
+    { name: "Tata Piago", type: "2w", visits: 755, color: 'gold' },
   ];
   const headers1 = [
-    { label: "#", flex: 1, index:0 },
-    { label: "Type", flex: 1 , index:1},
-    { label: "Vehicle", flex: 4, index:2},
-    { label: "Sales", flex: 1, index:3},
+    { label: "#", flex: 1, index: 0 },
+    { label: "Type", flex: 1, index: 1 },
+    { label: "Vehicle", flex: 4, index: 2 },
+    { label: "Sales", flex: 1, index: 3 },
   ];
   const data = [
     { name: "4 Wheeler", count: 70, color: "#4E57CE" },
@@ -198,13 +262,88 @@ function Dashboard() {
         </Grid>
 
         <Grid container spacing={3}>
-          <Grid item xs={12} md={6} lg={8}
+          <Grid item xs={12} md={12} lg={8}
             // mt={4}
             mb={8}
           >
             <MapComponent locations={locations} />
+            <MDBox mt={6}>
+
+              <Card sx={{ height: "100%" }}>
+
+                <MDBox padding="1rem">
+                  <MDBox
+                    variant="gradient"
+                    bgColor="dark"
+                    borderRadius="lg"
+                    coloredShadow="dark"
+                    py={2}
+                    pr={0.5}
+                    mt={-5}
+                  // height="12.5rem"
+                  >
+                    <ResponsiveContainer width="100%" height={400}>
+                    <BarChart
+                      width={730}
+                      height={350}
+                      data={data1}
+                    // style={{color:"white"}}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" tick={{ stroke: 'white', fontSize: 12 }} />
+                      <YAxis tick={{ stroke: 'white', fontSize: 12 }} />
+                      <Tooltip />
+                      <Legend />
+                      <Bar dataKey="Last Year" fill="#8884d8" />
+                      <Bar dataKey="This Year" fill="#82ca9d" />
+                    </BarChart>
+                    </ResponsiveContainer>
+                  </MDBox>
+                </MDBox>
+              </Card>
+              {/* <MDBox mt={4.5}> */}
+              <Grid container spacing={3}>
+                {/* <Grid item xs={12} md={6} lg={6}>
+                  <MDBox mb={3}>
+                    <ReportsBarChart
+                      color="info"
+                      title="website views"
+                      description="Last Campaign Performance"
+                      date="campaign sent 2 days ago"
+                      chart={reportsBarChartData}
+                    />
+                  </MDBox>
+                </Grid>
+                <Grid item xs={12} md={6} lg={6}>
+                  <MDBox mb={3}>
+                    <ReportsLineChart
+                      color="success"
+                      title="daily sales"
+                      description={
+                        <>
+                          (<strong>+15%</strong>) increase in today sales.
+                        </>
+                      }
+                      date="updated 4 min ago"
+                      chart={sales}
+                    />
+                  </MDBox>
+                </Grid> */}
+                {/* <Grid item xs={12} md={6} lg={4}>
+              <MDBox mb={3}>
+                <ReportsLineChart
+                  color="dark"
+                  title="completed tasks"
+                  description="Last Campaign Performance"
+                  date="just updated"
+                  chart={tasks}
+                />
+              </MDBox>
+            </Grid> */}
+              </Grid>
+            </MDBox>
           </Grid>
-          <Grid item xs={12} md={6} lg={4} >
+          <Grid item xs={12} md={12} lg={4} >
             <MDBox mb={1.5}>
               <LocationVisitsCard
                 title="Location visits"
@@ -223,12 +362,12 @@ function Dashboard() {
               <StackedBarCard
                 title="Vehicle Type"
                 data={data}
-                // headers={headers1}
+              // headers={headers1}
               />
             </MDBox>
           </Grid>
         </Grid>
-        <MDBox mt={4.5}>
+        {/* <MDBox mt={4.5}>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6} lg={4}>
               <MDBox mb={3}>
@@ -268,7 +407,7 @@ function Dashboard() {
               </MDBox>
             </Grid>
           </Grid>
-        </MDBox>
+        </MDBox> */}
         {/* <MDBox>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6} lg={8}>

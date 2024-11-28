@@ -248,7 +248,7 @@ const ViewLocation = () => {
                 {content?.charger_id}
               </Typography>
               <Typography variant="subtitle1" sx={{ lineHeight: "36px" }}>
-                {content?.charger_type} &nbsp; | &nbsp; {content?.energy_disp}
+                {content?.c_type} &nbsp; | &nbsp; {content?.energy_disp}
               </Typography>
               <Typography variant="subtitle1" sx={{ lineHeight: "36px" }}>
                 {content?.location} &nbsp;|&nbsp; {content?.l_type} &nbsp;|&nbsp; {data.accessibility}
