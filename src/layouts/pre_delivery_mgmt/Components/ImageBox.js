@@ -5,6 +5,7 @@ import ImageList from '@mui/material/ImageList';
 import ImageListItem from '@mui/material/ImageListItem';
 
 const ImageBox = (props) => {
+    console.log(props);
     return (
         // <Box sx={{ height: 300 }}>
         <Box >
@@ -21,7 +22,8 @@ const ImageBox = (props) => {
                             <Image
                                 // srcSet={`${process.env.REACT_APP_AWS_BASEURL}${item}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
                                 // src={`${process.env.REACT_APP_AWS_BASEURL}${item}?w=164&h=164&fit=crop&auto=format`}
-                                src={`${process.env.REACT_APP_AWS_BASEURL}${props?.imageList}`}
+                                // src={`${process.env.REACT_APP_AWS_BASEURL}${props?.imageList}`}
+                                src={`${props?.imageList?.response_img}`}
                                 alt={`Pre Delivery Image`}
                                 loading="lazy"
                                 style={{ objectFit: 'cover', height: '164px' }}

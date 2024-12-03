@@ -7,6 +7,9 @@ import {
   DialogTitle,
   TextField,
 } from '@mui/material';
+import { Image } from 'antd';
+import ImageList from '@mui/material/ImageList';
+import ImageListItem from '@mui/material/ImageListItem';
 import axios from "axios";
 import { Avatar as Avatar1 } from 'antd';
 import { Rate } from 'antd';
@@ -149,9 +152,11 @@ const ViewLocation = () => {
   const [columns1, setColumns1] = useState([]);
   const [rows, setRows] = useState([]);
   const [rows1, setRows1] = useState([]);
+  const [additionalImages, setAdditionalImages] = useState([]);
   const location = useLocation();
   console.log(location.state);
-  const additionalImages = [first2, first3, first4, first5, first6];
+  // setAdditionalImages(location.state.locationImage);
+  // const additionalImages = [first2, first3, first4, first5, first6];
   const [content, setContent] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
   const handleCloseDialog = () => {
@@ -244,7 +249,7 @@ const ViewLocation = () => {
           setRows1(response.data.data);
           setIsLoading1(false);
         } else {
-          enqueueSnackbar(response.data.message, { variant: 'error' });
+          enqueueSnackbar(response.data.message, { variant: 'info' });
           setIsLoading1(false);
           // console.log("status is false ");
         }
@@ -252,6 +257,7 @@ const ViewLocation = () => {
       .catch((error) => {
         console.log(error);
       });
+    setAdditionalImages(location.state.locationImage);
   }, []);
 
   const column = [
@@ -336,29 +342,29 @@ const ViewLocation = () => {
       Cell: (row) => (
         <div>
           {
-            row.row.original.user.status === 'active'?
-          //   <Avatar1
-          //   style={{
-          //     backgroundColor: '#fde3cf',
-          //     color: '#f56a00',
-          //     marginRight: '1rem'
-          //   }}
-          // >
-          //   U
-          // </Avatar1>
-          <Avatar1 icon={<UserOutlined />} style={{
-            backgroundColor: '#87d068',
-            // color: '#f56a00',
-            marginRight: '1rem'
-          }} />
-          :
-          <Avatar1 icon={<UserOutlined />} style={{
-            // backgroundColor: '#fde3cf',
-            // color: '#f56a00',
-            marginRight: '1rem'
-          }} />
+            row.row.original.user.status === 'active' ?
+              //   <Avatar1
+              //   style={{
+              //     backgroundColor: '#fde3cf',
+              //     color: '#f56a00',
+              //     marginRight: '1rem'
+              //   }}
+              // >
+              //   U
+              // </Avatar1>
+              <Avatar1 icon={<UserOutlined />} style={{
+                backgroundColor: '#87d068',
+                // color: '#f56a00',
+                marginRight: '1rem'
+              }} />
+              :
+              <Avatar1 icon={<UserOutlined />} style={{
+                // backgroundColor: '#fde3cf',
+                // color: '#f56a00',
+                marginRight: '1rem'
+              }} />
           }
-          
+
           {`${row.row.original.user.firstName} ${row.row.original.user.lastName}`}
         </div>
       ),
@@ -642,25 +648,70 @@ const ViewLocation = () => {
               <Grid container spacing={3}>
                 <Grid item xs={12}>
                   <Card>
-                    <CardMedia
+                    {/* <CardMedia
                       component="img"
                       height="200"
-                      image={first}
+                      image={location.state.locationImage[0] ? process.env.REACT_APP_AWS_BASEURL + location.state.locationImage[0] : first}
+                      // image={first}
                       alt="main image"
                       style={{ width: '100%', margin: 0, borderRadius: 0, objectFit: "fill" }}
-                    />
+                    /> */}
+                    <ImageList sx={{ width: '100%', height: '100%' }} cols={1} rowHeight={200}>
+                      <Image.PreviewGroup
+                        preview={{
+                          onChange: (current, prev) => console.log(`current index: ${current}, prev index: ${prev}`),
+                        }}
+                      >
+                        {/* {itemData.map((item) => ( */}
+                        {/* {props?.imageList?.map((item, index) => ( */}
+                        <ImageListItem>
+                          <Image
+                            // srcSet={`${process.env.REACT_APP_AWS_BASEURL}${item}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
+                            // src={`${process.env.REACT_APP_AWS_BASEURL}${item}?w=164&h=164&fit=crop&auto=format`}
+                            src={`${process.env.REACT_APP_AWS_BASEURL}${location.state.locationImage[0]}`}
+                            alt={`Pre Delivery Image`}
+                            loading="lazy"
+                            style={{ objectFit: 'cover', height: '198px' }}
+                          />
+                        </ImageListItem>
+                        {/* ))} */}
+
+                      </Image.PreviewGroup>
+                    </ImageList>
                     <CardContent style={{ padding: 0 }}>
                       <Grid container spacing={0.2}>
                         {/* Additional images */}
                         {additionalImages.map((image, index) => (
                           <Grid item xs={2.4} key={index}>
-                            <CardMedia
+                            {/* <CardMedia
                               component="img"
                               height="100"
-                              image={image}
+                              image={process.env.REACT_APP_AWS_BASEURL + image}
                               alt={`image ${index + 1}`}
                               style={{ width: '100%', margin: 0, borderRadius: 0, objectFit: "fill" }}
-                            />
+                            /> */}
+                            {/* <ImageList sx={{ width: '100%', height: '100%' }} cols={3} rowHeight={170}> */}
+                            <Image.PreviewGroup
+                              preview={{
+                                onChange: (current, prev) => console.log(`current index: ${current}, prev index: ${prev}`),
+                              }}
+                            >
+                              {/* {itemData.map((item) => ( */}
+                              {/* {props?.imageList?.map((item, index) => ( */}
+                              <ImageListItem>
+                                <Image
+                                  // srcSet={`${process.env.REACT_APP_AWS_BASEURL}${item}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
+                                  // src={`${process.env.REACT_APP_AWS_BASEURL}${item}?w=164&h=164&fit=crop&auto=format`}
+                                  src={`${process.env.REACT_APP_AWS_BASEURL}${image}`}
+                                  alt={`Pre Delivery Image`}
+                                  loading="lazy"
+                                  style={{ objectFit: 'cover', height: '164px' }}
+                                />
+                              </ImageListItem>
+                              {/* ))} */}
+
+                            </Image.PreviewGroup>
+                            {/* </ImageList> */}
                           </Grid>
                         ))}
                       </Grid>

@@ -5,10 +5,13 @@ import { useEffect, useState } from "react";
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
 import { BarChart, CartesianGrid, XAxis, YAxis, Legend, Bar, Tooltip, ResponsiveContainer } from "recharts";
+
+import { useMaterialUIController } from "context";
 // Material Dashboard 2 React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import ReportsBarChart from "examples/Charts/BarCharts/ReportsBarChart";
+import MDTypography from "components/MDTypography";
 import ReportsLineChart from "examples/Charts/LineCharts/ReportsLineChart";
 import Card from "@mui/material/Card";
 import StackedBarCard from "examples/Cards/StatisticsCards/StackedBarCard";
@@ -28,6 +31,8 @@ import OrdersOverview from "layouts/dashboard/components/OrdersOverview";
 import { useSnackbar } from "notistack";
 
 function Dashboard() {
+  const [controller] = useMaterialUIController();
+  const { darkMode } = controller;
   const { sales, tasks } = reportsLineChartData;
   const [locations, setLocations] = useState([]);
   const navigate = useNavigate();
@@ -272,7 +277,10 @@ function Dashboard() {
               <Card sx={{ height: "100%" }}>
 
                 <MDBox padding="1rem">
-                  <MDBox
+                  <MDTypography variant="h5" fontWeight="medium" mb={3} px={2}>
+                    Energy dispersed
+                  </MDTypography>
+                  {/* <MDBox
                     variant="gradient"
                     bgColor="dark"
                     borderRadius="lg"
@@ -281,24 +289,36 @@ function Dashboard() {
                     pr={0.5}
                     mt={-5}
                   // height="12.5rem"
-                  >
-                    <ResponsiveContainer width="100%" height={400}>
+                  > */}
+                  <ResponsiveContainer width="100%" height={400}>
                     <BarChart
                       width={730}
                       height={350}
                       data={data1}
-                    // style={{color:"white"}}
+                    style={{ 
+                      color: darkMode ? "white" : "black"
+                    }}
                     >
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" tick={{ stroke: 'white', fontSize: 12 }} />
-                      <YAxis tick={{ stroke: 'white', fontSize: 12 }} />
+                      <XAxis dataKey="name"
+                        tick={{
+                          stroke: darkMode ? 'white': "black",
+                          fontFamily: "Roboto",
+                          fontSize: 12
+                        }} />
+                      <YAxis tick={{
+                          stroke: darkMode ? 'white': "black",
+                          fontFamily: "Roboto",
+                        // stroke: 'white', 
+                        fontSize: 12
+                      }} />
                       <Tooltip />
                       <Legend />
                       <Bar dataKey="Last Year" fill="#8884d8" />
                       <Bar dataKey="This Year" fill="#82ca9d" />
                     </BarChart>
-                    </ResponsiveContainer>
-                  </MDBox>
+                  </ResponsiveContainer>
+                  {/* </MDBox> */}
                 </MDBox>
               </Card>
               {/* <MDBox mt={4.5}> */}
