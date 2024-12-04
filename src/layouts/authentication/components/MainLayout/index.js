@@ -137,6 +137,7 @@ function MainLayout({ image, children }) {
         <CssBaseline />
         <Grid
           item
+          // xs={12}
           xs={false}
           sm={4}
           md={7}

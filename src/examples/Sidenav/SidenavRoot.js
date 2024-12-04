@@ -3,6 +3,7 @@
 // @mui material components
 import Drawer from "@mui/material/Drawer";
 import { styled } from "@mui/material/styles";
+import zIndex from "@mui/material/styles/zIndex";
 
 export default styled(Drawer)(({ theme, ownerState }) => {
   const { palette, boxShadows, transitions, breakpoints, functions } = theme;
@@ -72,7 +73,7 @@ export default styled(Drawer)(({ theme, ownerState }) => {
     "& .MuiDrawer-paper": {
       boxShadow: xxl,
       border: "none",
-
+      zIndex: "1000",
       ...(miniSidenav ? drawerCloseStyles() : drawerOpenStyles()),
     },
   };

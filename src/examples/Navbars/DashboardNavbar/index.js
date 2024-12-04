@@ -114,6 +114,7 @@ function DashboardNavbar({ absolute, light, isMini, hidebreadcrumbTitle }) {
       position={absolute ? "absolute" : navbarType}
       color="inherit"
       sx={(theme) => navbar(theme, { transparentNavbar, absolute, light, darkMode })}
+      style={{zIndex:"1000"}}
     >
       <Toolbar sx={(theme) => navbarContainer(theme)}>
         <MDBox color="inherit" mb={{ xs: 1, md: 0 }} sx={(theme) => navbarRow(theme, { isMini })}>

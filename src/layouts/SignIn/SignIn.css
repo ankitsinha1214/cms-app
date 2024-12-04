@@ -37,3 +37,7 @@
     margin-top: 20px;
     text-align: center;
 } 
+.custom-carousel {
+    width: 100% !important;
+    overflow: visible;
+  }
