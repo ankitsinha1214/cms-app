@@ -12,7 +12,7 @@ import Icon from "@mui/material/Icon";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 
-function ComplexStatisticsCard({ color, title, count, percentage, icon, labelicon }) {
+function ComplexStatisticsCard({ color, title, count, percentage, icon, labelicon, imgicon }) {
   return (
     <Card>
       <MDBox display="flex" justifyContent="space-between" pt={1} px={2}>
@@ -31,6 +31,13 @@ function ComplexStatisticsCard({ color, title, count, percentage, icon, labelico
         >
           {(labelicon) ?
             React.createElement(labelicon)
+            :
+            imgicon ?
+            <img 
+              src={imgicon} 
+              alt={title} 
+              style={{ width: "2rem", height: "2rem", objectFit: "contain" }}
+            /> 
             :
             <Icon fontSize="medium" color="inherit">
               {icon}

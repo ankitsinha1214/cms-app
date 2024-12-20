@@ -2,6 +2,7 @@ import axios from "axios";
 // @mui material components
 import Grid from "@mui/material/Grid";
 import PopAddBasic from "./PopAddBasic";
+import Slider from 'react-slick';
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
 import React, { useState, useEffect } from "react";
@@ -43,6 +44,42 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 // import "maplibre-gl/dist/maplibre-gl.css";
 // import mapboxgl from "mapbox-gl";
 // import "mapbox-gl/dist/mapbox-gl.css";
+// import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+
+// Custom Next Arrow Component
+const NextArrow = ({ onClick }) => (
+  <div
+    onClick={onClick}
+    style={{
+      cursor: 'pointer',
+      position: 'absolute',
+      top: '45%', // Center vertically
+      right: '-15px', // Adjust for desired spacing from the right
+      transform: 'translateY(-50%)', // Ensure it's centered vertically
+      zIndex: 2,
+    }}
+  >
+    <ArrowForwardIosIcon fontSize="large" />
+  </div>
+);
+
+// Custom Prev Arrow Component
+const PrevArrow = ({ onClick }) => (
+  <div
+    onClick={onClick}
+    style={{
+      cursor: 'pointer',
+      position: 'absolute',
+      top: '45%', // Center vertically
+      left: '10px', // Adjust for desired spacing from the left
+      transform: 'translateY(-50%)', // Ensure it's centered vertically
+      zIndex: 2,
+    }}
+  >
+    <ArrowBackIosIcon fontSize="large" />
+  </div>
+);
 
 
 function Location_mgmt() {
@@ -50,8 +87,167 @@ function Location_mgmt() {
   const { darkMode } = controller;
   const [isLoading, setIsLoading] = useState(true);
   const { enqueueSnackbar } = useSnackbar();
+  const  malls = `${process.env.REACT_APP_AWS_BASEURL}locationIcon/Mall.png`;
+  const locationTypes = [
+    "Petrol Pumps",
+    "Malls",
+    "Highways",
+    "Resorts",
+    "Airports",
+    "Hotels",
+    "Parking Garages",
+    "Office Complexes",
+    "Supermarkets",
+    "Train Stations",
+    "Restaurants",
+    "Residential Areas",
+    "Parks and Recreational Areas",
+    "University Campuses",
+    "Convention Centers",
+    "Stadiums and Sports Arenas",
+    "Movie Theaters",
+    "Hospitals",
+    "Government Buildings",
+    "Libraries",
+    "Community Centers",
+    "Beach Parking Lots",
+    "Tourist Attractions",
+    "Car Dealerships",
+    "Metro Stations"
+  ];
+  
+  const initialLocations = locationTypes.map((type, index) => ({
+    id: index + 1,
+    count: 0,
+    locationType: type,
+    percentage: 0,
+  }));
   const [locations, setLocations] = useState([]);
+  const [items, setItems] = useState(initialLocations);
   const [showIncomplete, setShowIncomplete] = useState(false);
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 4,
+    slidesToScroll: 4,
+    // slidesToScroll: 1, // Scroll one card at a time
+    nextArrow: <NextArrow />,
+    prevArrow: <PrevArrow />,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 2,
+        },
+      },
+      {
+        breakpoint: 600,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+        },
+      },
+    ],
+  };
+  // const items = [
+  //   {
+  //     id: 1,
+  //     color: "Total",
+  //     // icon: "300",
+  //     title: "Total",
+  //     count: 270
+  //   },
+  //   {
+  //     id: 2,
+  //     color: "Total",
+  //     // icon: "300",
+  //     title: "Total",
+  //     count: 270
+  //   },
+  //   {
+  //     id: 3,
+  //     color: "Total",
+  //     // icon: "300",
+  //     title: "Total",
+  //     count: 270
+  //   },
+  //   {
+  //     id: 4,
+  //     color: "Total",
+  //     // icon: "300",
+  //     title: "Total",
+  //     count: 270
+  //   },
+  //   {
+  //     id: 5,
+  //     color: "Total",
+  //     // icon: "300",
+  //     title: "Total",
+  //     count: 270
+  //   },
+  //   {
+  //     id: 6,
+  //     color: "Total",
+  //     // icon: "300",
+  //     title: "Total",
+  //     count: 270
+  //   },
+  //   {
+  //     id: 7,
+  //     color: "Total",
+  //     // icon: "300",
+  //     title: "Total",
+  //     count: 270
+  //   },
+  //   {
+  //     id: 8,
+  //     color: "Total",
+  //     // icon: "300",
+  //     title: "Total",
+  //     count: 270
+  //   },
+  // ];
+  const handleLocationTypes = () => {
+    axios({
+      method: "get",
+      url: process.env.REACT_APP_BASEURL + "charger-locations/location-type-count",
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`
+      },
+      // headers: {
+      //   "Content-Type": "application/json", 
+      // },
+    })
+      .then((response) => {
+        if (response.data.success === true) {
+          const updatedData = response.data.data.map((item, index) => ({
+            ...item,
+            id: index + 1, // Add a unique 'id' for each item
+          }));
+            // setItems(updatedData);
+            const mergedItems = items.map((item) => {
+              const match = updatedData.find((update) => update.locationType === item.locationType);
+              return match
+                ? { ...item, count: match.count, percentage: match.percentage }
+                : item;
+            });
+        
+            // Update state with merged data
+            setItems(mergedItems);
+
+
+        } else {
+          // console.log("status is false ");
+          enqueueSnackbar(response.data.message, { variant: 'error' });
+        }
+      })
+      .catch((error) => {
+        // console.log(error);
+        enqueueSnackbar(error.data.message, { variant: 'error' });
+      });
+  };
   // const [viewState, setViewState] = useState({
   //   longitude: 0,
   //   latitude: 0,
@@ -152,6 +348,7 @@ function Location_mgmt() {
       .catch((error) => {
         console.log(error);
       });
+      handleLocationTypes();
   }, []);
   const mapContainerStyle = {
     width: '100%',
@@ -449,9 +646,62 @@ function Location_mgmt() {
         </Grid> */}
         </Grid>
       </Box>
-      <MDBox py={3} mt={4}>
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={6} lg={3}>
+      <MDBox
+        py={3}
+        mt={4}
+      >
+        <Grid container
+          // spacing={2} 
+          spacing={3}
+        // style={{ width: "100%" }}
+        >
+          <Slider {...settings} className="custom-carousel" style={{
+            //  marginBottom: "6rem", 
+            marginBottom: "2rem",
+            paddingLeft: "2rem",
+            paddingRight: "2rem",
+            //  width: "100%" 
+          }}
+          >
+            {/* <ComplexStatisticsCard
+                  color="dark"
+                  icon="weekend"
+                  title="Total"
+                  count={1}
+                  percentage={{
+                    color: "",
+                    amount: "",
+                    label: "",
+                  }}
+                /> */}
+            {/* <Grid item xs={12} md={6} lg={3}> */}
+            {/* <img src={malls} alt="as" /> */}
+            {items.map((item, index) => (
+              <MDBox key={item.id} mb={1.5}
+              // style={{width: "100%"}}
+              >
+                <ComplexStatisticsCard
+                  color="dark"
+                  // icon="weekend"
+                  // labelicon={`${process.env.REACT_APP_AWS_BASEURL}locationIcon/Mall.png`}
+                  imgicon={`${process.env.REACT_APP_AWS_BASEURL}locationIcon/${item.locationType}.png`}
+                  // imgicon={malls}
+                  title={item.locationType === 'Stadiums and Sports Arenas' ? 'Sports Arenas' 
+                    :
+                    item.locationType === 'Parks and Recreational Areas'? 'Parks & Recreational':
+                    item.locationType}
+                  count={item.count}
+                  percentage={{
+                    color: "success",
+                    amount: `${item.percentage}%`,
+                    label: "of total",
+                  }}
+                />
+                {/* </Grid> */}
+              </MDBox>
+            ))}
+          </Slider>
+          {/* <Grid item xs={12} md={6} lg={3}>
             <MDBox mb={1.5}>
               <ComplexStatisticsCard
                 color="dark"
@@ -524,7 +774,7 @@ function Location_mgmt() {
                 }}
               />
             </MDBox>
-          </Grid>
+          </Grid> */}
         </Grid>
         <MDBox mt={4} style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
           {/* <img src={mapImage} alt="Map Image" srcset="" /> */}
