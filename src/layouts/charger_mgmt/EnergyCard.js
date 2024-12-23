@@ -43,42 +43,82 @@ function EnergyCard() {
         },
         {
             id: 2,
-            title: "2wAC",
+            title: "3kW DC Single Gun",
             count: "200",
         },
         {
             id: 3,
-            title: "4wAC",
+            title: "6kW DC Dual Gun",
             count: "300",
         },
         {
             id: 4,
-            title: "4wDC",
+            title: "6kW DC Single Gun",
             count: "300",
         },
         {
             id: 5,
-            title: "Demo",
+            title: "12kW DC Dual Gun",
             count: "200",
         },
         {
             id: 6,
-            title: "2wDC",
+            title: "12kW DC Single Gun",
             count: "300",
         },
         {
             id: 7,
-            title: "2wDC",
+            title: "ODM",
             count: "300",
         },
         {
             id: 8,
-            title: "2wDC",
+            title: "7.4kW AC Single Gun",
             count: "300",
         },
         {
             id: 9,
-            title: "2wDC",
+            title: "7.4kW AC Dual Gun",
+            count: "300",
+        },
+        {
+            id: 10,
+            title: "11kW AC Single Gun",
+            count: "300",
+        },
+        {
+            id: 11,
+            title: "11kW AC Dual Gun",
+            count: "300",
+        },
+        {
+            id: 12,
+            title: "22kW AC Single Gun",
+            count: "300",
+        },
+        {
+            id: 13,
+            title: "22kW AC Dual Gun",
+            count: "300",
+        },
+        {
+            id: 14,
+            title: "120kW DC Single Gun",
+            count: "300",
+        },
+        {
+            id: 15,
+            title: "240kW DC Dual Gun",
+            count: "300",
+        },
+        {
+            id: 15,
+            title: "240kW DC Single Gun",
+            count: "300",
+        },
+        {
+            id: 15,
+            title: "500kW DC Dual Gun",
             count: "300",
         },
     ];

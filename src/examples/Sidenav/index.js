@@ -1,6 +1,6 @@
  
 
-import { useEffect } from "react";
+import { useState,useEffect,useMemo } from "react";
 
 // react-router-dom components
 import { useLocation, NavLink } from "react-router-dom";
@@ -39,7 +39,13 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
   const { miniSidenav, transparentSidenav, whiteSidenav, darkMode, sidenavColor } = controller;
   const location = useLocation();
   const collapseName = location.pathname.replace("/", "");
+  const [routes1,setRoutes1] = useState(routes);
+  console.log(routes1);
+  console.log(routes);
 
+  useEffect(() => {
+    setRoutes1(routes);
+  }, [routes]);
   let textColor = "white";
 
   if (transparentSidenav || (whiteSidenav && !darkMode)) {
@@ -71,7 +77,9 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
   }, [dispatch, location]);
 
   // Render all the routes from the routes.js (All the visible items on the Sidenav)
-  const renderRoutes = routes.map(({ type, name, icon, title, noCollapse, key, href, route }) => {
+  const renderRoutes = useMemo(() => {
+    return routes1.map(({ type, name, icon, title, noCollapse, key, href, route }) => {
+  // const renderRoutes = routes1.map(({ type, name, icon, title, noCollapse, key, href, route }) => {
     let returnValue;
 
     if (type === "collapse") {
@@ -125,7 +133,9 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
     }
 
     return returnValue;
-  });
+  // });
+});
+}, [routes1, collapseName, textColor, darkMode, whiteSidenav, transparentSidenav]);
 
   return (
     <SidenavRoot

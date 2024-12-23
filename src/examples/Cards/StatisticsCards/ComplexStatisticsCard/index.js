@@ -30,7 +30,10 @@ function ComplexStatisticsCard({ color, title, count, percentage, icon, labelico
           mt={-3}
         >
           {(labelicon) ?
-            React.createElement(labelicon)
+          <div style={{ width: "32px", height: "32px", display: "flex", justifyContent: "center", alignItems: "center" }}>
+          {React.createElement(labelicon, { style: { width: "100%", height: "100%" } })}
+        </div>
+            // React.createElement(labelicon)
             :
             imgicon ?
             <img 

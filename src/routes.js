@@ -62,7 +62,30 @@ import PowerIcon from '@mui/icons-material/Power';
 import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 import TextSnippetIcon from '@mui/icons-material/TextSnippet';
 
+const userRole = localStorage.getItem("role");
+const serviceID = JSON.parse(localStorage.getItem("data"))?.serviceID;
+// console.log(userRole);
+console.log(serviceID);
+export const adminRoutes = [
+  {
+    type: "collapse",
+    name: "Admins",
+    key: "admins",
+    icon: <Icon fontSize="small">account_circle</Icon>,
+    route: "/admins",
+    component: <Admin />,
+  },
+  {
+    type: "collapse",
+    name: "Settings",
+    key: "settings",
+    icon: <Icon fontSize="small">settings</Icon>,
+    route: "/settings",
+    component: <Settings />,
+  },
+];
 export const superAdminRoutes = [
+  // const superAdminRoutes = [
   {
     type: "collapse",
     name: "Dashboard",
@@ -79,6 +102,7 @@ export const superAdminRoutes = [
     route: "/",
     component: <Dashboard />,
   },
+  (userRole === "Admin" || (userRole === "Manager" && serviceID.includes("1"))) &&
   {
     type: "collapse",
     name: "Charger Mgmt",
@@ -87,6 +111,7 @@ export const superAdminRoutes = [
     route: "/charger",
     component: <ChargerMgmt />,
   },
+  (userRole === "Admin" || (userRole === "Manager" && serviceID.includes("2"))) &&
   {
     type: "collapse",
     name: "User Mgmt",
@@ -95,6 +120,7 @@ export const superAdminRoutes = [
     route: "/User-Management",
     component: <UserMgmt />,
   },
+  (userRole === "Admin" || (userRole === "Manager" && serviceID.includes("2"))) &&
   {
     // type: "collapse",
     // name: "Update User",
@@ -103,6 +129,7 @@ export const superAdminRoutes = [
     route: "/update-user",
     component: <UpdateUser />,
   },
+  (userRole === "Admin" || (userRole === "Manager" && serviceID.includes("3"))) &&
   {
     // type: "collapse",
     // name: "Update User",
@@ -111,6 +138,7 @@ export const superAdminRoutes = [
     route: "/location/view",
     component: <ViewLocation />,
   },
+  (userRole === "Admin" || (userRole === "Manager" && serviceID.includes("1"))) &&
   {
     // type: "collapse",
     // name: "Update User",
@@ -119,6 +147,7 @@ export const superAdminRoutes = [
     route: "/charger/view",
     component: <ViewCharger />,
   },
+  (userRole === "Admin" || (userRole === "Manager" && serviceID.includes("3"))) &&
   {
     type: "collapse",
     name: "Location Mgmt",
@@ -127,7 +156,9 @@ export const superAdminRoutes = [
     route: "/location",
     component: <LocationMgmt />,
   },
-  {
+  // ...(userRole === "Manager" && serviceID.includes("1") ? [
+    (userRole === "Admin" || (userRole === "Manager" && serviceID.includes("4"))) &&
+    {
     type: "collapse",
     name: "Service & Maintenace",
     key: "service-maintenace",
@@ -135,6 +166,8 @@ export const superAdminRoutes = [
     route: "/service-maintenace",
     component: <Service_and_maintenance_mgmt />,
   },
+// ] : []),
+  (userRole === "Admin" || (userRole === "Manager" && serviceID.includes("4"))) &&
   {
     // type: "collapse",
     // name: "Site Survey Mgmt",
@@ -143,6 +176,7 @@ export const superAdminRoutes = [
     route: "/service-maintenace/site-survey",
     component: <Site_servey_mgmt />,
   },
+  (userRole === "Admin" || (userRole === "Manager" && serviceID.includes("4"))) &&
   {
     // type: "collapse",
     // name: "Pre Installation Mgmt",
@@ -151,6 +185,7 @@ export const superAdminRoutes = [
     route: "/service-maintenace/pre-installation",
     component: <Pre_installation_mgmt />,
   },
+  (userRole === "Admin" || (userRole === "Manager" && serviceID.includes("4"))) &&
   {
     // type: "collapse",
     // name: "Charger and Dcbox Mgmt",
@@ -159,6 +194,7 @@ export const superAdminRoutes = [
     route: "/service-maintenace/charger-and-dcbox",
     component: <Charger_and_dcbox_mgmt />,
   },
+  (userRole === "Admin" || (userRole === "Manager" && serviceID.includes("4"))) &&
   {
     // type: "collapse",
     // name: "Pre Delivery Mgmt",
@@ -167,6 +203,7 @@ export const superAdminRoutes = [
     route: "/service-maintenace/pre-delivery",
     component: <Pre_delivery_mgmt />,
   },
+  (userRole === "Admin" || (userRole === "Manager" && serviceID.includes("4"))) &&
   {
     // type: "collapse",
     // name: "Update User",
@@ -175,6 +212,7 @@ export const superAdminRoutes = [
     route: "/service-maintenace/site-survey/view",
     component: <ViewSitesurvey />,
   },
+  (userRole === "Admin" || (userRole === "Manager" && serviceID.includes("4"))) &&
   {
     // type: "collapse",
     // name: "Update User",
@@ -183,6 +221,7 @@ export const superAdminRoutes = [
     route: "/service-maintenace/pre-installation/view",
     component: <ViewPreinstallation />,
   },
+  (userRole === "Admin" || (userRole === "Manager" && serviceID.includes("4"))) &&
   {
     // type: "collapse",
     // name: "Update User",
@@ -191,6 +230,7 @@ export const superAdminRoutes = [
     route: "/service-maintenace/charger-and-dcbox/view",
     component: <ViewChargerandDcbox />,
   },
+  (userRole === "Admin" || (userRole === "Manager" && serviceID.includes("4"))) &&
   {
     // type: "collapse",
     // name: "Update User",
@@ -199,6 +239,7 @@ export const superAdminRoutes = [
     route: "/service-maintenace/pre-delivery/view",
     component: <ViewPreDelivery />,
   },
+  (userRole === "Admin" || (userRole === "Manager" && serviceID.includes("4"))) &&
   {
     // type: "collapse",
     // name: "Update User",
@@ -207,6 +248,7 @@ export const superAdminRoutes = [
     route: "/service-maintenace/users-service-and-maintenance",
     component: <User_service_maintenace_mgmt />,
   },
+  (userRole === "Admin" || (userRole === "Manager" && serviceID.includes("4"))) &&
   {
     // type: "collapse",
     // name: "Update User",
@@ -223,6 +265,8 @@ export const superAdminRoutes = [
     route: "/app_mgmt",
     component: <AppMgmt />,
   },
+  // ...(userRole === "Manager" && serviceID.includes("2") ? [
+    (userRole === "Admin" || (userRole === "Manager" && serviceID.includes("5"))) &&
   {
     type: "collapse",
     name: "Push Notifications",
@@ -231,6 +275,7 @@ export const superAdminRoutes = [
     route: "/notifications",
     component: <Notifications />,
   },
+  (userRole === "Admin" || (userRole === "Manager" && serviceID.includes("6"))) &&
   {
     type: "collapse",
     name: "Customer service",
@@ -239,6 +284,7 @@ export const superAdminRoutes = [
     route: "/customer_service",
     component: <CustomerService />,
   },
+  (userRole === "Admin" || (userRole === "Manager" && serviceID.includes("7"))) &&
   {
     type: "collapse",
     name: "Reports",
@@ -280,26 +326,26 @@ export const superAdminRoutes = [
   //   route: "/admins/create",
   //   component: <CreateAdmin />,
   // },
-  {
-    type: "collapse",
-    name: "Admins",
-    key: "admins",
-    icon: <Icon fontSize="small">account_circle</Icon>,
-    route: "/admins",
-    component: <Admin />,
-  },
-  {
-    type: "collapse",
-    name: "Settings",
-    key: "settings",
-    icon: <Icon fontSize="small">settings</Icon>,
-    route: "/settings",
-    component: <Settings />,
-  },
+  // {
+  //   type: "collapse",
+  //   name: "Admins",
+  //   key: "admins",
+  //   icon: <Icon fontSize="small">account_circle</Icon>,
+  //   route: "/admins",
+  //   component: <Admin />,
+  // },
+  // {
+  //   type: "collapse",
+  //   name: "Settings",
+  //   key: "settings",
+  //   icon: <Icon fontSize="small">settings</Icon>,
+  //   route: "/settings",
+  //   component: <Settings />,
+  // },
   {
     type: "collapse",
     name: "Sign Out",
-    key: "sign-in",
+    key: "sign-out",
     icon: <Icon fontSize="small">login</Icon>,
     route: "/sign-in",
     component: <SignIn />,
@@ -341,6 +387,12 @@ export const superAdminRoutes = [
 //     component: <SignIn />,
 //   },
 // ];
+// console.log(userRole)
+// if (userRole === "Admin") {
+//   superAdminRoutes.push(...adminRoutes);
+//   // export {superAdminRoutes};
+// }
+// export {superAdminRoutes};
 
 export const notLoggedInRoutes = [
   // Sign In
@@ -353,3 +405,21 @@ export const notLoggedInRoutes = [
     component: <SignIn />,
   },
 ];
+// const getSuperAdminRoutes = () => {
+
+//       // Find the index of the "Sign Out" route
+
+// if (userRole === "Admin") {
+//     const signOutIndex = superAdminRoutes.findIndex(
+//       (route) => route.key === "sign-in" && route.name === "Sign Out"
+//     );
+
+//     // Insert the new routes before the "Sign Out" route
+//     if (signOutIndex !== -1) {
+//       superAdminRoutes.splice(signOutIndex, 0, ...adminRoutes);
+//     }
+//   }
+//   return superAdminRoutes;
+// };
+
+// export default getSuperAdminRoutes;

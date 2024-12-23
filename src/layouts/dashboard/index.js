@@ -202,8 +202,9 @@ function Dashboard() {
           <Grid item xs={12} md={6} lg={3}>
             <MDBox mb={1.5}>
               <ComplexStatisticsCard
+              imgicon={`${process.env.REACT_APP_AWS_BASEURL}cms-icons/Total+charger.png`}
                 color="dark"
-                icon="weekend"
+                // icon="weekend"
                 title="Total Chargers"
                 count={300}
               // percentage={{
@@ -217,8 +218,10 @@ function Dashboard() {
           <Grid item xs={12} md={6} lg={3}>
             <MDBox mb={1.5}>
               <ComplexStatisticsCard
-                icon="leaderboard"
+                // icon="leaderboard"
+                imgicon={`${process.env.REACT_APP_AWS_BASEURL}cms-icons/Inactive+Charger.png`}
                 title="Active Chargers"
+                color="success"
                 count="287"
                 percentage={{
                   color: "success",
@@ -231,8 +234,9 @@ function Dashboard() {
           <Grid item xs={12} md={6} lg={3}>
             <MDBox mb={1.5}>
               <ComplexStatisticsCard
-                color="success"
-                icon="store"
+                color="error"
+                // icon="store"
+                imgicon={`${process.env.REACT_APP_AWS_BASEURL}cms-icons/Active+charger.png`}
                 title="Inactive Chargers"
                 count="13"
                 percentage={{
@@ -253,8 +257,9 @@ function Dashboard() {
                 title2="Available"
                 // count={300}
                 count1={240}
-                colorcount1="#C19B16"
-                count2={60}
+                // colorcount1="#C19B16"
+                colorcount1="#95C1DF"
+                count2={47}
                 colorcount2="#198038"
               // percentage={{
               //   color: "success",
@@ -314,8 +319,10 @@ function Dashboard() {
                       }} />
                       <Tooltip />
                       <Legend />
-                      <Bar dataKey="Last Year" fill="#8884d8" />
-                      <Bar dataKey="This Year" fill="#82ca9d" />
+                      <Bar dataKey="Last Year" fill="#7B7777" />
+                      {/* <Bar dataKey="Last Year" fill="#8884d8" /> */}
+                      {/* <Bar dataKey="This Year" fill="#82ca9d" /> */}
+                      <Bar dataKey="This Year" fill="#66BB6A" />
                     </BarChart>
                   </ResponsiveContainer>
                   {/* </MDBox> */}

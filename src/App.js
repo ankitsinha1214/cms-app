@@ -25,7 +25,8 @@ import themeDark from "assets/theme-dark";
 import { CacheProvider } from "@emotion/react";
 
 // Dashboard routes
-import { superAdminRoutes, notLoggedInRoutes } from "routes";
+// import superAdminRoutes  from "routes";
+import { superAdminRoutes, notLoggedInRoutes, adminRoutes } from "routes";
 import NotFoundPage  from "./NotFoundPage";
 
 // Dashboard contexts
@@ -39,6 +40,30 @@ import brandWhite from "assets/images/12.png";
 import brandDark from "assets/images/112.png";
 
 export default function App() {
+const userRole = localStorage.getItem("role");
+const [routes,setRoutes] = useState(superAdminRoutes);
+const [routes1, setRoutes1] = useState(superAdminRoutes); 
+// routes = userRole === "Admin" ? routes1 : superAdminRoutes
+useEffect(() => {
+  if (userRole === "Admin") {
+    // setRoutes1((prevRoutes) => [...prevRoutes, ...adminRoutes]);
+    // Find the "Sign Out" route and remove it from superAdminRoutes
+    const signOutRoute = superAdminRoutes.find(route => route.key === "sign-out");
+    const updatedRoutes = superAdminRoutes.filter(route => route.key !== "sign-out");
+
+    // Add adminRoutes before the Sign Out route
+    setRoutes1([...updatedRoutes, ...adminRoutes, signOutRoute]);
+    setRoutes([...updatedRoutes, ...adminRoutes, signOutRoute]);
+  }
+  else{
+    setRoutes1(superAdminRoutes);
+    setRoutes(superAdminRoutes)
+  }
+}, [userRole,superAdminRoutes]);
+// }, [userRole]);
+  console.log(superAdminRoutes);
+  console.log(adminRoutes);
+  console.log(routes);
   const [controller, dispatch] = useMaterialUIController();
   const { miniSidenav, direction, layout, openConfigurator, sidenavColor, transparentSidenav, whiteSidenav, darkMode } = controller;
   const rState = useSelector(s => s.user.userData)
@@ -113,7 +138,8 @@ export default function App() {
     </MDBox>
   );
   // setSidenavColor(dispatch, "#7F9C3C");
-  const routes = rState?.role === "super-admin" ? superAdminRoutes : superAdminRoutes
+  // const routes = rState?.role === "super-admin" ? routes1 : routes1
+  // const routes = userRole === "Admin" ? routes1 : superAdminRoutes
   return (
     <ThemeProvider theme={darkMode ? themeDark : theme}>
       <CssBaseline />

@@ -12,11 +12,38 @@ import Icon from "@mui/material/Icon";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 
-function ComplexStatisticsCard1({ color, title, title1, title2, colorcount1, colorcount2, count, count1, count2, percentage, icon }) {
+function ComplexStatisticsCard1({ color, title, title1, title2, colorcount1, colorcount2, count, count1, count2, percentage, icon, imgicon }) {
   return (
     <Card>
       <MDBox display="flex" justifyContent="space-between" pt={1} px={2}>
-        {
+      {icon ? (
+    <MDBox
+      variant="gradient"
+      bgColor={color}
+      color={color === "light" ? "dark" : "white"}
+      coloredShadow={color}
+      borderRadius="xl"
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      width="4rem"
+      height="4rem"
+      mt={-3}
+    >
+      {imgicon ? (
+        <img
+          src={imgicon}
+          alt={title}
+          style={{ width: "2rem", height: "2rem", objectFit: "contain" }}
+        />
+      ) : (
+        <Icon fontSize="medium" color="inherit">
+          {icon}
+        </Icon>
+      )}
+    </MDBox>
+  ) : null}
+        {/* {
           icon ?
             <MDBox
               variant="gradient"
@@ -31,12 +58,21 @@ function ComplexStatisticsCard1({ color, title, title1, title2, colorcount1, col
               height="4rem"
               mt={-3}
             >
-              <Icon fontSize="medium" color="inherit">
+             {imgicon ? (
+            <img 
+              src={imgicon} 
+              alt={title} 
+              style={{ width: "2rem", height: "2rem", objectFit: "contain" }}
+            /> )
+            :
+              <(Icon fontSize="medium" color="inherit">
                 {icon}
               </Icon>
+            )}
             </MDBox>
-            : null
-        }
+            : 
+            null
+        } */}
         <MDBox textAlign="right" lineHeight={1.25}>
           {
             icon ?

@@ -434,7 +434,8 @@ function User_mgmt() {
             <MDBox mb={1.5}>
               <ComplexStatisticsCard
                 color="dark"
-                icon="functions"
+                imgicon={`${process.env.REACT_APP_AWS_BASEURL}cms-icons/Total+charger.png`}
+                // icon="functions"
                 title="Total"
                 count={totalRows}
               // count={total}
@@ -450,8 +451,9 @@ function User_mgmt() {
             <MDBox mb={1.5}>
               <ComplexStatisticsCard
                 color="success"
-                icon="leaderboard"
+                // icon="leaderboard"
                 title="Active"
+                imgicon={`${process.env.REACT_APP_AWS_BASEURL}cms-icons/Active+user.png`}
                 count={totalActive}
                 // count={countActive}
                 percentage={{

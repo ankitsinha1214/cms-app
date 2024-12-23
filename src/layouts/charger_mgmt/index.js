@@ -415,6 +415,7 @@ function Charger_mgmt() {
                 color="dark"
                 icon="weekend"
                 title="Total"
+                imgicon={`${process.env.REACT_APP_AWS_BASEURL}cms-icons/Total+charger.png`}
                 title1="Active"
                 title2="Inactive"
                 count={300}
@@ -434,6 +435,7 @@ function Charger_mgmt() {
                 icon="leaderboard"
                 title="4wAC"
                 title1="Active"
+                imgicon={`${process.env.REACT_APP_AWS_BASEURL}cms-icons/4wac.png`}
                 title2="Inactive"
                 count="100"
                 count1={80}
@@ -452,6 +454,7 @@ function Charger_mgmt() {
                 color="success"
                 icon="store"
                 title="4wDC"
+                imgicon={`${process.env.REACT_APP_AWS_BASEURL}cms-icons/4wdc.png`}
                 title1="Active"
                 title2="Inactive"
                 count="100"
@@ -471,6 +474,7 @@ function Charger_mgmt() {
                 color="primary"
                 icon="person_add"
                 title="2wDC"
+                imgicon={`${process.env.REACT_APP_AWS_BASEURL}cms-icons/2wdc.png`}
                 title1="Active"
                 title2="Inactive"
                 count="100"

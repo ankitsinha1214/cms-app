@@ -183,7 +183,9 @@ function SignIn() {
                     localStorage.setItem("data", JSON.stringify(response.data.data));
                     setLoading(false);
                     navigate('/dashboard');
-                    return enqueueSnackbar('Admin Login Successful !!!', { variant: 'success' });
+                    enqueueSnackbar(`${response?.data?.data?.role} Login Successful !!!`, { variant: 'success' });
+                    // return enqueueSnackbar(`${response?.data?.data?.role} Login Successful !!!`, { variant: 'success' });
+                    window.location.reload();
                 } else {
                     console.log("status is false ");
                     setLoading(false);

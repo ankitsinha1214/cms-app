@@ -4,14 +4,17 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useSnackbar } from "notistack";
 import axios from "axios";
+import "./somestyle.css";
 // Material components
 import PopAddBasic from "./PopAddBasic";
+import PopAddBasic1 from "./PopAddBasic1";
 import MDLoading from "components/MDLoading/MDLoading";
 import MDTypography from "components/MDTypography";
 import MDButton from "components/MDButton";
 import MDInput from "components/MDInput";
 import MDBox from "components/MDBox";
 import { useMaterialUIController } from "context";
+import Completion from "./Completion";
 
 import { format } from 'date-fns';
 import { toZonedTime } from 'date-fns-tz';
@@ -33,19 +36,21 @@ function Admin() {
         }
         axios({
             method: "get",
-            url: process.env.REACT_APP_BASEURL + "user-service-and-maintenance",
+            // url: process.env.REACT_APP_BASEURL + "user-service-and-maintenance",
+            url: process.env.REACT_APP_BASEURL + "user-service-and-maintenance/admins-managers",
             headers: {
                 "Authorization": `Bearer ${localStorage.getItem("token")}`
             },
         })
             .then((response) => {
                 if (response.data.success === true) {
-                    const filteredUsers = response.data.data.filter(user => {
-                        const excludedRoles = ['User', 'Manager']; 
-                        return !excludedRoles.includes(user.role); // Filters out users with the specified roles
-                    });
-                    setRows(filteredUsers);
-                    // setRows(response.data.data);
+                    // const filteredUsers = response.data.data.filter(user => {
+                    //     const excludedRoles = ['User', 'Manager']; 
+                    //     return !excludedRoles.includes(user.role); // Filters out users with the specified roles
+                    // });
+                    
+                    // setRows(filteredUsers);
+                    setRows(response.data.data);
                     setIsLoading(false);
                 } else {
                     enqueueSnackbar(response.data.message, { variant: 'error' });
@@ -71,9 +76,21 @@ function Admin() {
             department: ""
         };
     };
+    const getValues2 = () => {
+        return {
+            email: "",
+            username: "",
+            password: "",
+            company: "",
+            serviceID: [],
+            department: ""
+        };
+    };
     const [isDisabled, setIsDisabled] = useState(false);
+    const [isDisabled1, setIsDisabled1] = useState(false);
     const [columns, setColumns] = useState([]);
     const [values1, setValues1] = useState(getValues1);
+    const [values2, setValues2] = useState(getValues2);
     const [isLoading, setIsLoading] = useState(true);
     const [deleteLoading, setDeleteLoading] = useState(false);
 
@@ -249,6 +266,14 @@ function Admin() {
           }, accessorKey: "email", align: "center"
         },
         {
+          header: "Role", muiTableHeadCellProps: {
+            align: 'center',
+          },
+          muiTableBodyCellProps: {
+            align: 'center',
+          }, accessorKey: "role", align: "center"
+        },
+        {
           header: "Company", muiTableHeadCellProps: {
             align: 'center',
           },
@@ -378,10 +403,19 @@ function Admin() {
       }, []);
     return (
         <DashboardLayout>
+            {/* <Completion 
+            isDialog={true}
+            /> */}
             <PopAddBasic
                 isDialog={isDisabled}
                 onClose={setIsDisabled}
                 value={values1}
+            // onHandleChange={handleChange}
+            />
+            <PopAddBasic1
+                isDialog={isDisabled1}
+                onClose={setIsDisabled1}
+                value={values2}
             // onHandleChange={handleChange}
             />
             <DashboardNavbar hidebreadcrumbTitle />
@@ -393,11 +427,22 @@ function Admin() {
                                 borderRadius="lg" coloredShadow="info"
                             >
                                 <Grid container direction="row" justifyContent="space-between" alignItems="center">
-                                    <MDTypography variant="h6" color="white">
-                                        All Admins
+                                    <MDTypography variant="h6" color="white" style={{width:"50%"}}>
+                                        All Admins and Managers
                                     </MDTypography>
 
-                                    <MDBox className="admin_btnsHeaderCont">
+                                    <MDBox className="admin_btnsHeaderCont" style={{display:"flex",
+                                        // width:"50%",
+                                        justifyContent:"space-between"}}>
+                                        <MDButton
+                                            // onClick={() => navigate('/admins/create')} 
+                                            onClick={() => setIsDisabled1(!isDisabled1)}
+                                            variant="outlined"
+                                            color="white"
+                                            style={{marginRight: "1rem"}}
+                                            >
+                                            Add Manager
+                                        </MDButton>
                                         <MDButton
                                             // onClick={() => navigate('/admins/create')} 
                                             onClick={() => setIsDisabled(!isDisabled)}
