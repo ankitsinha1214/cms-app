@@ -466,7 +466,8 @@ function Notification_service_maintenance_mgmt() {
             <MDBox mb={1.5}>
               <ComplexStatisticsCard
                 color="dark"
-                icon="functions"
+                // icon="functions"
+                imgicon={`${process.env.REACT_APP_AWS_BASEURL}cms-icons/Total+charger.png`}
                 title="Total"
                 count={total}
               // percentage={{

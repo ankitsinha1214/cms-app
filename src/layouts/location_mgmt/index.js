@@ -37,6 +37,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import CircleIcon from '@mui/icons-material/Circle';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
+import EditIcon from '@mui/icons-material/Edit';
 // ola maps
 // import { DeckGL } from "@deck.gl/react";
 // import { Map } from "react-map-gl";
@@ -492,13 +493,25 @@ function Location_mgmt() {
             zIndex: '111',
           }}>
             <MDButton
-              onClick={(e) => handleEdit(row.row.original)}
+              onClick={(e) => handleView(row.row.original)}
               variant="gradient"
               color="info"
               iconOnly
             >
               <LaunchIcon />
             </MDButton>
+            {/* <MDButton
+              sx={{
+                marginLeft: 2,
+              }}
+              onClick={(e) => handleEdit(row.row.original)}
+              variant="gradient"
+              color="info"
+              // color="secondary"
+              iconOnly
+            >
+              <EditIcon />
+            </MDButton> */}
             <MDButton
               sx={{
                 marginLeft: 2,
@@ -530,9 +543,16 @@ function Location_mgmt() {
     // console.log(rows);
     // console.log(column);
   }, []);
-  const handleEdit = (row_data) => {
+  const handleView = (row_data) => {
     navigate("/location/view", { state: row_data });
   };
+  // const handleEdit = (row_data) => {
+  //   // navigate("/location/view", { state: row_data });
+  //   setValues(row_data);
+  //   setIsDisabled2(!isDisabled2)
+  //   console.log(row_data);
+  // };
+  // console.log(values)
   const handleDelete = (row_data) => {
     const payload = { "status": "Inactive" };
     axios({

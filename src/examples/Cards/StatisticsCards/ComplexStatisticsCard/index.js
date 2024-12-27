@@ -1,5 +1,3 @@
-
-
 // prop-types is a library for typechecking of props
 import PropTypes from "prop-types";
 import React from "react";
@@ -42,7 +40,17 @@ function ComplexStatisticsCard({ color, title, count, percentage, icon, labelico
               style={{ width: "2rem", height: "2rem", objectFit: "contain" }}
             /> 
             :
-            <Icon fontSize="medium" color="inherit">
+            <Icon 
+            // fontSize="medium" 
+            fontSize="large" 
+            // fontSize="32px" 
+            color="inherit"
+            style={{
+              // width: "32px",
+              // height: "32px",
+              // fontSize: "32px",
+            }}
+            >
               {icon}
             </Icon>
           }
@@ -110,7 +118,7 @@ ComplexStatisticsCard.propTypes = {
     amount: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     label: PropTypes.string,
   }),
-  icon: PropTypes.node.isRequired,
+  // icon: PropTypes.node.isRequired,
 };
 
 export default ComplexStatisticsCard;
