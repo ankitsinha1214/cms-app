@@ -61,6 +61,7 @@ import EditLocationAltIcon from '@mui/icons-material/EditLocationAlt';
 import PowerIcon from '@mui/icons-material/Power';
 import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 import TextSnippetIcon from '@mui/icons-material/TextSnippet';
+import UpdateLocation from "layouts/location_mgmt/UpdateLocation";
 
 const userRole = localStorage.getItem("role");
 const serviceID = JSON.parse(localStorage.getItem("data"))?.serviceID;
@@ -155,6 +156,15 @@ export const superAdminRoutes = [
     icon: <EditLocationAltIcon />,
     route: "/location",
     component: <LocationMgmt />,
+  },
+  (userRole === "Admin" || (userRole === "Manager" && serviceID.includes("3"))) &&
+  {
+    // type: "collapse",
+    // name: "Update Location",
+    key: "update-location",
+    // icon: <EditLocationAltIcon />,
+    route: "/location/edit",
+    component: <UpdateLocation />,
   },
   // ...(userRole === "Manager" && serviceID.includes("1") ? [
     (userRole === "Admin" || (userRole === "Manager" && serviceID.includes("4"))) &&

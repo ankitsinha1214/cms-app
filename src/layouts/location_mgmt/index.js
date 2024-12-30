@@ -500,7 +500,7 @@ function Location_mgmt() {
             >
               <LaunchIcon />
             </MDButton>
-            {/* <MDButton
+            <MDButton
               sx={{
                 marginLeft: 2,
               }}
@@ -511,7 +511,7 @@ function Location_mgmt() {
               iconOnly
             >
               <EditIcon />
-            </MDButton> */}
+            </MDButton>
             <MDButton
               sx={{
                 marginLeft: 2,
@@ -552,6 +552,9 @@ function Location_mgmt() {
   //   setIsDisabled2(!isDisabled2)
   //   console.log(row_data);
   // };
+  const handleEdit = (row_data) => {
+    navigate("/location/edit", { state: row_data });
+  };
   // console.log(values)
   const handleDelete = (row_data) => {
     const payload = { "status": "Inactive" };
@@ -574,7 +577,7 @@ function Location_mgmt() {
           // setIsDialog(true);
           // alert(response.data.message);
           enqueueSnackbar(response.data.message, { variant: 'success' });
-          window.location.reload();
+          navigate("/location");
         } else {
           // console.log("status is false ");
           enqueueSnackbar(response.data.message, { variant: 'error' });

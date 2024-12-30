@@ -409,7 +409,7 @@ function PopAddBasic(props) {
                             </MDBox>
                             <MDBox p={1}>
                                 <MDInput
-                                    type="number"
+                                    type="text"
                                     label="Address"
                                     value={values.address}
                                     name="address"

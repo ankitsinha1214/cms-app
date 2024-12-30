@@ -8,6 +8,8 @@ import {
   TextField,
 } from '@mui/material';
 import { Image } from 'antd';
+// import EditIcon from '@mui/icons-material/Edit';
+import MDButton from "components/MDButton";
 import ImageList from '@mui/material/ImageList';
 import ImageListItem from '@mui/material/ImageListItem';
 import axios from "axios";
@@ -20,7 +22,7 @@ import MDTypography from "components/MDTypography";
 import MDBox from "components/MDBox";
 import { green } from '@mui/material/colors';
 import CircleIcon from '@mui/icons-material/Circle';
-import { Button } from 'antd';
+import { Button, Space } from 'antd';
 import AddIcon from '@mui/icons-material/Add';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
@@ -71,7 +73,36 @@ import {
   SyncOutlined,
 } from '@ant-design/icons';
 import { Flex, Tag } from 'antd';
-import './Somecss.css'
+import LaunchIcon from "@mui/icons-material/Launch";
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+// import { ConfigProvider, Space } from 'antd';
+// import { createStyles } from 'antd-style';
+// import './Somecss.css';
+
+// const useStyle = createStyles(({ prefixCls, css }) => ({
+//   linearGradientButton: css`
+//     &.${prefixCls}-btn-primary:not([disabled]):not(.${prefixCls}-btn-dangerous) {
+//       > span {
+//         position: relative;
+//       }
+
+//       &::before {
+//         content: '';
+//         background: linear-gradient(135deg, #6253e1, #04befe);
+//         position: absolute;
+//         inset: -1px;
+//         opacity: 1;
+//         transition: all 0.3s;
+//         border-radius: inherit;
+//       }
+
+//       &:hover::before {
+//         opacity: 0;
+//       }
+//     }
+//   `,
+// }));
 
 const data = {
   locationName: 'MCC - Mysore road',
@@ -132,7 +163,7 @@ const iconMap = {
   "Public Transportation Hubs": <EmojiTransportationIcon />,
   Toilets: <WcIcon />,
   Parking: <LocalParkingIcon />,
-  Restaurant: <RestaurantIcon />,
+  Restaurants: <RestaurantIcon />,
   // Location: <LocationOnIcon />,
 };
 
@@ -158,10 +189,19 @@ const ViewLocation = () => {
   // setAdditionalImages(location.state.locationImage);
   // const additionalImages = [first2, first3, first4, first5, first6];
   const [content, setContent] = useState([]);
+  const [editChargerInfo, setEditChargerInfo] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
+  const [openDialog1, setOpenDialog1] = useState(false);
   const handleCloseDialog = () => {
     // Close the dialog
     setOpenDialog(false);
+  };
+  const handleCloseDialog1 = () => {
+    // Close the dialog
+    setOpenDialog1(false);
+  };
+  const navEdit = () => {
+    navigate("/location/edit", { state: location?.state });
   };
   const statusList = [
     'Inactive',
@@ -184,14 +224,138 @@ const ViewLocation = () => {
 
     form.setFieldsValue({ chargerInfo: updatedChargerInfo });
   };
+  const handleTypeChange1 = (key, e) => {
+    const value = e.target.value;
+    const chargerInfo1 = form.getFieldValue('chargerInfo1') || [];
+    const updatedChargerInfo = chargerInfo1.map((info, index) => {
+      if (index === key) {
+        return {
+          ...info,
+          type: value,
+          subtype: value === "AC" ? "CCS" : "CC-T6",
+        };
+      }
+      return info;
+    });
+
+    form.setFieldsValue({ chargerInfo1: updatedChargerInfo });
+  };
+  const handleEdit = (row_data) => {
+    // navigate("/location/edit", { state: row_data });
+    const updatedChargerData = {
+      ...row_data,
+      powerOutput: row_data.powerOutput.replace(/\s*w$/i, '').trim(), // Remove 'w' and whitespace
+      energyConsumptions: row_data.energyConsumptions.replace(/\s*kWh$/i, '').trim(), // Remove 'kWh' and whitespace
+    };
+    // console.log(updatedChargerData);
+    setEditChargerInfo([updatedChargerData]);
+    // console.log(row_data);
+    setOpenDialog1(true);
+  };
+  const handleDelete = (row_data) => {
+    // console.log(location.state);
+    // return;
+    const payload = {
+      "location_id": location?.state?._id,
+      "charger_id": row_data?._id
+    };
+    axios({
+      method: "delete",
+      url: process.env.REACT_APP_BASEURL + "charger-locations/delete-charger",
+      data: payload, // JSON payload
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`
+      },
+      // headers: {
+      //   "Content-Type": "application/json", 
+      // },
+    })
+      .then((response) => {
+        if (response.data.success === true) {
+          // console.log(response);
+          // setIsBackdrop(false);
+          // setDialogMessage(response.data.message);
+          // setIsDialog(true);
+          // alert(response.data.message);
+          enqueueSnackbar(response.data.message, { variant: 'success' });
+          navigate("/location");
+          // window.location.reload();
+        } else {
+          // console.log("status is false ");
+          enqueueSnackbar(response.data.message, { variant: 'error' });
+        }
+      })
+      .catch((error) => {
+        // console.log(error);
+        enqueueSnackbar("Error Occurred while Deleting Charger. Please try again later.", { variant: 'error' });
+      });
+  };
+  const handleUpdateCharger = () => {
+    form.validateFields()  // Validate the form before submitting
+      .then(() => {
+        const chargerData = form.getFieldValue("chargerInfo1")[0];  // Get the single charger entry from the form
+        // Modify the chargerData before sending to the API
+        const updatedChargerData = {
+          ...chargerData,
+          powerOutput: `${chargerData.powerOutput} w`, // Adding 'w' to powerOutput
+          energyConsumptions: `${chargerData.energyConsumptions} kWh`, // Adding 'w' to powerOutput
+        };
+        // console.log(chargerData);
+        // console.log(updatedChargerData);
+        // return;
+        const payload = {
+          "location_id": location?.state?._id,
+          "charger_id": chargerData?._id,
+          "updatedChargerInfo": updatedChargerData,
+        };
+        // console.log(chargerData);
+        // return;
+        axios({
+          method: "post",
+          url: process.env.REACT_APP_BASEURL + "charger-locations/update-charger",
+          data: payload,
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
+          },
+        })
+          .then((response) => {
+            if (response.data.success === true) {
+              console.log(response.data);
+              enqueueSnackbar('Charger Added Successfully.', { variant: 'success' });
+              form.resetFields(["chargerInfo"]);  // Reset the form after successful addition
+              navigate("/location");
+            } else {
+              enqueueSnackbar(response.data.message, { variant: 'error' });
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+            enqueueSnackbar('Error Occurred while Adding Charger.', { variant: 'error' });
+          });
+
+        setOpenDialog(false);  // Close the dialog
+      })
+      .catch((error) => {
+        console.log("Validation Failed:", error);
+        enqueueSnackbar('Please fill in all required fields.', { variant: 'warning' });
+      });
+  };
   const handleAddCharger = () => {
     form.validateFields()  // Validate the form before submitting
       .then(() => {
         const chargerData = form.getFieldValue("chargerInfo")[0];  // Get the single charger entry from the form
-
+        // Modify the chargerData before sending to the API
+        const updatedChargerData = {
+          ...chargerData,
+          powerOutput: `${chargerData.powerOutput} w`, // Adding 'w' to powerOutput
+          energyConsumptions: `${chargerData.energyConsumptions} kWh`, // Adding 'w' to powerOutput
+        };
+        // console.log(updatedChargerData);
+        // return;
         const payload = {
           location_id: content._id,
-          newChargerInfo: chargerData,
+          newChargerInfo: updatedChargerData,
         };
         // console.log(chargerData);
         // return;
@@ -206,7 +370,7 @@ const ViewLocation = () => {
         })
           .then((response) => {
             if (response.data.success === true) {
-              console.log(response.data);
+              // console.log(response.data);
               enqueueSnackbar('Charger Added Successfully.', { variant: 'success' });
               form.resetFields(["chargerInfo"]);  // Reset the form after successful addition
               navigate("/location");
@@ -328,6 +492,59 @@ const ViewLocation = () => {
       muiTableBodyCellProps: {
         align: 'center',
       }, accessorKey: "subtype", align: "center"
+    },
+    {
+      header: "Action",
+      enableColumnFilter: false,
+      muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      }, accessorKey: "action",
+      align: "center",
+      Cell: (row) => (
+        row.row.depth === 0 ? (
+          <div style={{
+            position: 'sticky',
+            right: '0',
+            zIndex: '111',
+          }}>
+            {/* <MDButton
+              onClick={(e) => handleView(row.row.original)}
+              variant="gradient"
+              color="info"
+              iconOnly
+            >
+              <LaunchIcon />
+            </MDButton> */}
+            <MDButton
+              // sx={{
+              // marginLeft: 2,
+              // }}
+              onClick={(e) => handleEdit(row.row.original)}
+              variant="gradient"
+              color="info"
+              // color="secondary"
+              iconOnly
+            >
+              <EditIcon />
+            </MDButton>
+            <MDButton
+              sx={{
+                marginLeft: 2,
+              }}
+              onClick={(e) => handleDelete(row.row.original)}
+              variant="gradient"
+              color="info"
+              // color="secondary"
+              iconOnly
+            >
+              <DeleteIcon />
+            </MDButton>
+          </div>
+        ) : null
+      ),
     },
   ];
   const column1 = [
@@ -460,40 +677,70 @@ const ViewLocation = () => {
             {/* Header Section */}
             <Grid item xs={12} sm={7}>
               {/* <Flex gap="4px 0" wrap> */}
-              {content?.status === "Active" ?
-                <Tag icon={<CheckCircleOutlined />} color="success">
-                  Live
-                </Tag>
-                : content?.status === "Pending" ?
-                  <Tag icon={<SyncOutlined spin />} color="warning">
-                    Pending
-                  </Tag>
-                  : content?.status === "Inactive" ?
-                    <Tag icon={<CloseCircleOutlined />} color="error">
-                      Inactive
+              {/* <Flex gap="4px 0" wrap> */}
+
+              <Grid container spacing={3}>
+                <Grid item xs={12} md={6}>
+                  {content?.status === "Active" ?
+                    <Tag icon={<CheckCircleOutlined />} color="success">
+                      Live
                     </Tag>
-                    : content?.status === "Waitlisted" ?
-                      <Tag icon={<ClockCircleOutlined />} color="default">
-                        waiting
-                      </Tag> :
-                      <Tag icon={<MinusCircleOutlined />} color="default">
-                        {content?.status}
+                    : content?.status === "Pending" ?
+                      <Tag icon={<SyncOutlined spin />} color="warning">
+                        Pending
                       </Tag>
-              }
-              {/* <Tag icon={<ExclamationCircleOutlined />} color="warning">
+                      : content?.status === "Inactive" ?
+                        <Tag icon={<CloseCircleOutlined />} color="error">
+                          Inactive
+                        </Tag>
+                        : content?.status === "Waitlisted" ?
+                          <Tag icon={<ClockCircleOutlined />} color="default">
+                            waiting
+                          </Tag> :
+                          <Tag icon={<MinusCircleOutlined />} color="default">
+                            {content?.status}
+                          </Tag>
+                  }
+                  {/* <Tag icon={<ExclamationCircleOutlined />} color="warning">
                   warning
                 </Tag> */}
-              {/* {JSON.stringify(data)} */}
-              {/* </Flex> */}
-              <Typography variant="h4" component="h1" gutterBottom>
-                {content?.locationName}
-              </Typography>
-              <Typography variant="subtitle1">
-                {content?.city}, {content?.state}
-              </Typography>
-              <Typography variant="body2">
-                {content?.locationType} | {data.accessibility}
-              </Typography>
+                  {/* {JSON.stringify(data)} */}
+                  {/* </Flex> */}
+                  <Typography variant="h4" component="h1" gutterBottom>
+                    {content?.locationName}
+                  </Typography>
+                  <Typography variant="subtitle1">
+                    {content?.city}, {content?.state}
+                  </Typography>
+                  <Typography variant="body2">
+                    {content?.locationType} | {data.accessibility}
+                  </Typography>
+                </Grid>
+                {/* <ConfigProvider
+      button={{
+        className: styles.linearGradientButton,
+      }}
+    > */}
+                <Grid item xs={12} md={6} 
+                sx={{
+                  textAlign: {
+                    xs: 'start', // Left-align for extra-small screens
+                    md: 'end',   // Right-align for medium and larger screens
+                  },
+                }}
+                // style={{
+                //   textAlign:  xs: 'start', // Left-align for extra-small screens
+                //   md: 'end',  xs ? "start" : "end"
+                //   }}
+                  >
+                  {/* <Space> */}
+                  <Button type="primary" size="large" icon={<EditIcon />} onClick={navEdit}>
+                    Edit Location
+                  </Button>
+                  {/* </Space> */}
+                </Grid>
+              </Grid>
+              {/* </ConfigProvider> */}
               {/* Statistics Section */}
               <Grid item xs={12}
                 // md={6}
@@ -1002,7 +1249,9 @@ const ViewLocation = () => {
                           },
                         ]}
                       >
-                        <InputNumber addonAfter="w" variant="filled" />
+                        <InputNumber addonAfter="w"
+                          variant="filled"
+                        />
                       </Form.Item>
                       <Form.Item label="Enery Consumptions" name={[field.name, 'energyConsumptions']}
                         labelCol={{ xs: 24, sm: 12, md: 8 }}
@@ -1065,6 +1314,216 @@ const ViewLocation = () => {
             </Button>
             <Button variant="outlined" color="error" onClick={handleAddCharger}>
               Add
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+      <Dialog
+        open={openDialog1}
+        // maxWidth="md"
+        fullWidth
+        onClose={handleCloseDialog1}>
+        <DialogTitle className="dialogtitle">Update the Charger</DialogTitle>
+        <DialogContent>
+          {/* <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                label="Charger Name"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="Power Output"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+              />
+            </Grid>
+            <Grid item xs={12}>
+
+              <TextField
+                label="Energy Consumptions"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                defaultValue={data1?.phone_number}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="Charger Type"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                defaultValue={data1?.contact_person}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="Connector Type"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                defaultValue={data1?.organization_category}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="Status"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                defaultValue={data1?.status}
+              />
+            </Grid>
+          </Grid> */}
+          <Form
+            labelCol={{
+              span: 6,
+            }}
+            wrapperCol={{
+              span: 18,
+            }}
+            form={form}
+            name="dynamic_form_complex"
+            style={{
+              maxWidth: 700,
+            }}
+            autoComplete="off"
+            initialValues={{
+              chargerInfo1: editChargerInfo || [{}],
+              // chargerInfo: [{}],
+            }}
+            onValuesChange={(changedValues, allValues) => {
+              setFormValues(allValues);
+            }}
+          // initialValues={formValues}
+          >
+            <Form.List name="chargerInfo1">
+              {(fields) => (
+                <div
+                  style={{
+                    display: 'flex',
+                    rowGap: 16,
+                    flexDirection: 'column',
+                  }}
+                >
+                  {fields.map((field) => (
+                    <AntCard
+                      // size="small"
+                      size="default"
+                      title={`Charger Details`}
+                      style={{
+                        width: '100%', // Set width to 100% to make it full width of the container
+                        minHeight: 200, // Set a minimum height or specify an exact height
+                        padding: '16px',
+                        maxWidth: '700px',
+                      }}
+                    >
+                      <Form.Item label="Name" name={[field.name, 'name']}
+                        rules={[
+                          {
+                            required: true,
+                            message: 'Please Enter a value',
+                          },
+                        ]}
+                      >
+                        <Input variant="filled" />
+                      </Form.Item>
+
+                      {/* New Status Field */}
+                      <Form.Item label="Status" name={[field.name, 'status']}
+                        rules={[
+                          { required: true, message: 'Please select a status' },
+                        ]}
+                      >
+                        {/* <Select placeholder="Select Status">
+                          <Select.Option value="Available">Available</Select.Option>
+                          <Select.Option value="Inactive">Inactive</Select.Option>
+                        </Select> */}
+                        <Radio.Group>
+                          <Radio value="Available"> Available </Radio>
+                          <Radio value="Inactive"> Inactive </Radio>
+                        </Radio.Group>
+                      </Form.Item>
+                      <Form.Item label="Power Output" name={[field.name, 'powerOutput']} labelCol={{ xs: 24, sm: 12, md: 8 }}
+                        rules={[
+                          {
+                            required: true,
+                            message: 'Please Enter a value',
+                          },
+                        ]}
+                      >
+                        <InputNumber addonAfter="w"
+                          variant="filled"
+                        />
+                      </Form.Item>
+                      <Form.Item label="Enery Consumptions" name={[field.name, 'energyConsumptions']}
+                        labelCol={{ xs: 24, sm: 12, md: 8 }}
+                        // labelCol={{ span: 8 }}
+                        rules={[
+                          {
+                            required: true,
+                            message: 'Please Enter a value',
+                          },
+                        ]}
+                      >
+                        <InputNumber addonAfter="kWh" variant="filled" />
+                      </Form.Item>
+                      <Form.Item label="Charger Type" name={[field.name, 'type']} labelCol={{ xs: 24, sm: 12, md: 8 }} rules={[
+                        {
+                          required: true,
+                          message: 'Select something!',
+                        },
+                      ]}
+                      >
+                        <Radio.Group onChange={(e) => handleTypeChange1(field.name, e)}>
+                          <Radio value="AC"> AC </Radio>
+                          <Radio value="DC"> DC </Radio>
+                        </Radio.Group>
+                      </Form.Item>
+                      {form.getFieldValue(['chargerInfo1', field.name, 'type']) &&
+                        (<Form.Item label="Connector Type" name={[field.name, 'subtype']} labelCol={{ xs: 24, sm: 12, md: 8 }} rules={[
+                          {
+                            required: true,
+                            message: 'Select something!',
+                          },
+                        ]}
+                          initialValue="CCS"
+                        >
+                          <Radio.Group>
+                            <Radio value="CCS"> CCS </Radio>
+                            <Radio value="CC-T6" disabled={form.getFieldValue(['chargerInfo1', field.name, 'type']) === "AC"}> CC-T6 </Radio>
+                            <Radio value="Type2" disabled={form.getFieldValue(['chargerInfo1', field.name, 'type']) === "DC"}> Type2 </Radio>
+                            <Radio value="Ather" disabled={form.getFieldValue(['chargerInfo1', field.name, 'type']) === "DC"}> Ather </Radio>
+                          </Radio.Group>
+                        </Form.Item>)
+                      }
+                    </AntCard>
+                  ))}
+                </div>
+              )}
+            </Form.List>
+
+            <Form.Item noStyle shouldUpdate>
+              {() => (
+                <Typography>
+                  {/* <pre>{JSON.stringify(form.getFieldsValue(), null, 2)}</pre>
+                  <pre>{JSON.stringify(formValues, null, 2)}</pre> */}
+                  {/* <pre>{JSON.stringify(values.chargerInfo, null, 2)}</pre> */}
+                </Typography>
+              )}
+            </Form.Item>
+          </Form>
+          <div style={{ marginTop: '16px', textAlign: 'end' }}>
+            <Button variant="outlined" danger color="error" onClick={handleCloseDialog1} style={{ marginRight: "1rem" }}>
+              Cancel
+            </Button>
+            <Button variant="outlined" color="error" onClick={handleUpdateCharger}>
+              Update
             </Button>
           </div>
         </DialogContent>

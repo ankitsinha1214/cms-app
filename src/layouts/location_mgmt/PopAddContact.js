@@ -53,6 +53,13 @@ function PopAddContact(props) {
     const createUser = (salesManager, dealer) => {
         // alert("User Created successfully!!")
         onClose(false);
+        const updatedChargersData = (props.value.chargerInfo).map(charger => ({
+            ...charger,
+            powerOutput: `${charger.powerOutput} w`, // Add 'w' to powerOutput for each charger
+            energyConsumptions: `${charger.energyConsumptions} kWh`, // Adding 'w' to powerOutput
+        }));
+        // console.log(updatedChargersData);
+        // return;
 
         // setIsDisabled(!isDisabled)
         const bodyFormData = new FormData();
@@ -81,7 +88,8 @@ function PopAddContact(props) {
         bodyFormData.append("salesManager", JSON.stringify(salesManager));
         bodyFormData.append("dealer", JSON.stringify(dealer));
         bodyFormData.append("facilities", JSON.stringify(props.value.facilities));
-        bodyFormData.append("chargerInfo", JSON.stringify(props.value.chargerInfo));
+        bodyFormData.append("chargerInfo", JSON.stringify(updatedChargersData));
+        // bodyFormData.append("chargerInfo", JSON.stringify(props.value.chargerInfo));
         // setIsBackdrop(true);
         axios({
             method: "post",
@@ -89,7 +97,7 @@ function PopAddContact(props) {
             data: bodyFormData,
             headers: {
                 'Content-Type': 'multipart/form-data',
-                    "Authorization": `Bearer ${localStorage.getItem("token")}`
+                "Authorization": `Bearer ${localStorage.getItem("token")}`
             }
         })
             .then((response) => {
