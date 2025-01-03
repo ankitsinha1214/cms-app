@@ -32,20 +32,22 @@ function PopAddUserVehicle(props) {
     const { enqueueSnackbar } = useSnackbar();
     const [data, setData] = useState([]);
     const [makeShow, setMakeShow] = useState([]);
+    const [typeShow, setTypeShow] = useState([]);
     const [modelShow, setModelShow] = useState([]);
     const [variantShow, setVariantShow] = useState([]);
     const navigate = useNavigate();
     const [vehicleId, setVehicleId] = useState("");
 
-    const createUser = (make, model, variant, registeration_number, range, vehicle_img) => {
+    const createUser = (type, make, model, variant, registeration_number, range, vehicle_img) => {
         onClose(false);
         const uservehicle = {
-            "make":make,
-            "model":model,
-            "variant":variant,
-            "vehicle_reg":registeration_number,
-            "range":range,
-            "vehicle_img":vehicle_img
+            "type": type,
+            "make": make,
+            "model": model,
+            "variant": variant,
+            "vehicle_reg": registeration_number,
+            "range": range,
+            "vehicle_img": vehicle_img
         }
         const arruservehicle = [];
         arruservehicle.push(uservehicle);
@@ -108,17 +110,17 @@ function PopAddUserVehicle(props) {
     console.log(props.value);
     const parseDate = (dateString) => {
         if (!dateString) return "";
-    
+
         // Split the date string into parts
         const [year, month, day] = dateString.split("-");
-    
+
         // Pad single-digit day and month with leading zeros
         const paddedDay = day.padStart(2, "0");
         const paddedMonth = month.padStart(2, "0");
-    
+
         // Return the formatted date string
         return `${paddedDay}/${paddedMonth}/${year}`;
-      };
+    };
     const [values, setValues] = useState(props.value);
     console.log(values);
     const getMake = () => {
@@ -127,7 +129,7 @@ function PopAddUserVehicle(props) {
             url: process.env.REACT_APP_BASEURL + "vehicle/all",
             headers: {
                 "Authorization": `Bearer ${localStorage.getItem("token")}`
-              },
+            },
         })
             .then((response) => {
                 if (response.data.success === true) {
@@ -135,7 +137,9 @@ function PopAddUserVehicle(props) {
                     const data = response.data.data[0];
                     setData(response.data.data[0]);
                     const makes = Object.keys(data);
-                    setMakeShow(makes);
+                    setTypeShow(makes);
+                    setMakeShow([]);
+                    // setMakeShow(makes);
                     setModelShow([]);
                     setVariantShow([]);
                 } else {
@@ -146,6 +150,22 @@ function PopAddUserVehicle(props) {
                 console.log(error);
             });
     };
+    const handleTypeChange = (event) => {
+        const selectedType = event.target.value;
+        // values.type = event.target.value;
+        setValues((prevValues) => ({
+            ...prevValues,
+            type: selectedType,
+            make: "",
+            model: "",
+            variant: "",
+        }));
+        const makes = Object.keys(data[selectedType]);
+        setMakeShow(makes);
+        setModelShow([]);
+        setVariantShow([]);
+    };
+
     const handleMakeChange = (event) => {
         const selectedMake = event.target.value;
         values.make = event.target.value;
@@ -155,7 +175,7 @@ function PopAddUserVehicle(props) {
             model: "",
             variant: "",
         }));
-        const models = Object.keys(data[selectedMake]);
+        const models = Object.keys(data[values.type][selectedMake]);
         setModelShow(models);
         setVariantShow([]);
     };
@@ -168,7 +188,7 @@ function PopAddUserVehicle(props) {
             model: selectedModel,
             variant: "",
         }));
-        const variants = data[values.make][selectedModel];
+        const variants = data[values.type][values.make][selectedModel];
         setVariantShow(variants);
     };
 
@@ -195,20 +215,24 @@ function PopAddUserVehicle(props) {
     };
     const reset = (event) => {
         event.preventDefault();
+        values.type = "";
         values.make = "";
         values.model = "";
         values.variant = "";
         values.registeration_number = "";
         values.range = "";
+        setMakeShow([]);
+        setModelShow([]);
+        setVariantShow([]);
         setValues(props.value);
     }
     const handleClose = () => {
         onClose(false);
     };
     const pop = () => {
-        if (!values.make || !values.model || !values.variant || values.make === '' || values.model === '' || values.variant === '') return enqueueSnackbar('Please Fill All The Details !!!', { variant: 'error' })
+        if (!values.type || !values.make || !values.model || !values.variant || values.type === '' || values.make === '' || values.model === '' || values.variant === '') return enqueueSnackbar('Please Fill All The Details !!!', { variant: 'error' })
         setIsBackdrop(false);
-        createUser(values.make, values.model, values.variant, values.registeration_number, values.range, values.vehicle_img);
+        createUser(values.type, values.make, values.model, values.variant, values.registeration_number, values.range, values.vehicle_img);
     };
     console.log(values);
     const back = () => {
@@ -250,6 +274,33 @@ function PopAddUserVehicle(props) {
                         </MDBox>
 
                         <MDBox p={2} component="form" role="form">
+                            <MDBox p={1}>
+                                <FormControl fullWidth>
+                                    <InputLabel id="demo-multiple-name-label">Vehicle Type</InputLabel>
+                                    <Select
+                                        sx={{
+                                            height: 50,
+                                        }}
+                                        labelId="demo-multiple-name-label"
+                                        id="demo-multiple-name"
+                                        placeholder="Select Type"
+                                        value={values.type}
+                                        name="type"
+                                        onChange={handleTypeChange}
+                                        input={<OutlinedInput label="Type" />}
+                                    >
+                                        {typeShow.map((name, index) => (
+                                            <MenuItem
+                                                key={index}
+                                                value={name}
+                                            //   style={getStyles(name.name, values.service, theme)}
+                                            >
+                                                {name}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </MDBox>
                             <MDBox p={1}>
                                 <FormControl fullWidth>
                                     <InputLabel id="demo-multiple-name-label">Make</InputLabel>

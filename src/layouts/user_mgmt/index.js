@@ -86,6 +86,7 @@ function User_mgmt() {
       date_of_birth: "",
       state: "",
       city: "",
+      type: "",
       make: "",
       model: "",
       variant: "",

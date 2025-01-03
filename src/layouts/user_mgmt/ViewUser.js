@@ -122,6 +122,7 @@ function ViewUser(props) {
                                         </MDBox>
 
                                         <Grid container direction="row" p={2}>
+                                            {(<DataCard title="Type" value={props.value.type} count={3} />)}
                                             {(<DataCard title="Make" value={props.value.make} count={3} />)}
                                             {(<DataCard title="Model" value={props.value.model} count={3} />)}
                                             {(<DataCard title="Variant" value={props.value.variant} count={3} />)}
@@ -129,7 +130,7 @@ function ViewUser(props) {
                                             {(<DataCard title="Registeration Number" value={props.value.registeration_number} count={3} />)}
                                             {(<DataCard title="Range" value={props.value.range} count={3} />)}
                                             {/* {(<DataCard title="Variant Image" value='' count={3} />)} */}
-                                            <div>
+                                            <div style={{marginLeft: "16px"}}>
                                             <h5>Vehicle Image</h5>
                                             <img src={props.value.vehicle_img} alt="Variant Image" width={150} height={150} srcset="" />
                                             </div>
