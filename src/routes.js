@@ -66,7 +66,7 @@ import UpdateLocation from "layouts/location_mgmt/UpdateLocation";
 const userRole = localStorage.getItem("role");
 const serviceID = JSON.parse(localStorage.getItem("data"))?.serviceID;
 // console.log(userRole);
-console.log(serviceID);
+// console.log(serviceID);
 export const adminRoutes = [
   {
     type: "collapse",

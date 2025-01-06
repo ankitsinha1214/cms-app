@@ -21,23 +21,75 @@ import { useSnackbar } from "notistack";
 import { Space, Switch } from 'antd';
 import { Country, State, City } from 'country-state-city';
 import { Checkbox, Col, Row } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import services from './components/Services';
-// import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { Image, Upload } from 'antd';
+import dayjs from 'dayjs';
 
 const { RangePicker } = TimePicker;
+
+const getBase64 = (file) =>
+    new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = (error) => reject(error);
+    });
+
 function UpdateLocation() {
     const navigate = useNavigate();
     const { enqueueSnackbar } = useSnackbar();
     const location = useLocation();
     const [states, setStates] = useState(State.getStatesOfCountry('IN'));
     const [cities, setCities] = useState([]);
-    // const [stateData, setStateData] = useState({});
-    // const [states, setStates] = useState([]);
+    // const [defaultFac, setDefaultFac] = useState([]);
+    const [workinghr, setWorkinghr] = useState(location?.state?.workingHours);
+    const [imageupdt, setImageupdt] = useState(false);
+    const [range, setRange] = useState([null, null]);
     // const [selectedState, setSelectedState] = useState("");
     // const [cities, setCities] = useState([]);
     const row_data = location.state || {}; // Get the state data passed via navigate
+    const [defaultFac, setDefaultFac] = useState(
+        row_data?.facilities?.map((facility) => facility.name || '') || []
+    );    
+    const [previewOpen, setPreviewOpen] = useState(false);
+    const [previewImage, setPreviewImage] = useState('');
+    const [fileList, setFileList] = useState([]);
+    const handlePreview = async (file) => {
+        if (!file.url && !file.preview) {
+            file.preview = await getBase64(file.originFileObj);
+        }
+        setPreviewImage(file.url || file.preview);
+        setPreviewOpen(true);
+    };
+    const uploadButton = (
+        <button
+            style={{
+                border: 0,
+                background: 'none',
+                color: 'grey'
+            }}
+            type="button"
+        >
+            <PlusOutlined />
+            <div
+                style={{
+                    marginTop: 8,
+                }}
+            >
+                Upload
+            </div>
+        </button>
+    );
+    const handleUploadChange = ({ fileList: newFileList }) => {
+        setFileList(newFileList);
+        setImageupdt(true);
+    }
     useEffect(() => {
         getState();
+        getImage();
+        getWorkinghr();
+        // getFacilities();
     }, []);
     const getInitialValues = () => ({
         locationName: row_data.locationName || "",
@@ -45,6 +97,9 @@ function UpdateLocation() {
         state: row_data.state || "",
         city: row_data.city || "",
         address: row_data.address || "",
+        // facilities: row_data.facilities 
+        // ? row_data.facilities.map(({ _id, icon , ...rest }) => rest) 
+        // : [], // Removes `_id` from each object in facilities
         facilities: row_data.facilities || [],
         workingDays: row_data.workingDays || "",
         workingHours: row_data.workingHours || "",
@@ -54,11 +109,11 @@ function UpdateLocation() {
         },
         salesManager: row_data.salesManager || { name: '', phoneNumber: '', email: '' },
         dealer: row_data.dealer || { name: '', phoneNumber: '', email: '' },
+        locationImage: row_data.locationImage || []
     });
     const [values, setValues] = useState(getInitialValues);
-    const [dialogMessage, setDialogMessage] = useState("");
     const onChange = (checkedValues) => {
-        // console.log('checked = ', checkedValues);
+        console.log('checked = ', checkedValues);
         // setCheckedValues(values);
         setValues((prevValues) => ({
             ...prevValues,
@@ -89,16 +144,18 @@ function UpdateLocation() {
     };
     const handleRangeChange = (values1) => {
         // `values` is an array of moment objects
-        // setRange(values);
-
+        // console.log(values1)
+        setRange(values1);
+        // console.log('hi');
         if (values1) {
             const [start, end] = values1;
             const workingHr = start.format('ha') + '-' + end.format('ha');
             console.log('Time : ', workingHr);
-            setValues((prevValues) => ({
-                ...prevValues,
-                workingHours: workingHr,
-            }));
+            setWorkinghr(workingHr);
+            // setValues((prevValues) => ({
+            //     ...prevValues,
+            //     workingHours: workingHr,
+            // }));
         }
     };
     const formatDate = (dateString) => {
@@ -119,7 +176,6 @@ function UpdateLocation() {
 
     const parseDate = (dateString) => {
         if (!dateString) return "";
-
         // Split the date string into parts
         const [year, month, day] = dateString.split("-");
 
@@ -153,11 +209,42 @@ function UpdateLocation() {
         }));
     };
 
+    const getImage = () => {
+        if (values.locationImage.length > 0) {
+            const formattedImages = values.locationImage.map((url, index) => ({
+                uid: `${index}`, // Unique identifier for each image
+                name: `Image_${index + 1}`, // Name to display
+                status: 'done', // Mark as already uploaded
+                url: `${process.env.REACT_APP_AWS_BASEURL}${url}`, // Image URL
+            }));
+            setFileList(formattedImages);
+        }
+    }
+    // }, [values.locationImage]);
+    // }, [location.state.locationImages]);
+
     console.log(values.facilities);
     useEffect(() => {
         setValues(getInitialValues);
     }, [row_data]);
     console.log(values);
+    // console.log(location.state.locationImage);
+    // const getWorkinghr = () => {
+    //     console.log('hi')
+    //     const [start, end] = values.workingHours.split('-');
+    //     setRange([moment(start, 'ha'), moment(end, 'ha')]);
+    // };
+    const getWorkinghr = () => {
+        // console.log('hi');
+        const [start, end] = values.workingHours.split('-');
+        setRange([dayjs(start, 'ha'), dayjs(end, 'ha')]);
+    };
+
+    // const getFacilities = () => {
+    //     const facilityNames = values.facilities.map((facility) => facility.name);
+    //     setDefaultFac(facilityNames);
+    // };
+
     const getState = () => {
         try {
             const selectedState = row_data?.state;
@@ -183,15 +270,23 @@ function UpdateLocation() {
         setCities(City.getCitiesOfState('IN', stateIsoCode));
     };
     const createUser = (locationName, locationType, state, city, address, facilities, workingDays, workingHours, freepaid, salesManager, dealer) => {
+        const selectedFacilities = services
+        .filter(service => facilities.includes(service.name)) // Match service name with facilities array
+        .map(service => ({
+            name: service.name,
+            icon: service.icon, // Use the icon from the service
+        }));
+    
+    console.log(selectedFacilities);
         const payload = {
             "locationName": locationName,
             "locationType": locationType,
             "state": state,
             "city": city,
             "address": address,
-            "facilities": facilities,
+            "facilities": selectedFacilities,
             "workingDays": workingDays,
-            "workingHours": workingHours,
+            "workingHours": workinghr,
             "freepaid": freepaid,
             "salesManager": salesManager,
             "dealer": dealer,
@@ -209,10 +304,14 @@ function UpdateLocation() {
             .then((response) => {
                 if (response.data.success === true) {
                     // console.log(response.data);
-                    enqueueSnackbar("Location Updated Successfully!!", { variant: 'success' });
-                    navigate("/location");
+                    if (imageupdt) {
+                        updateImage();
+                    }
+                    else {
+                        enqueueSnackbar("Location Updated Successfully!!", { variant: 'success' });
+                        navigate("/location");
+                    }
                     // window.location.reload();
-                    // setState_show(response.data.data);
                 } else {
                     console.log("status is false ");
                     enqueueSnackbar("An error occurred while updating the location.", { variant: 'error' });
@@ -223,7 +322,52 @@ function UpdateLocation() {
                 console.log(error);
                 enqueueSnackbar(error, { variant: 'error' });
             });
-        // console.log(parseDate(dob));
+    };
+    const updateImage = () => {
+        const bodyFormData = new FormData();
+        (fileList || []).forEach((file, index) => {
+            // console.log(file)
+            if (file?.originFileObj) {
+                bodyFormData.append('locationImage', file?.originFileObj);
+            }
+        });
+        (fileList || []).forEach((file, index) => {
+            // console.log(file)
+            var i = 0;
+            if (file?.url) {
+                bodyFormData.append(`locationImageUrl[${i}]`, file?.url);
+                i++;
+            }
+        });
+        // console.log(bodyFormData)
+        // return;
+        bodyFormData.append("locationId", row_data?._id);
+        const token = localStorage.getItem("token");
+        axios({
+            method: "put",
+            url: process.env.REACT_APP_BASEURL + "charger-locations/update-image",
+            data: bodyFormData,
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                "Authorization": `Bearer ${token}`,
+            },
+        })
+            .then((response) => {
+                if (response.data.success === true) {
+                    // console.log(response.data);
+                    enqueueSnackbar("Location Updated Successfully!!", { variant: 'success' });
+                    navigate("/location");
+                    window.location.reload();
+                } else {
+                    console.log("status is false ");
+                    enqueueSnackbar("An error occurred while updating the location Image.", { variant: 'error' });
+
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+                enqueueSnackbar(error, { variant: 'error' });
+            });
     };
 
     const handleChange = (event) => {
@@ -233,10 +377,27 @@ function UpdateLocation() {
         }));
     };
 
+    const isValidImage = (file) => {
+        // Check if the file type starts with 'image'
+        return file.type?.startsWith('image/');
+    };
     const handleSubmit = (event) => {
         event.preventDefault();
         if (values.locationName === '' || values.locationType === '' || values.state === '' || values.city === '' || values.address === '' || values.facilities === '' || values.workingDays === '' || values.workingHours === '' || values.freepaid === '') {
             return enqueueSnackbar('All fields are necessary', { variant: 'error' });
+        }
+        // fileList.forEach(async element => {
+        //     if(element?.url){
+        //         element = await convertImageUrlToFile(element.url);
+        //         // img = await convertImageUrlToFile(img, `${imgKey}.jpg`);
+        //     }
+        // });
+        // console.log(fileList);
+        // const hasImages = Array.from(fileList).some(file => isValidImage(file));
+        // if (!hasImages) {
+        if (fileList.length === 0) {
+            // Show error notification if no images are found
+            return enqueueSnackbar('Please upload at least one location image!', { variant: 'error' });
         }
         createUser(
             values.locationName,
@@ -253,13 +414,42 @@ function UpdateLocation() {
         );
     };
 
+    const handlePreviewClose = () => {
+        setPreviewImage('');
+        setPreviewOpen(false);
+    };
+
     const reset = (event) => {
         event.preventDefault();
+        getState();
+        getImage();
+        getWorkinghr();
+        // getFacilities();
         setValues(getInitialValues());
     };
-    console.log(cities);
     return (
         <DashboardLayout>
+            {previewImage && (
+                <Image
+                    wrapperStyle={{
+                        display: 'none',
+                        // zIndex: 1050,
+                    }}
+                    preview={{
+                        visible: previewOpen,
+                        onVisibleChange: (visible) => {
+                            setPreviewOpen(visible);
+                            if (!visible) handlePreviewClose(); // Handle dialog reopening when preview closes
+                        },
+                        afterOpenChange: (visible) => {
+                            if (!visible) handlePreviewClose();
+                        },
+                        // onVisibleChange: (visible) => setPreviewOpen(visible),
+                        // afterOpenChange: (visible) => !visible && setPreviewImage(''),
+                    }}
+                    src={previewImage}
+                />
+            )}
             <DashboardNavbar />
             <MDBox pt={6} pb={3}>
                 <Grid container spacing={6}>
@@ -419,25 +609,21 @@ function UpdateLocation() {
                                         >
                                             <MenuItem
                                                 value={"Everyday"}
-                                            //   style={getStyles(name.name, values.service, theme)}
                                             >
                                                 Everyday
                                             </MenuItem>
                                             <MenuItem
                                                 value={"Monday-Saturday"}
-                                            //   style={getStyles(name.name, values.service, theme)}
                                             >
                                                 Monday-Saturday
                                             </MenuItem>
                                             <MenuItem
                                                 value={"Monday-Friday"}
-                                            //   style={getStyles(name.name, values.service, theme)}
                                             >
                                                 Monday-Friday
                                             </MenuItem>
                                             <MenuItem
                                                 value={"Monday-Thrusday"}
-                                            //   style={getStyles(name.name, values.service, theme)}
                                             >
                                                 Monday-Thrusday
                                             </MenuItem>
@@ -447,27 +633,51 @@ function UpdateLocation() {
                                 <MDBox p={1}>
                                     <FormLabel>Working Hours</FormLabel>
                                     <Flex gap={8}>
-                                        <RangePicker use12Hours format="h a" placeholder={['Start Time', 'End Time']} changeOnScroll needConfirm={false} onChange={handleRangeChange} />
+                                        <RangePicker
+                                            use12Hours
+                                            format="h a"
+                                            value={range}
+                                            // defaultValue={range} 
+                                            placeholder={['Start Time', 'End Time']}
+                                            changeOnScroll
+                                            needConfirm={false}
+                                            // onChange={(values) => {
+                                            //     console.log(values);
+                                            //     setRange(values); // Update the range state
+                                            //     handleRangeChange(values); // Update the working hours string
+                                            // }}
+                                            onChange={handleRangeChange}
+                                        />
                                     </Flex>
                                 </MDBox>
                                 <MDBox p={1}>
                                     <FormLabel >Facilities</FormLabel>
-                                </MDBox>
-                                <MDBox p={1}>
+                                {/* </MDBox> */}
+                                {/* <MDBox p={1}> */}
                                     <Checkbox.Group
                                         style={{
                                             width: '100%',
                                         }}
                                         onChange={onChange}
-                                        value={values.facilities}
-                                        defaultValue={values.facilities}
+                                    // value={defaultFac}
+                                    // value={location.state.facilities}
+                                    // defaultValue={location.state.facilities}
+                                    // defaultValue={[{
+                                    //     name: "Petrol Pumps",
+                                    //     icon: "https://example.com/icons/petrol-pump.svg" // Replace with your actual icon URL
+                                    //   }]}
+                                    // defaultValue={["Petrol Pumps"]} 
+                                    defaultValue={defaultFac} 
                                     >
                                         <Row gutter={16}>
                                             {services.map((service, index) => (
                                                 <Col key={index} xs={24} sm={12} md={8}>
-                                                    <Checkbox 
-                                                    value={service}
-                                                    checked={true}
+                                                    <Checkbox
+                                                        value={service.name}
+                                                        // value={service}
+                                                        // checked={true}
+                                                        // defaultChecked={true}
+                                                        // indeterminate={true}
                                                     // checked={values.facilities.some(facility => facility.name === service.name)}
                                                     >{service.name}</Checkbox>
                                                 </Col>
@@ -502,225 +712,107 @@ function UpdateLocation() {
                                     </Grid>
                                 </Grid>
                                 <MDBox p={1}>
-                                <MDInput
-                                    type="text"
-                                    label="Sales Manager Name"
-                                    value={values.salesManager.name}
-                                    name="salesManager.name"
-                                    margin="dense"
-                                    fullWidth={true}
-                                    onChange={handleSalesManagerChange}
-                                />
-                            </MDBox>
-
-                            <MDBox p={1}>
-                                <MDInput
-                                    type="email"
-                                    label="Sales Manager Email"
-                                    value={values.salesManager.email}
-                                    name="salesManager.email"
-                                    // multiline
-                                    // rows={5}
-                                    margin="dense"
-                                    pattern=".+@+.+.com"
-                                    fullWidth={true}
-                                    onChange={handleSalesManagerChange}
-                                />
-                            </MDBox>
-                            <MDBox p={1}>
-                                <MDInput
-                                    type="number"
-                                    label="Sales Manager Phone"
-                                    value={values.salesManager.phoneNumber}
-                                    name="salesManager.phoneNumber"
-                                    // multiline
-                                    // rows={5}
-                                    inputProps={{
-                                        pattern: "\\+[1-9]{1}[0-9]{1,2}[0-9]{10}"
-                                    }}
-                                    margin="dense"
-                                    fullWidth={true}
-                                    onChange={handleSalesManagerChange}
-                                />
-                            </MDBox>
-                            <MDBox p={1}>
-                                <MDInput
-                                    type="text"
-                                    label="Dealer Name"
-                                    value={values.dealer.name}
-                                    name="dealer.name"
-                                    margin="dense"
-                                    fullWidth={true}
-                                    onChange={handleDealerChange}
-                                />
-                            </MDBox>
-
-                            <MDBox p={1}>
-                                <MDInput
-                                    type="email"
-                                    label="Dealer Email"
-                                    value={values.dealer.email}
-                                    name="dealer.email"
-                                    // multiline
-                                    // rows={5}
-                                    margin="dense"
-                                    pattern=".+@+.+.com"
-                                    fullWidth={true}
-                                    onChange={handleDealerChange}
-                                />
-                            </MDBox>
-                            <MDBox p={1}>
-                                <MDInput
-                                    type="number"
-                                    label="Dealer Phone"
-                                    value={values.dealer.phoneNumber}
-                                    name="dealer.phoneNumber"
-                                    // multiline
-                                    // rows={5}
-                                    inputProps={{
-                                        pattern: "\\+[1-9]{1}[0-9]{1,2}[0-9]{10}"
-                                    }}
-                                    margin="dense"
-                                    fullWidth={true}
-                                    onChange={handleDealerChange}
-                                />
-                            </MDBox>
-                                {/* <MDBox p={1}>
                                     <MDInput
-                                        disabled
-                                        type="email"
-                                        label="E-mail ID"
-                                        value={values.email}
-                                        name="email"
-                                        placeholder="username@gmail.com"
-                                        pattern=".+@+.+.com"
-                                        margin="dense"
-                                        fullWidth
-                                        onChange={handleChange}
-                                    />
-                                </MDBox>
-                                <MDBox p={1}>
-                                    <MDInput
-                                        disabled
                                         type="text"
-                                        label="Gender"
-                                        value={values.gender}
-                                        name="gender"
+                                        label="Sales Manager Name"
+                                        value={values.salesManager.name}
+                                        name="salesManager.name"
                                         margin="dense"
-                                        fullWidth
-                                        onChange={handleChange}
+                                        fullWidth={true}
+                                        onChange={handleSalesManagerChange}
                                     />
-                                </MDBox> */}
-                                {/* <MDBox p={1}>
-                                    <FormControl fullWidth variant="outlined" margin="dense">
-                                        <InputLabel
-                                            shrink={true}
-                                            htmlFor="date-of-birth"
-                                        >
-                                            Date Of Birth
-                                        </InputLabel>
-                                        <OutlinedInput
-                                            disabled
-                                            id="date-of-birth"
-                                            type="date"
-                                            label="Date Of Birth"
-                                            value={values.date_of_birth}
-                                            name="date_of_birth"
-                                            onChange={handleChange}
-                                            notched={true}
-                                        />
-                                    </FormControl>
-                                </MDBox> */}
-                                {/* <MDBox p={1}>
-                  <FormControl fullWidth variant="outlined" margin="dense">
-                    <InputLabel shrink={Boolean(values.date_of_birth)} htmlFor="date-of-birth">
-                      Date Of Birth
-                    </InputLabel>
-                    <OutlinedInput
-                      id="date-of-birth"
-                      type="date"
-                      value={parseDate(values.date_of_birth)}
-                      name="date_of_birth"
-                      onChange={handleChange}
-                    />
-                  </FormControl>
-                </MDBox> */}
-                                {/* <MDBox p={1}>
-                  <MDInput
-                    type="text"
-                    label="State"
-                    value={values.state}
-                    name="state"
-                    margin="dense"
-                    fullWidth
-                    onChange={handleChange}
-                  />
-                </MDBox> */}
-                                {/* <MDBox p={1}>
-                  <MDInput
-                    type="text"
-                    label="City"
-                    value={values.city}
-                    name="city"
-                    margin="dense"
-                    fullWidth
-                    onChange={handleChange}
-                  />
-                </MDBox> */}
-                                {/* <MDBox p={1}>
-                                    <FormControl fullWidth>
-                                        <InputLabel id="demo-multiple-name-label">State</InputLabel>
-                                        <Select
-                                            sx={{
-                                                height: 50,
-                                            }}
-                                            labelId="demo-multiple-name-label"
-                                            id="demo-multiple-name"
-                                            placeholder="State"
-                                            value={values.state}
-                                            name="state"
-                                            onChange={handleStateChange}
-                                            input={<OutlinedInput label="State" />}
-                                        >
-                                            {states.map((state, index) => (
-                                                <MenuItem
-                                                    key={index}
-                                                    value={state}
-                                                //   style={getStyles(name.name, values.service, theme)}
-                                                >
-                                                    {state}
-                                                </MenuItem>
-                                            ))}
-                                        </Select>
-                                    </FormControl>
+                                </MDBox>
+
+                                <MDBox p={1}>
+                                    <MDInput
+                                        type="email"
+                                        label="Sales Manager Email"
+                                        value={values.salesManager.email}
+                                        name="salesManager.email"
+                                        // multiline
+                                        // rows={5}
+                                        margin="dense"
+                                        pattern=".+@+.+.com"
+                                        fullWidth={true}
+                                        onChange={handleSalesManagerChange}
+                                    />
                                 </MDBox>
                                 <MDBox p={1}>
-                                    <FormControl fullWidth>
-                                        <InputLabel id="demo-multiple-name-label">City</InputLabel>
-                                        <Select
-                                            sx={{
-                                                height: 50,
-                                            }}
-                                            labelId="demo-multiple-name-label"
-                                            id="demo-multiple-name"
-                                            placeholder="City"
-                                            value={values.city}
-                                            name="city"
-                                            onChange={handleChange}
-                                            input={<OutlinedInput label="City" />}
-                                        >
-                                            {cities.map((city, index) => (
-                                                <MenuItem
-                                                    key={index}
-                                                    value={city}
-                                                //   style={getStyles(name.name, values.service, theme)}
-                                                >
-                                                    {city}
-                                                </MenuItem>
-                                            ))}
-                                        </Select>
-                                    </FormControl>
-                                </MDBox> */}
+                                    <MDInput
+                                        type="number"
+                                        label="Sales Manager Phone"
+                                        value={values.salesManager.phoneNumber}
+                                        name="salesManager.phoneNumber"
+                                        // multiline
+                                        // rows={5}
+                                        inputProps={{
+                                            pattern: "\\+[1-9]{1}[0-9]{1,2}[0-9]{10}"
+                                        }}
+                                        margin="dense"
+                                        fullWidth={true}
+                                        onChange={handleSalesManagerChange}
+                                    />
+                                </MDBox>
+                                <MDBox p={1}>
+                                    <MDInput
+                                        type="text"
+                                        label="Dealer Name"
+                                        value={values.dealer.name}
+                                        name="dealer.name"
+                                        margin="dense"
+                                        fullWidth={true}
+                                        onChange={handleDealerChange}
+                                    />
+                                </MDBox>
+
+                                <MDBox p={1}>
+                                    <MDInput
+                                        type="email"
+                                        label="Dealer Email"
+                                        value={values.dealer.email}
+                                        name="dealer.email"
+                                        // multiline
+                                        // rows={5}
+                                        margin="dense"
+                                        pattern=".+@+.+.com"
+                                        fullWidth={true}
+                                        onChange={handleDealerChange}
+                                    />
+                                </MDBox>
+                                <MDBox p={1}>
+                                    <MDInput
+                                        type="number"
+                                        label="Dealer Phone"
+                                        value={values.dealer.phoneNumber}
+                                        name="dealer.phoneNumber"
+                                        // multiline
+                                        // rows={5}
+                                        inputProps={{
+                                            pattern: "\\+[1-9]{1}[0-9]{1,2}[0-9]{10}"
+                                        }}
+                                        margin="dense"
+                                        fullWidth={true}
+                                        onChange={handleDealerChange}
+                                    />
+                                </MDBox>
+                                <MDBox p={1}>
+                                    <FormLabel >Location Image</FormLabel>
+
+                                </MDBox>
+
+                                <MDBox p={1}>
+                                    <Upload
+                                        // action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
+                                        customRequest={({ file, onSuccess }) => setTimeout(() => onSuccess("ok"), 0)}
+                                        listType="picture-card"
+                                        fileList={fileList}
+                                        onPreview={handlePreview}
+                                        onChange={handleUploadChange}
+                                    >
+                                        {fileList.length >= 6 ? null : uploadButton}
+                                    </Upload>
+
+                                </MDBox>
                                 <Grid container direction="row" justifyContent="space-around" p={2}>
                                     <MDButton variant="gradient" color="info" onClick={reset}>
                                         Reset

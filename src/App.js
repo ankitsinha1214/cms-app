@@ -61,9 +61,9 @@ useEffect(() => {
   }
 }, [userRole,superAdminRoutes]);
 // }, [userRole]);
-  console.log(superAdminRoutes);
-  console.log(adminRoutes);
-  console.log(routes);
+  // console.log(superAdminRoutes);
+  // console.log(adminRoutes);
+  // console.log(routes);
   const [controller, dispatch] = useMaterialUIController();
   const { miniSidenav, direction, layout, openConfigurator, sidenavColor, transparentSidenav, whiteSidenav, darkMode } = controller;
   const rState = useSelector(s => s.user.userData)
