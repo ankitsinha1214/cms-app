@@ -76,9 +76,10 @@ import { Flex, Tag } from 'antd';
 import LaunchIcon from "@mui/icons-material/Launch";
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import './Somecss.css';
+const { Option } = Select;
 // import { ConfigProvider, Space } from 'antd';
 // import { createStyles } from 'antd-style';
-// import './Somecss.css';
 
 // const useStyle = createStyles(({ prefixCls, css }) => ({
 //   linearGradientButton: css`
@@ -192,13 +193,22 @@ const ViewLocation = () => {
   const [editChargerInfo, setEditChargerInfo] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [openDialog1, setOpenDialog1] = useState(false);
+  const [selectedCurrency, setSelectedCurrency] = useState("INR");
   const handleCloseDialog = () => {
     // Close the dialog
     setOpenDialog(false);
+    setSelectedCurrency("INR");
+  };
+  const handleChangeCurrency = (e) => {
+    // console.log(e);
+    setSelectedCurrency(e);
   };
   const handleCloseDialog1 = () => {
     // Close the dialog
     setOpenDialog1(false);
+    setSelectedCurrency("INR");
+    setEditChargerInfo([]);
+    window.location.reload();
   };
   const navEdit = () => {
     navigate("/location/edit", { state: location?.state });
@@ -208,6 +218,15 @@ const ViewLocation = () => {
     'Available',
     'Inuse'
   ];
+  const selectAfter = (
+    <Select defaultValue="INR" style={{ width: 100 }} onChange={(e) => handleChangeCurrency(e)}>
+        <Option value="INR">&#8377; (INR)</Option>
+        <Option value="USD">$ (USD)</Option>
+        <Option value="EUR">€ (EUR)</Option>
+        <Option value="GBP">£ (GBP)</Option>
+        <Option value="CNY">¥ (CNY)</Option>
+    </Select>
+);
   const handleTypeChange = (key, e) => {
     const value = e.target.value;
     const chargerInfo = form.getFieldValue('chargerInfo') || [];
@@ -242,12 +261,15 @@ const ViewLocation = () => {
   };
   const handleEdit = (row_data) => {
     // navigate("/location/edit", { state: row_data });
+    console.log(row_data);
     const updatedChargerData = {
       ...row_data,
-      powerOutput: row_data.powerOutput.replace(/\s*w$/i, '').trim(), // Remove 'w' and whitespace
+      powerOutput: row_data.powerOutput.replace(/\s*kW$/i, '').trim(), // Remove 'w' and whitespace
       energyConsumptions: row_data.energyConsumptions.replace(/\s*kWh$/i, '').trim(), // Remove 'kWh' and whitespace
+      amount: row_data.costPerUnit.amount, // Remove 'kWh' and whitespace
     };
-    // console.log(updatedChargerData);
+    console.log(updatedChargerData);
+    console.log(editChargerInfo);
     setEditChargerInfo([updatedChargerData]);
     // console.log(row_data);
     setOpenDialog1(true);
@@ -297,8 +319,13 @@ const ViewLocation = () => {
         // Modify the chargerData before sending to the API
         const updatedChargerData = {
           ...chargerData,
-          powerOutput: `${chargerData.powerOutput} w`, // Adding 'w' to powerOutput
-          energyConsumptions: `${chargerData.energyConsumptions} kWh`, // Adding 'w' to powerOutput
+          powerOutput: `${chargerData.powerOutput} kW`, // Adding 'w' to powerOutput
+          // energyConsumptions: `${chargerData.energyConsumptions} kWh`, // Adding 'w' to powerOutput
+          energyConsumptions: `0 kWh`, // Adding 'w' to powerOutput
+          costPerUnit: {
+            amount: chargerData.amount,
+            currency: selectedCurrency
+          }
         };
         // console.log(chargerData);
         // console.log(updatedChargerData);
@@ -346,10 +373,18 @@ const ViewLocation = () => {
       .then(() => {
         const chargerData = form.getFieldValue("chargerInfo")[0];  // Get the single charger entry from the form
         // Modify the chargerData before sending to the API
+        // console.log(chargerData.amount);
+        // console.log(selectedCurrency);
+        // return;
         const updatedChargerData = {
           ...chargerData,
-          powerOutput: `${chargerData.powerOutput} w`, // Adding 'w' to powerOutput
-          energyConsumptions: `${chargerData.energyConsumptions} kWh`, // Adding 'w' to powerOutput
+          powerOutput: `${chargerData.powerOutput} kW`, // Adding 'w' to powerOutput
+          // energyConsumptions: `${chargerData.energyConsumptions} kWh`, // Adding 'w' to powerOutput
+          energyConsumptions: `0 kWh`, 
+          costPerUnit: {
+            amount: chargerData.amount,
+            currency: selectedCurrency
+          }
         };
         // console.log(updatedChargerData);
         // return;
@@ -484,6 +519,30 @@ const ViewLocation = () => {
       muiTableBodyCellProps: {
         align: 'center',
       }, accessorKey: "energyConsumptions", align: "center"
+    },
+    {
+      header: "Cost Per Unit", muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      }, 
+      // accessorKey: `costPerUnit`, 
+      align: "center",
+      //  Cell: (row) => (
+      //   <div>
+      //     {row.row.costPerUnit.map((cost, index) => (
+      //       <div key={index}>
+      //        {cost.currency} {cost.amount}
+      //       </div>
+      //     ))}
+      //   </div>
+      // ),
+      Cell: (row) => (
+        <div>
+          {`${row.row.original.costPerUnit?.currency} ${row.row.original.costPerUnit?.amount}`}
+        </div>
+      ),
     },
     {
       header: "Charger Subtype", muiTableHeadCellProps: {
@@ -721,18 +780,18 @@ const ViewLocation = () => {
         className: styles.linearGradientButton,
       }}
     > */}
-                <Grid item xs={12} md={6} 
-                sx={{
-                  textAlign: {
-                    xs: 'start', // Left-align for extra-small screens
-                    md: 'end',   // Right-align for medium and larger screens
-                  },
-                }}
+                <Grid item xs={12} md={6}
+                  sx={{
+                    textAlign: {
+                      xs: 'start', // Left-align for extra-small screens
+                      md: 'end',   // Right-align for medium and larger screens
+                    },
+                  }}
                 // style={{
                 //   textAlign:  xs: 'start', // Left-align for extra-small screens
                 //   md: 'end',  xs ? "start" : "end"
                 //   }}
-                  >
+                >
                   {/* <Space> */}
                   <Button type="primary" size="large" icon={<EditIcon />} onClick={navEdit}>
                     Edit Location
@@ -1249,11 +1308,12 @@ const ViewLocation = () => {
                           },
                         ]}
                       >
-                        <InputNumber addonAfter="w"
+                        <InputNumber addonAfter="kW"
                           variant="filled"
+                          style={{width:"100%"}}
                         />
                       </Form.Item>
-                      <Form.Item label="Enery Consumptions" name={[field.name, 'energyConsumptions']}
+                      {/* <Form.Item label="Enery Consumptions" name={[field.name, 'energyConsumptions']}
                         labelCol={{ xs: 24, sm: 12, md: 8 }}
                         // labelCol={{ span: 8 }}
                         rules={[
@@ -1264,6 +1324,20 @@ const ViewLocation = () => {
                         ]}
                       >
                         <InputNumber addonAfter="kWh" variant="filled" />
+                      </Form.Item> */}
+                      <Form.Item label="Cost Per Unit" name={[field.name, 'amount']} labelCol={{ xs: 24, sm: 12, md: 8 }}
+                        rules={[
+                          {
+                            required: true,
+                            message: 'Please Enter a value',
+                          },
+                        ]}
+                      >
+                        <InputNumber
+                          addonBefore={selectAfter}
+                          // addonAfter="kWh" 
+                          style={{width:"100%"}}
+                          variant="filled" />
                       </Form.Item>
                       <Form.Item label="Charger Type" name={[field.name, 'type']} labelCol={{ xs: 24, sm: 12, md: 8 }} rules={[
                         {
@@ -1457,11 +1531,12 @@ const ViewLocation = () => {
                           },
                         ]}
                       >
-                        <InputNumber addonAfter="w"
+                        <InputNumber addonAfter="kW"
                           variant="filled"
+                          style={{width:"100%"}}
                         />
                       </Form.Item>
-                      <Form.Item label="Enery Consumptions" name={[field.name, 'energyConsumptions']}
+                      {/* <Form.Item label="Enery Consumptions" name={[field.name, 'energyConsumptions']}
                         labelCol={{ xs: 24, sm: 12, md: 8 }}
                         // labelCol={{ span: 8 }}
                         rules={[
@@ -1472,6 +1547,20 @@ const ViewLocation = () => {
                         ]}
                       >
                         <InputNumber addonAfter="kWh" variant="filled" />
+                      </Form.Item> */}
+                      <Form.Item label="Cost Per Unit" name={[field.name, 'amount']} labelCol={{ xs: 24, sm: 12, md: 8 }}
+                        rules={[
+                          {
+                            required: true,
+                            message: 'Please Enter a value',
+                          },
+                        ]}
+                      >
+                        <InputNumber
+                          addonBefore={selectAfter}
+                          // addonAfter="kWh" 
+                          style={{width:"100%"}}
+                          variant="filled" />
                       </Form.Item>
                       <Form.Item label="Charger Type" name={[field.name, 'type']} labelCol={{ xs: 24, sm: 12, md: 8 }} rules={[
                         {

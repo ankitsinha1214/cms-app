@@ -95,7 +95,6 @@ function PopAddLocation(props) {
     };
 
     const [values, setValues] = useState(props.value);
-
     // const handleChange = (event) => {
     //     setValues((prevValues) => ({
     //         ...prevValues,
@@ -131,7 +130,7 @@ function PopAddLocation(props) {
         }
         // Validate each valid charger entry
         for (const charger of validChargerInfo) {
-            if (!charger.name || !charger.powerOutput || !charger.energyConsumptions || !charger.type || !charger.subtype) {
+            if (!charger.name || !charger.powerOutput || !charger.type || !charger.subtype || !charger.amount) {
                 return enqueueSnackbar('Please fill all the details for each charger!', { variant: 'error' });
             }
         }
@@ -162,6 +161,15 @@ function PopAddLocation(props) {
     console.log(values);
 
 
+    const selectAfter = (
+        <Select defaultValue="INR" style={{ width: 60 }}>
+            <Option value="INR">&#8377;</Option>
+            <Option value="USD">$</Option>
+            <Option value="EUR">€</Option>
+            <Option value="GBP">£</Option>
+            <Option value="CNY">¥</Option>
+        </Select>
+    );
     const handleTypeChange = (key, e) => {
         const value = e.target.value;
         const chargerInfo = form.getFieldValue('chargerInfo') || [];
@@ -224,7 +232,7 @@ function PopAddLocation(props) {
                                     onValuesChange={(changedValues, allValues) => {
                                         setFormValues(allValues);
                                     }}
-                                    // initialValues={formValues}
+                                // initialValues={formValues}
                                 >
                                     <Form.List name="chargerInfo">
                                         {(fields, { add, remove }) => (
@@ -266,9 +274,22 @@ function PopAddLocation(props) {
                                                                 },
                                                             ]}
                                                         >
-                                                            <InputNumber addonAfter="w" variant="filled" />
+                                                            <InputNumber addonAfter="kW" variant="filled" />
                                                         </Form.Item>
-                                                        <Form.Item label="Enery Consumptions" name={[field.name, 'energyConsumptions']} labelCol={{ xs: 24, sm: 12, md: 8 }}
+                                                        <Form.Item label="Cost Per Unit" name={[field.name, 'amount']} labelCol={{ xs: 24, sm: 12, md: 8 }}
+                                                            rules={[
+                                                                {
+                                                                    required: true,
+                                                                    message: 'Please Enter a value',
+                                                                },
+                                                            ]}
+                                                        >
+                                                            <InputNumber
+                                                                addonBefore={selectAfter}
+                                                                // addonAfter="kWh" 
+                                                                variant="filled" />
+                                                        </Form.Item>
+                                                        {/* <Form.Item label="Enery Consumptions" name={[field.name, 'energyConsumptions']} labelCol={{ xs: 24, sm: 12, md: 8 }}
                                                             rules={[
                                                                 {
                                                                     required: true,
@@ -277,7 +298,7 @@ function PopAddLocation(props) {
                                                             ]}
                                                         >
                                                             <InputNumber addonAfter="kWh" variant="filled" />
-                                                        </Form.Item>
+                                                        </Form.Item> */}
                                                         <Form.Item label="Charger Type" name={[field.name, 'type']} labelCol={{ xs: 24, sm: 12, md: 8 }} rules={[
                                                             {
                                                                 required: true,

@@ -320,7 +320,7 @@ function Location_mgmt() {
             const dcCount = location.chargerInfo.filter(charger => charger.type === 'DC').length;
             const energyDisp = location.chargerInfo.reduce((total, charger) => {
               // console.log(charger);
-              const energyValue = parseFloat(charger.energyConsumptions.replace(' kWh', ''));
+              const energyValue = parseFloat(charger?.energyConsumptions?.replace(' kWh', ''));
               return total + energyValue;
             }, 0).toFixed(1) + ' kWh';
             const chargerInfoRep = location.chargerInfo.map(charger => ({

@@ -51,7 +51,7 @@ function UpdateLocation() {
     const row_data = location.state || {}; // Get the state data passed via navigate
     const [defaultFac, setDefaultFac] = useState(
         row_data?.facilities?.map((facility) => facility.name || '') || []
-    );    
+    );
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
     const [fileList, setFileList] = useState([]);
@@ -271,20 +271,22 @@ function UpdateLocation() {
     };
     const createUser = (locationName, locationType, state, city, address, facilities, workingDays, workingHours, freepaid, salesManager, dealer) => {
         const selectedFacilities = services
-        .filter(service => facilities.includes(service.name)) // Match service name with facilities array
-        .map(service => ({
-            name: service.name,
-            icon: service.icon, // Use the icon from the service
-        }));
-    
-    console.log(selectedFacilities);
+            .filter(service => facilities.includes(service.name)) // Match service name with facilities array
+            .map(service => ({
+                name: service.name,
+                icon: service.icon, // Use the icon from the service
+            }));
+
+        console.log(services);
+        console.log(facilities);
+        console.log(selectedFacilities);
         const payload = {
             "locationName": locationName,
             "locationType": locationType,
             "state": state,
             "city": city,
             "address": address,
-            "facilities": selectedFacilities,
+            "facilities": (selectedFacilities.length === 0) ? facilities : selectedFacilities,
             "workingDays": workingDays,
             "workingHours": workinghr,
             "freepaid": freepaid,
@@ -652,32 +654,32 @@ function UpdateLocation() {
                                 </MDBox>
                                 <MDBox p={1}>
                                     <FormLabel >Facilities</FormLabel>
-                                {/* </MDBox> */}
-                                {/* <MDBox p={1}> */}
+                                    {/* </MDBox> */}
+                                    {/* <MDBox p={1}> */}
                                     <Checkbox.Group
                                         style={{
                                             width: '100%',
                                         }}
                                         onChange={onChange}
-                                    // value={defaultFac}
-                                    // value={location.state.facilities}
-                                    // defaultValue={location.state.facilities}
-                                    // defaultValue={[{
-                                    //     name: "Petrol Pumps",
-                                    //     icon: "https://example.com/icons/petrol-pump.svg" // Replace with your actual icon URL
-                                    //   }]}
-                                    // defaultValue={["Petrol Pumps"]} 
-                                    defaultValue={defaultFac} 
+                                        // value={defaultFac}
+                                        // value={location.state.facilities}
+                                        // defaultValue={location.state.facilities}
+                                        // defaultValue={[{
+                                        //     name: "Petrol Pumps",
+                                        //     icon: "https://example.com/icons/petrol-pump.svg" // Replace with your actual icon URL
+                                        //   }]}
+                                        // defaultValue={["Petrol Pumps"]} 
+                                        defaultValue={defaultFac}
                                     >
                                         <Row gutter={16}>
                                             {services.map((service, index) => (
                                                 <Col key={index} xs={24} sm={12} md={8}>
                                                     <Checkbox
                                                         value={service.name}
-                                                        // value={service}
-                                                        // checked={true}
-                                                        // defaultChecked={true}
-                                                        // indeterminate={true}
+                                                    // value={service}
+                                                    // checked={true}
+                                                    // defaultChecked={true}
+                                                    // indeterminate={true}
                                                     // checked={values.facilities.some(facility => facility.name === service.name)}
                                                     >{service.name}</Checkbox>
                                                 </Col>

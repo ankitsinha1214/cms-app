@@ -55,8 +55,13 @@ function PopAddContact(props) {
         onClose(false);
         const updatedChargersData = (props.value.chargerInfo).map(charger => ({
             ...charger,
-            powerOutput: `${charger.powerOutput} w`, // Add 'w' to powerOutput for each charger
-            energyConsumptions: `${charger.energyConsumptions} kWh`, // Adding 'w' to powerOutput
+            powerOutput: `${charger.powerOutput} kW`, // Add 'w' to powerOutput for each charger
+            // energyConsumptions: `${charger.energyConsumptions} kWh`, // Adding 'w' to powerOutput
+            energyConsumptions: `0 kWh`, 
+            costPerUnit: {
+              amount: charger.amount,
+              currency: 'INR'
+            }
         }));
         // console.log(updatedChargersData);
         // return;
