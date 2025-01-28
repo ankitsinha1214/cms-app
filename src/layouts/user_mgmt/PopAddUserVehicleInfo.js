@@ -230,7 +230,7 @@ function PopAddUserVehicle(props) {
         onClose(false);
     };
     const pop = () => {
-        if (!values.type || !values.make || !values.model || !values.variant || values.type === '' || values.make === '' || values.model === '' || values.variant === '') return enqueueSnackbar('Please Fill All The Details !!!', { variant: 'error' })
+        if (!values.type || !values.make || !values.model || !values.variant || values.type === '' || values.make === '' || values.model === '' || values.variant === '' || values.range === '') return enqueueSnackbar('Please Fill All The Details !!!', { variant: 'error' })
         setIsBackdrop(false);
         createUser(values.type, values.make, values.model, values.variant, values.registeration_number, values.range, values.vehicle_img);
     };
@@ -403,7 +403,7 @@ function PopAddUserVehicle(props) {
                             <MDBox p={1}>
                                 <MDInput
                                     type="number"
-                                    label="Range (Optional)"
+                                    label="Range"
                                     value={values.range}
                                     name="range"
                                     // multiline

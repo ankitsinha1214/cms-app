@@ -214,9 +214,14 @@ const ViewLocation = () => {
     navigate("/location/edit", { state: location?.state });
   };
   const statusList = [
-    'Inactive',
     'Available',
-    'Inuse'
+    'Charging',
+    'Preparing',
+    'Finishing',
+    'SuspendedEVSE',
+    'Faulted',
+    'Inactive',
+    // 'Inuse'
   ];
   const selectAfter = (
     <Select defaultValue="INR" style={{ width: 100 }} onChange={(e) => handleChangeCurrency(e)}>
@@ -474,16 +479,28 @@ const ViewLocation = () => {
       },
       Cell: (row) => (
         <div>
-          {(row.row.original.status === "Inactive") ?
+         {(row.row.original.status === "Faulted") ?
             <CircleIcon style={{ color: "#DA1E28" }} />
             :
-            // (row.row.original.status === "grey") ?
-            //   <CircleIcon style={{ color: "#7B7B7B" }} />
-            //   :
-            (row.row.original.status === "Inuse") ?
-              <CircleIcon style={{ color: "#F1C21B" }} />
+            (row.row.original.status === "Inactive") ?
+              <CircleIcon style={{ color: "#7B7B7B" }} />
               :
-              <CircleIcon style={{ color: "#198038" }} />
+            (row.row.original.status === "Available") ?
+            <CircleIcon style={{ color: "#198038" }} />
+              :
+            (row.row.original.status === "Charging") ?
+            <CircleIcon style={{ color: "#1A73E8" }} />
+              :
+            (row.row.original.status === "SuspendedEVSE") ?
+            <CircleIcon style={{ color: "orange" }} />
+              :
+            (row.row.original.status === "Finishing") ?
+            <CircleIcon style={{ color: "#800080" }} />
+            :
+            (row.row.original.status === "Preparing") ?
+            <CircleIcon style={{ color: "#F1C21B" }} />
+            :
+            <CircleIcon style={{ color: "yellow" }} />
           }
         </div>
       ),

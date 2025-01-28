@@ -132,7 +132,7 @@ function ViewUser(props) {
                                             {/* {(<DataCard title="Variant Image" value='' count={3} />)} */}
                                             <div style={{marginLeft: "16px"}}>
                                             <h5>Vehicle Image</h5>
-                                            <img src={props.value.vehicle_img} alt="Variant Image" width={150} height={150} srcset="" />
+                                            <img src={process.env.REACT_APP_AWS_BASEURL + props.value.vehicle_img} alt="Variant Image" width={150} height={150} srcset="" />
                                             </div>
 
                                         </Grid>

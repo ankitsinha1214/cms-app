@@ -19,6 +19,7 @@ import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import PopAddUser from "./PopAddUser";
 import ElectricMopedIcon from '@mui/icons-material/ElectricMoped';
+import ElectricRickshawIcon from '@mui/icons-material/ElectricRickshaw';
 import ElectricCarIcon from '@mui/icons-material/ElectricCar';
 import LaunchIcon from "@mui/icons-material/Launch";
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -40,6 +41,7 @@ function User_mgmt() {
   const [pageSize, setPageSize] = useState(10);
   const [totalRows, setTotalRows] = useState(0);
   const [totalActive, setTotalActive] = useState(0);
+  const [totalVehicle, setTotalVehicle] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [dataRec, setDataRec] = useState([]);
   const { darkMode } = controller;
@@ -158,6 +160,7 @@ function User_mgmt() {
           setDataRec(response.data.data);
           setTotalRows(response.data.pagination.totalRecords);
           setTotalActive(response.data.pagination.totalActiveRecords);
+          setTotalVehicle(response.data.vehicleCounts);
           setIsLoading(false);
         } else {
           console.log("status is false ");
@@ -431,7 +434,7 @@ function User_mgmt() {
       <DashboardNavbar />
       <MDBox py={3}>
         <Grid container spacing={3}>
-          <Grid item xs={12} md={6} lg={3}>
+          {/* <Grid item xs={12} md={6} lg={3}>
             <MDBox mb={1.5}>
               <ComplexStatisticsCard
                 color="dark"
@@ -447,7 +450,7 @@ function User_mgmt() {
               // }}
               />
             </MDBox>
-          </Grid>
+          </Grid> */}
           <Grid item xs={12} md={6} lg={3}>
             <MDBox mb={1.5}>
               <ComplexStatisticsCard
@@ -470,7 +473,22 @@ function User_mgmt() {
               <ComplexStatisticsCard
                 labelicon={ElectricMopedIcon}
                 title="2 Wheeler"
-                count="13"
+                count={totalVehicle["2-Wheeler"]}
+                percentage={{
+                  color: "success",
+                  amount: "+1%",
+                  label: "than yesterday",
+                }}
+              />
+            </MDBox>
+          </Grid>
+          <Grid item xs={12} md={6} lg={3}>
+            <MDBox mb={1.5}>
+              <ComplexStatisticsCard
+                color="warning"
+                labelicon={ElectricRickshawIcon}
+                title="3 Wheeler"
+                count={totalVehicle["3-Wheeler"]}
                 percentage={{
                   color: "success",
                   amount: "+1%",
@@ -486,7 +504,7 @@ function User_mgmt() {
                 // icon="person_add"
                 labelicon={ElectricCarIcon}
                 title="4 Wheeler"
-                count="91"
+                count={totalVehicle["4-Wheeler"]}
                 percentage={{
                   color: "success",
                   amount: "",
