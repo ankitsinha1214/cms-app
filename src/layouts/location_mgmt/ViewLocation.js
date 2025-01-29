@@ -190,6 +190,7 @@ const ViewLocation = () => {
   // setAdditionalImages(location.state.locationImage);
   // const additionalImages = [first2, first3, first4, first5, first6];
   const [content, setContent] = useState([]);
+  console.log(content)
   const [editChargerInfo, setEditChargerInfo] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [openDialog1, setOpenDialog1] = useState(false);
@@ -225,13 +226,13 @@ const ViewLocation = () => {
   ];
   const selectAfter = (
     <Select defaultValue="INR" style={{ width: 100 }} onChange={(e) => handleChangeCurrency(e)}>
-        <Option value="INR">&#8377; (INR)</Option>
-        <Option value="USD">$ (USD)</Option>
-        <Option value="EUR">€ (EUR)</Option>
-        <Option value="GBP">£ (GBP)</Option>
-        <Option value="CNY">¥ (CNY)</Option>
+      <Option value="INR">&#8377; (INR)</Option>
+      <Option value="USD">$ (USD)</Option>
+      <Option value="EUR">€ (EUR)</Option>
+      <Option value="GBP">£ (GBP)</Option>
+      <Option value="CNY">¥ (CNY)</Option>
     </Select>
-);
+  );
   const handleTypeChange = (key, e) => {
     const value = e.target.value;
     const chargerInfo = form.getFieldValue('chargerInfo') || [];
@@ -385,7 +386,7 @@ const ViewLocation = () => {
           ...chargerData,
           powerOutput: `${chargerData.powerOutput} kW`, // Adding 'w' to powerOutput
           // energyConsumptions: `${chargerData.energyConsumptions} kWh`, // Adding 'w' to powerOutput
-          energyConsumptions: `0 kWh`, 
+          energyConsumptions: `0 kWh`,
           costPerUnit: {
             amount: chargerData.amount,
             currency: selectedCurrency
@@ -479,28 +480,28 @@ const ViewLocation = () => {
       },
       Cell: (row) => (
         <div>
-         {(row.row.original.status === "Faulted") ?
+          {(row.row.original.status === "Faulted") ?
             <CircleIcon style={{ color: "#DA1E28" }} />
             :
             (row.row.original.status === "Inactive") ?
               <CircleIcon style={{ color: "#7B7B7B" }} />
               :
-            (row.row.original.status === "Available") ?
-            <CircleIcon style={{ color: "#198038" }} />
-              :
-            (row.row.original.status === "Charging") ?
-            <CircleIcon style={{ color: "#1A73E8" }} />
-              :
-            (row.row.original.status === "SuspendedEVSE") ?
-            <CircleIcon style={{ color: "orange" }} />
-              :
-            (row.row.original.status === "Finishing") ?
-            <CircleIcon style={{ color: "#800080" }} />
-            :
-            (row.row.original.status === "Preparing") ?
-            <CircleIcon style={{ color: "#F1C21B" }} />
-            :
-            <CircleIcon style={{ color: "yellow" }} />
+              (row.row.original.status === "Available") ?
+                <CircleIcon style={{ color: "#198038" }} />
+                :
+                (row.row.original.status === "Charging") ?
+                  <CircleIcon style={{ color: "#1A73E8" }} />
+                  :
+                  (row.row.original.status === "SuspendedEVSE") ?
+                    <CircleIcon style={{ color: "orange" }} />
+                    :
+                    (row.row.original.status === "Finishing") ?
+                      <CircleIcon style={{ color: "#800080" }} />
+                      :
+                      (row.row.original.status === "Preparing") ?
+                        <CircleIcon style={{ color: "#F1C21B" }} />
+                        :
+                        <CircleIcon style={{ color: "yellow" }} />
           }
         </div>
       ),
@@ -543,7 +544,7 @@ const ViewLocation = () => {
       },
       muiTableBodyCellProps: {
         align: 'center',
-      }, 
+      },
       // accessorKey: `costPerUnit`, 
       align: "center",
       //  Cell: (row) => (
@@ -1049,23 +1050,34 @@ const ViewLocation = () => {
                           <Typography mb={3}>{data.contact.phone}</Typography>
                           <Typography variant="h6">Hours</Typography>
                           <Typography mb={3}>{content?.workingDays} {content?.workingHours}</Typography>
-                        </Grid>
-                        {/* Facilities */}
-                        <Grid item xs={12} mb={2}>
-                          <Typography variant="h6" mb={1.5}>Facilities</Typography>
-                          <Grid container spacing={2}>
-                            {Array.isArray(content?.facilities) && content?.facilities.map((facility, index) => (
-                              <Tooltip title={facility.name} key={facility.name || index}>
-                                <Grid item xs={4} sm={2} key={index}>
-                                  <Avatar sx={{ bgcolor: green[500], width: 40, height: 40 }}>
-                                    {iconMap[facility.name] || <MoreHorizIcon />}
-                                  </Avatar>
-                                </Grid>
-                              </Tooltip>
-                            ))}
+
+                          <Grid container spacing={1} >
+                            <Grid item xs={6}>
+                              <Typography variant="h6">Charging</Typography>
+                              <Typography mb={3}>{content?.freepaid?.charging ? 'FREE' : 'PAID'}</Typography>
+                            </Grid>
+                            <Grid item xs={6}>
+                              <Typography variant="h6">Parking</Typography>
+                              <Typography mb={3}>{content?.freepaid?.parking ? 'FREE' : content?.parkingCost?.amount + ' ' + content?.parkingCost?.currency}</Typography>
+                            </Grid>
+                          </Grid>
+                          </Grid>
+                          {/* Facilities */}
+                          <Grid item xs={12} mb={2}>
+                            <Typography variant="h6" mb={1.5}>Facilities</Typography>
+                            <Grid container spacing={2}>
+                              {Array.isArray(content?.facilities) && content?.facilities.map((facility, index) => (
+                                <Tooltip title={facility.name} key={facility.name || index}>
+                                  <Grid item xs={4} sm={2} md={4} lg={2} key={index}>
+                                    <Avatar sx={{ bgcolor: green[500], width: 40, height: 40 }}>
+                                      {iconMap[facility.name] || <MoreHorizIcon />}
+                                    </Avatar>
+                                  </Grid>
+                                </Tooltip>
+                              ))}
+                            </Grid>
                           </Grid>
                         </Grid>
-                      </Grid>
                     </Box>
                     {/* Personal Information */}
                     <Grid item xs={12}>
@@ -1327,7 +1339,7 @@ const ViewLocation = () => {
                       >
                         <InputNumber addonAfter="kW"
                           variant="filled"
-                          style={{width:"100%"}}
+                          style={{ width: "100%" }}
                         />
                       </Form.Item>
                       {/* <Form.Item label="Enery Consumptions" name={[field.name, 'energyConsumptions']}
@@ -1353,7 +1365,7 @@ const ViewLocation = () => {
                         <InputNumber
                           addonBefore={selectAfter}
                           // addonAfter="kWh" 
-                          style={{width:"100%"}}
+                          style={{ width: "100%" }}
                           variant="filled" />
                       </Form.Item>
                       <Form.Item label="Charger Type" name={[field.name, 'type']} labelCol={{ xs: 24, sm: 12, md: 8 }} rules={[
@@ -1550,7 +1562,7 @@ const ViewLocation = () => {
                       >
                         <InputNumber addonAfter="kW"
                           variant="filled"
-                          style={{width:"100%"}}
+                          style={{ width: "100%" }}
                         />
                       </Form.Item>
                       {/* <Form.Item label="Enery Consumptions" name={[field.name, 'energyConsumptions']}
@@ -1576,7 +1588,7 @@ const ViewLocation = () => {
                         <InputNumber
                           addonBefore={selectAfter}
                           // addonAfter="kWh" 
-                          style={{width:"100%"}}
+                          style={{ width: "100%" }}
                           variant="filled" />
                       </Form.Item>
                       <Form.Item label="Charger Type" name={[field.name, 'type']} labelCol={{ xs: 24, sm: 12, md: 8 }} rules={[

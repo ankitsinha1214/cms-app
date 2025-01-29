@@ -42,6 +42,7 @@ import { Space, Switch } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { Image, Upload } from 'antd';
 import { Flex, TimePicker } from 'antd';
+import { TextField, InputAdornment } from "@mui/material";
 import './Somecss.css';
 const { RangePicker } = TimePicker;
 
@@ -178,6 +179,33 @@ function PopAddBasic(props) {
         });
     };
 
+    const [selectAfterValue, setSelectAfterValue] = useState("INR"); // Default currency
+    // State for parking cost (amount)
+    // const [parkingCost, setParkingCost] = useState(props.values.parkingCost);
+    const [parkingCost, setParkingCost] = useState({
+        // amount: row_data.parkingCost.amount || "",
+        amount: "",
+        currency: "INR",
+    });
+
+    // Handle changes to the currency
+    const handleCurrencyChange = (event) => {
+        const newCurrency = event.target.value;
+        setSelectAfterValue(newCurrency);
+        setParkingCost((prev) => ({
+            ...prev,
+            currency: newCurrency,
+        }));
+    };
+
+    // Handle changes to the amount
+    const handleAmountChange = (event) => {
+        const newAmount = event.target.value;
+        setParkingCost((prev) => ({
+            ...prev,
+            amount: newAmount,
+        }));
+    };
 
     const handleLocationChange = (location) => {
         setValues((prevValues) => ({
@@ -188,17 +216,17 @@ function PopAddBasic(props) {
     const handleRangeChange = (values1) => {
         // `values` is an array of moment objects
         // setRange(values);
-    
+
         if (values1) {
-          const [start, end] = values1;
-          const workingHr = start.format('ha') + '-' + end.format('ha');
-          console.log('Time : ', workingHr);
-          setValues((prevValues) => ({
-            ...prevValues,
-            workingHours: workingHr,
-        }));
+            const [start, end] = values1;
+            const workingHr = start.format('ha') + '-' + end.format('ha');
+            console.log('Time : ', workingHr);
+            setValues((prevValues) => ({
+                ...prevValues,
+                workingHours: workingHr,
+            }));
         }
-      };
+    };
     // const handleSubmit = (event) => {
     //     event.preventDefault();
     //     createUser(values.locationName, values.locationType, values.address, values.state, values.city,values.status, values.paidup_capital, values.activity_code, values.activity_description, values.registered_office_address);
@@ -215,6 +243,16 @@ function PopAddBasic(props) {
             "parking": true,
             "charging": true
         };
+        values.parkingCost = {
+            amount: "",
+            currency: "INR"
+        };
+        setParkingCost({
+            // amount: row_data.parkingCost.amount || "",
+            amount: "",
+            currency: "INR",
+        });
+        setSelectAfterValue('INR');
         setFileList([]);
         setValues(props.value);
     }
@@ -235,10 +273,14 @@ function PopAddBasic(props) {
         }
         if (!values.locationName || !values.locationType || !values.address || !values.state || !values.city || !values.status) return enqueueSnackbar('Please Fill All The Details !!!', { variant: 'error' })
         if (!values.direction.latitude || !values.direction.longitude) return enqueueSnackbar('Please Enter the location correctly !!!', { variant: 'error' })
+        if (!values.freepaid.parking && parkingCost.amount === '') {
+            return enqueueSnackbar('Parking Amount is necessary when selected paid parking.', { variant: 'error' });
+        }
         setIsBackdrop(false);
         onClose(false);
         setIsDisabled(!isDisabled);
         values.locationImage = fileList;
+        values.parkingCost = parkingCost;
         // setIsDialog(true);
     };
     // const getState = () => {
@@ -493,7 +535,7 @@ function PopAddBasic(props) {
                                 </FormControl>
                             </MDBox>
                             <MDBox p={1}>
-                            <FormControl fullWidth>
+                                <FormControl fullWidth>
                                     <InputLabel id="demo-multiple-name-label">Working Days</InputLabel>
                                     <Select
                                         sx={{
@@ -507,38 +549,38 @@ function PopAddBasic(props) {
                                         onChange={handleChange}
                                         input={<OutlinedInput label="Working Days" />}
                                     >
-                                            <MenuItem
-                                                value={"Everyday"}
-                                            //   style={getStyles(name.name, values.service, theme)}
-                                            >
-                                                Everyday
-                                            </MenuItem>
-                                            <MenuItem
-                                                value={"Monday-Saturday"}
-                                            //   style={getStyles(name.name, values.service, theme)}
-                                            >
-                                                Monday-Saturday
-                                            </MenuItem>
-                                            <MenuItem
-                                                value={"Monday-Friday"}
-                                            //   style={getStyles(name.name, values.service, theme)}
-                                            >
-                                                Monday-Friday
-                                            </MenuItem>
-                                            <MenuItem
-                                                value={"Monday-Thrusday"}
-                                            //   style={getStyles(name.name, values.service, theme)}
-                                            >
-                                                Monday-Thrusday
-                                            </MenuItem>
+                                        <MenuItem
+                                            value={"Everyday"}
+                                        //   style={getStyles(name.name, values.service, theme)}
+                                        >
+                                            Everyday
+                                        </MenuItem>
+                                        <MenuItem
+                                            value={"Monday-Saturday"}
+                                        //   style={getStyles(name.name, values.service, theme)}
+                                        >
+                                            Monday-Saturday
+                                        </MenuItem>
+                                        <MenuItem
+                                            value={"Monday-Friday"}
+                                        //   style={getStyles(name.name, values.service, theme)}
+                                        >
+                                            Monday-Friday
+                                        </MenuItem>
+                                        <MenuItem
+                                            value={"Monday-Thrusday"}
+                                        //   style={getStyles(name.name, values.service, theme)}
+                                        >
+                                            Monday-Thrusday
+                                        </MenuItem>
                                     </Select>
                                 </FormControl>
                             </MDBox>
                             <MDBox p={1}>
                                 <FormLabel>Working Hours</FormLabel>
-                                    <Flex gap={8}>
-                                        <RangePicker use12Hours format="h a" placeholder={['Start Time', 'End Time']} changeOnScroll needConfirm={false} onChange={handleRangeChange} />
-                                    </Flex>
+                                <Flex gap={8}>
+                                    <RangePicker use12Hours format="h a" placeholder={['Start Time', 'End Time']} changeOnScroll needConfirm={false} onChange={handleRangeChange} />
+                                </Flex>
                             </MDBox>
                             <Grid container>
                                 <Grid item xs={6}>
@@ -567,6 +609,42 @@ function PopAddBasic(props) {
                                 </Grid>
                             </Grid>
 
+                            {!values.freepaid.parking && (
+                                <MDBox p={1}>
+                                    <FormControl fullWidth
+                                    // sx={{ mb: 2 }}
+                                    >
+                                        <TextField
+                                            label="Parking Cost"
+                                            name="parkingCost"
+                                            required
+                                            variant="outlined"
+                                            type="number"
+                                            value={parkingCost.amount}
+                                            InputProps={{
+                                                startAdornment: (
+                                                    <InputAdornment position="start">
+                                                        <FormControl variant="standard" size="small">
+                                                            <Select
+                                                                value={selectAfterValue}
+                                                                // variant="outlined"
+                                                                onChange={handleCurrencyChange}
+                                                            >
+                                                                <MenuItem value="INR">₹</MenuItem>
+                                                                <MenuItem value="USD">$</MenuItem>
+                                                                <MenuItem value="EUR">€</MenuItem>
+                                                                <MenuItem value="GBP">£</MenuItem>
+                                                                <MenuItem value="CNY">¥</MenuItem>
+                                                            </Select>
+                                                        </FormControl>
+                                                    </InputAdornment>
+                                                ),
+                                            }}
+                                            onChange={handleAmountChange}
+                                        />
+                                    </FormControl>
+                                </MDBox>
+                            )}
 
                             <MDBox p={1}>
                                 {

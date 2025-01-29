@@ -90,6 +90,7 @@ function PopAddContact(props) {
         // bodyFormData.append("chargerInfo", props.value.chargerInfo);
         bodyFormData.append("direction", JSON.stringify(props.value.direction));
         bodyFormData.append("freepaid", JSON.stringify(props.value.freepaid));
+        bodyFormData.append("parkingCost", JSON.stringify(props.value.parkingCost));
         bodyFormData.append("salesManager", JSON.stringify(salesManager));
         bodyFormData.append("dealer", JSON.stringify(dealer));
         bodyFormData.append("facilities", JSON.stringify(props.value.facilities));

@@ -88,7 +88,7 @@ function Location_mgmt() {
   const { darkMode } = controller;
   const [isLoading, setIsLoading] = useState(true);
   const { enqueueSnackbar } = useSnackbar();
-  const  malls = `${process.env.REACT_APP_AWS_BASEURL}locationIcon/Mall.png`;
+  const malls = `${process.env.REACT_APP_AWS_BASEURL}locationIcon/Mall.png`;
   const locationTypes = [
     "Petrol Pumps",
     "Malls",
@@ -116,7 +116,7 @@ function Location_mgmt() {
     "Car Dealerships",
     "Metro Stations"
   ];
-  
+
   const initialLocations = locationTypes.map((type, index) => ({
     id: index + 1,
     count: 0,
@@ -227,16 +227,16 @@ function Location_mgmt() {
             ...item,
             id: index + 1, // Add a unique 'id' for each item
           }));
-            // setItems(updatedData);
-            const mergedItems = items.map((item) => {
-              const match = updatedData.find((update) => update.locationType === item.locationType);
-              return match
-                ? { ...item, count: match.count, percentage: match.percentage }
-                : item;
-            });
-        
-            // Update state with merged data
-            setItems(mergedItems);
+          // setItems(updatedData);
+          const mergedItems = items.map((item) => {
+            const match = updatedData.find((update) => update.locationType === item.locationType);
+            return match
+              ? { ...item, count: match.count, percentage: match.percentage }
+              : item;
+          });
+
+          // Update state with merged data
+          setItems(mergedItems);
 
 
         } else {
@@ -273,6 +273,10 @@ function Location_mgmt() {
       freepaid: {
         "parking": true,
         "charging": true
+      },
+      parkingCost: {
+        amount: "",
+        currency: "INR"
       },
       direction: {},
       chargerInfo: [{}],
@@ -349,7 +353,7 @@ function Location_mgmt() {
       .catch((error) => {
         console.log(error);
       });
-      handleLocationTypes();
+    handleLocationTypes();
   }, []);
   const mapContainerStyle = {
     width: '100%',
@@ -709,10 +713,10 @@ function Location_mgmt() {
                   // labelicon={`${process.env.REACT_APP_AWS_BASEURL}locationIcon/Mall.png`}
                   imgicon={`${process.env.REACT_APP_AWS_BASEURL}locationIcon/${item.locationType}.png`}
                   // imgicon={malls}
-                  title={item.locationType === 'Stadiums and Sports Arenas' ? 'Sports Arenas' 
+                  title={item.locationType === 'Stadiums and Sports Arenas' ? 'Sports Arenas'
                     :
-                    item.locationType === 'Parks and Recreational Areas'? 'Parks & Recreational':
-                    item.locationType}
+                    item.locationType === 'Parks and Recreational Areas' ? 'Parks & Recreational' :
+                      item.locationType}
                   count={item.count}
                   percentage={{
                     color: "success",
