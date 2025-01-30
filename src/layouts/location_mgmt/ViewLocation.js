@@ -1049,7 +1049,7 @@ const ViewLocation = () => {
                           <Typography variant="h6">Phone no</Typography>
                           <Typography mb={3}>{data.contact.phone}</Typography>
                           <Typography variant="h6">Hours</Typography>
-                          <Typography mb={3}>{content?.workingDays} {content?.workingHours}</Typography>
+                          <Typography mb={3}>{content?.workingDays} {content?.workingHours === "12am-12am" ? "( Anytime )" : content?.workingHours }</Typography>
 
                           <Grid container spacing={1} >
                             <Grid item xs={6}>

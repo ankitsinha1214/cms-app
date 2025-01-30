@@ -189,7 +189,7 @@ function Site_servey_mgmt() {
       }, // default
       Cell: (row) => (
         <div>
-          {`${row.row.original.userId.phone.prefix} ${row.row.original.userId.phone.number}`}
+          {`${row.row.original.userId?.phone?.prefix} ${row.row.original.userId?.phone?.number}`}
         </div>
       ),
     },

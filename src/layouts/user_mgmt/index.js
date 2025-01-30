@@ -275,7 +275,8 @@ function User_mgmt() {
         <div>
           {row.row.original.user_vehicle.map((vehicle, index) => (
             <div key={index}>
-              {vehicle.vehicle_reg}
+              {vehicle.type}
+              {/* {vehicle.vehicle_reg} */}
             </div>
           ))}
         </div>

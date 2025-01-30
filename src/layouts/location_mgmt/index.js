@@ -589,7 +589,7 @@ function Location_mgmt() {
       })
       .catch((error) => {
         // console.log(error);
-        enqueueSnackbar(error.data.message, { variant: 'error' });
+        enqueueSnackbar(error.message, { variant: 'error' });
       });
   };
   const Item = styled(Paper)(({ theme }) => ({
