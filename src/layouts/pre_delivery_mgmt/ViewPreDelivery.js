@@ -267,7 +267,7 @@ const ViewPreDelivery = () => {
                         }
                       </Grid>
                       {
-                        (item.response.response_img !== "")?
+                        ( item.response.response_img && item.response.response_img !== "")?
                       <Grid item xs={12} sm={6} display="flex" justifyContent="flex-end" >
                         <ImageBox imageList={item?.response} />
                       </Grid>:null

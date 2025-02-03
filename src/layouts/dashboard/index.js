@@ -35,6 +35,7 @@ function Dashboard() {
   const { darkMode } = controller;
   const { sales, tasks } = reportsLineChartData;
   const [locations, setLocations] = useState([]);
+  const [dashboardData, setDashboardData] = useState({});
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const data1 = [
@@ -113,21 +114,22 @@ function Dashboard() {
   ];
   const sampleData1 = [
     { name: "Ather 450X", type: "2w", visits: 755, color: 'purple' },
-    { name: "Tata Nexon EV max", type: "2w", visits: 755, color: 'purple' },
-    { name: "Tata Tigor EV", type: "2w", visits: 755, color: 'magenta' },
-    { name: "Audi etron GT", type: "2w", visits: 755, color: 'magenta' },
-    { name: "Tata Piago", type: "2w", visits: 755, color: 'gold' },
+    { name: "Tata Nexon EV max", type: "4w", visits: 755, color: 'gold' },
+    { name: "Tata Tigor EV", type: "3w", visits: 755, color: 'magenta' },
+    { name: "Audi etron GT", type: "3w", visits: 755, color: 'magenta' },
+    { name: "Tata Piago", type: "4w", visits: 755, color: 'gold' },
   ];
   const headers1 = [
     { label: "#", flex: 1, index: 0 },
     { label: "Type", flex: 1, index: 1 },
     { label: "Vehicle", flex: 4, index: 2 },
-    { label: "Sales", flex: 1, index: 3 },
+    { label: "Visits", flex: 1, index: 3 },
+    // { label: "Sales", flex: 1, index: 3 },
   ];
   const data = [
-    { name: "4 Wheeler", count: 70, color: "#4E57CE" },
-    { name: "3 Wheeler", count: 20, color: "#FF3F6D" },
-    { name: "2 Wheeler", count: 10, color: "#FFDC82" },
+    { name: "4 Wheeler", count: dashboardData.fourWheelerUsers, color: "#4E57CE" },
+    { name: "3 Wheeler", count: dashboardData.threeWheelerUsers, color: "#FF3F6D" },
+    { name: "2 Wheeler", count: dashboardData.twoWheelerUsers, color: "#FFDC82" },
   ];
   useEffect(() => {
     if (
@@ -193,7 +195,29 @@ function Dashboard() {
       .catch((error) => {
         console.log(error);
       });
+      fetchAllChargers();
   }, []);
+  const fetchAllChargers = () => {
+    // axios.post(process.env.REACT_APP_BASEURL + "charger-locations/dashboard/get-data", {
+    //   headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
+    // })
+    axios({
+      method: "post",
+      url: process.env.REACT_APP_BASEURL + "charger-locations/dashboard/get-data",
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`
+      },
+    })
+    .then((response) => {
+      if (response.data.success) {
+        setDashboardData(response.data.data);
+      } else {
+        enqueueSnackbar(response.data.message, { variant: 'error' });
+      }
+    }).catch(error => {
+      console.error(error);
+    });
+  };
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -206,7 +230,7 @@ function Dashboard() {
                 color="dark"
                 // icon="weekend"
                 title="Total Chargers"
-                count={300}
+                count={dashboardData?.totalChargers || 0}
               // percentage={{
               //   color: "success",
               //   amount: "+55%",
@@ -222,7 +246,8 @@ function Dashboard() {
                 imgicon={`${process.env.REACT_APP_AWS_BASEURL}cms-icons/Inactive+Charger.png`}
                 title="Active Chargers"
                 color="success"
-                count="287"
+                count={(dashboardData?.availableChargers + dashboardData?.inUseChargers) || 0}
+                // count="287"
                 percentage={{
                   color: "success",
                   amount: "+3%",
@@ -238,7 +263,8 @@ function Dashboard() {
                 // icon="store"
                 imgicon={`${process.env.REACT_APP_AWS_BASEURL}cms-icons/Active+charger.png`}
                 title="Inactive Chargers"
-                count="13"
+                count={(dashboardData?.inactiveChargers) || 0}
+                // count="13"
                 percentage={{
                   color: "success",
                   amount: "+1%",
@@ -256,10 +282,12 @@ function Dashboard() {
                 title1="Inuse"
                 title2="Available"
                 // count={300}
-                count1={240}
+                // count1={240}
+                count1={(dashboardData?.inUseChargers) || 0}
+                count2={(dashboardData?.availableChargers) || 0}
                 // colorcount1="#C19B16"
                 colorcount1="#95C1DF"
-                count2={47}
+                // count2={47}
                 colorcount2="#198038"
               // percentage={{
               //   color: "success",

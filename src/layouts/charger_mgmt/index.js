@@ -17,6 +17,8 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import EnergyCard from "./EnergyCard";
 import { MaterialReactTable } from 'material-react-table';
 import theme from "assets/theme";
+import { format } from 'date-fns';
+import { toZonedTime } from 'date-fns-tz';
 import { useMaterialUIController } from "context";
 // Data
 import '../SignIn/SignIn.css';
@@ -39,13 +41,6 @@ import { Dropdown, Space } from 'antd';
 
 function Charger_mgmt() {
   // const navigate = useNavigate();
-  // useEffect(() => {
-  //   if (
-  //     localStorage.getItem("login_status") !== "true"
-  //   ) {
-  //     navigate("/sign-in");
-  //   }
-  // }, []);
   // const { columns, rows } = authorsTableData();
   // const { columns: pColumns, rows: pRows } = projectsTableData();
   const [isDisabled2, setIsDisabled2] = useState(false);
@@ -64,6 +59,12 @@ function Charger_mgmt() {
     'Inactive',
     // 'Inuse'
   ];
+  const statusList1 = [
+    'Active',
+    'Unpaid',
+    'Paid'
+    // 'Inuse'
+  ];
   const [controller] = useMaterialUIController();
   const { darkMode } = controller;
 
@@ -71,13 +72,27 @@ function Charger_mgmt() {
   const onClick = ({ key }) => {
     console.log(`Click on item ${key}`);
     console.log(key);
-    if(key === '0'){
+    if (key === '0') {
       handleDropdownSelect('All Chargers');
+      setColumns(column);
     }
-    else{
+    else {
       handleDropdownSelect('All Transactions');
+      setColumns(sessionColumn);
     }
   };
+
+  // Function to convert UTC to IST and format it
+  const convertUTCtoIST = (utcDate) => {
+    // console.log(utcDate);
+    if (!utcDate || isNaN(new Date(utcDate).getTime())) {
+      return 'N/A'; // Return 'N/A' if the date is invalid or missing
+    }
+    const timeZone = 'Asia/Kolkata'; // IST time zone
+    const zonedDate = toZonedTime(new Date(utcDate), timeZone); // Convert UTC to IST
+    return format(zonedDate, 'yyyy-MM-dd HH:mm:ss'); // Format the date as desired
+  };
+
   const items = [
     {
       label: 'All Chargers',
@@ -123,7 +138,7 @@ function Charger_mgmt() {
               city: location.city,
               state: location.state,
               energy_disp: charger.energyConsumptions,
-              last_ping: "N/A" // Placeholder if you want to add last ping data
+              last_ping: charger.lastPing ? charger.lastPing : "N/A"
             }))
           );
           console.log(transformedData)
@@ -142,13 +157,13 @@ function Charger_mgmt() {
   }, []);
   const handleDropdownSelect = (selectedValue) => {
     setSelected(selectedValue);
-    console.log(selectedValue);
+    // console.log(selectedValue);
     if (selectedValue === "All Chargers") {
       // Fetch or filter all chargers data
       fetchAllChargers();
     } else if (selectedValue === "All Transactions") {
       // Fetch or filter all transactions data
-      // fetchAllTransactions();
+      fetchAllTransactions();
     }
   };
   const fetchAllChargers = () => {
@@ -166,7 +181,7 @@ function Charger_mgmt() {
             city: location.city,
             state: location.state,
             energy_disp: charger.energyConsumptions,
-            last_ping: "N/A"
+            last_ping: charger.lastPing ? charger.lastPing : "N/A"
           }))
         );
         setRows(transformedData);
@@ -179,11 +194,19 @@ function Charger_mgmt() {
   };
 
   const fetchAllTransactions = () => {
-    axios.get(process.env.REACT_APP_BASEURL + "transactions/all", {
+    axios.get(process.env.REACT_APP_BASEURL + "session/", {
       headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
     }).then((response) => {
       if (response.data.success) {
-        setRows(response.data.data);  // Assuming transactions data can be mapped similarly
+        const updatedRows = response.data.data.map(session => ({
+          ...session,
+          status: session.status === "Started" ? "Active"
+            : session.status === "Stopped" ? "Unpaid"
+              : session.status === "Completed" ? "Paid"
+                : session.status // Keep it unchanged if it doesn't match
+        }));
+        setRows(updatedRows);
+        // setRows(response.data.data);  // Assuming transactions data can be mapped similarly
       } else {
         enqueueSnackbar(response.data.message, { variant: 'error' });
       }
@@ -213,22 +236,22 @@ function Charger_mgmt() {
             (row.row.original.status === "Inactive") ?
               <CircleIcon style={{ color: "#7B7B7B" }} />
               :
-            (row.row.original.status === "Available") ?
-            <CircleIcon style={{ color: "#198038" }} />
-              :
-            (row.row.original.status === "Charging") ?
-            <CircleIcon style={{ color: "#1A73E8" }} />
-              :
-            (row.row.original.status === "SuspendedEVSE") ?
-            <CircleIcon style={{ color: "orange" }} />
-              :
-            (row.row.original.status === "Finishing") ?
-            <CircleIcon style={{ color: "#800080" }} />
-            :
-            (row.row.original.status === "Preparing") ?
-            <CircleIcon style={{ color: "#F1C21B" }} />
-            :
-            <CircleIcon style={{ color: "yellow" }} />
+              (row.row.original.status === "Available") ?
+                <CircleIcon style={{ color: "#198038" }} />
+                :
+                (row.row.original.status === "Charging") ?
+                  <CircleIcon style={{ color: "#1A73E8" }} />
+                  :
+                  (row.row.original.status === "SuspendedEVSE") ?
+                    <CircleIcon style={{ color: "orange" }} />
+                    :
+                    (row.row.original.status === "Finishing") ?
+                      <CircleIcon style={{ color: "#800080" }} />
+                      :
+                      (row.row.original.status === "Preparing") ?
+                        <CircleIcon style={{ color: "#F1C21B" }} />
+                        :
+                        <CircleIcon style={{ color: "yellow" }} />
           }
         </div>
       ),
@@ -290,11 +313,15 @@ function Charger_mgmt() {
       },
     },
     {
-      header: "Last ping", accessorKey: "last_ping", align: "center", muiTableHeadCellProps: {
+      header: "Last ping", accessorKey: "last_ping", align: "center",
+      muiTableHeadCellProps: {
         align: 'center',
       },
       muiTableBodyCellProps: {
         align: 'center',
+      },
+      Cell: ({ cell }) => {
+        return convertUTCtoIST(cell.getValue());
       },
     },
     {
@@ -338,20 +365,160 @@ function Charger_mgmt() {
       ),
     },
   ];
+  const sessionColumn = [
+    {
+      header: "Status",
+      accessorKey: "status",
+      filterVariant: 'select',
+      filterSelectOptions: statusList1,
+      align: "center",
+      fixed: "true", muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      },
+      Cell: (row) => (
+        <div>
+          {(row.row.original.status === "Unpaid") ?
+            <CircleIcon style={{ color: "#DA1E28" }} />
+            // :
+            // (row.row.original.status === "Inactive") ?
+            //   <CircleIcon style={{ color: "#7B7B7B" }} />
+            // :
+            // (row.row.original.status === "Available") ?
+            :
+            (row.row.original.status === "Active") ?
+            <CircleIcon style={{ color: "#1A73E8" }} />
+            // <CircleIcon style={{ color: "#800080" }} />
+            :
+            // (row.row.original.status === "SuspendedEVSE") ?
+            //   <CircleIcon style={{ color: "orange" }} />
+            //   :
+            (row.row.original.status === "Paid") ?
+            <CircleIcon style={{ color: "#198038" }} />
+                // :
+                // (row.row.original.status === "Preparing") ?
+                //   <CircleIcon style={{ color: "#F1C21B" }} />
+                :
+                <CircleIcon style={{ color: "yellow" }} />
+          }
+        </div>
+      ),
+    },
+    {
+      header: "Charger ID", accessorKey: "chargerId", align: "center", muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      },
+    },
+    {
+      header: "Duration", accessorKey: "duration", align: "center", muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      },
+    },
+    {
+      header: "Location", accessorKey: "chargerLocation.locationName", align: "center", muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      },
+    },
+    // {
+    //   header: "L Type", accessorKey: "l_type", align: "center", muiTableHeadCellProps: {
+    //     align: 'center',
+    //   },
+    //   muiTableBodyCellProps: {
+    //     align: 'center',
+    //   },
+    // },
+    {
+      header: "City", accessorKey: "chargerLocation.city", align: "center", muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      },
+    },
+    {
+      header: "State", accessorKey: "chargerLocation.state", align: "center", muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      },
+    },
+    {
+      header: "Energy disp", accessorKey: "energy_disp", align: "center", muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      },
+    },
+    // {
+    //   header: "Last ping", accessorKey: "last_ping", align: "center",
+    //   muiTableHeadCellProps: {
+    //     align: 'center',
+    //   },
+    //   muiTableBodyCellProps: {
+    //     align: 'center',
+    //   },
+    //   Cell: ({ cell }) => {
+    //     return convertUTCtoIST(cell.getValue());
+    //   },
+    // },
+    // {
+    //   header: "Action",
+    //   accessorKey: "action",
+    //   enableColumnFilter: false,
+    //   align: "center", muiTableHeadCellProps: {
+    //     align: 'center',
+    //   },
+    //   muiTableBodyCellProps: {
+    //     align: 'center',
+    //   },
+    //   Cell: (row) => (
+    //     <div style={{
+    //       position: 'sticky',
+    //       right: '0',
+    //       // backgroundColor:'white',
+    //       zIndex: '111',
+    //     }}>
+    //       <MDButton
+    //         onClick={(e) => handleEdit(row.row.original)}
+    //         variant="gradient"
+    //         color="info"
+    //         iconOnly
+    //       >
+    //         <LaunchIcon />
+    //       </MDButton>
+    //       <MDButton
+    //         sx={{
+    //           marginLeft: 2,
+    //         }}
+    //         onClick={(e) => handleDelete(row.row.original)}
+    //         variant="gradient"
+    //         color="info"
+    //         // color="secondary"
+    //         iconOnly
+    //       >
+    //         <DeleteIcon />
+    //       </MDButton>
+    //     </div>
+    //   ),
+    // },
+  ];
   useEffect(() => {
     setColumns(column);
   }, []);
   const navigate = useNavigate();
-  useEffect(() => {
-    if (
-      localStorage.getItem("login_status") !== "true"
-    ) {
-      navigate("/sign-in");
-    }
-    console.log('hello');
-    console.log(rows);
-    console.log(column);
-  }, []);
   const handleEdit = (row_data) => {
     // navigate("/view/user", { state: row_data });
     navigate("/charger/view", { state: row_data });
@@ -435,9 +602,11 @@ function Charger_mgmt() {
                 imgicon={`${process.env.REACT_APP_AWS_BASEURL}cms-icons/Total+charger.png`}
                 title1="Active"
                 title2="Inactive"
-                count={300}
-                count1={240}
-                count2={60}
+                count={rows?.length || 0}
+                // count={300}
+                // count1={240}
+                count1={rows?.filter(row => row.status !== "Inactive").length || 0} // Count of Available chargers
+                count2={rows?.filter(row => row.status === "Inactive").length || 0}
                 percentage={{
                   color: "success",
                   amount: "+55%",

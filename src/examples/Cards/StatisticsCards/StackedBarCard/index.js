@@ -5,10 +5,11 @@ import Card from "@mui/material/Card";
 import MDBox from "components/MDBox";
 
 const StackedBarCard = ({ title, data }) => {
+  console.log(data)
   const total = data.reduce((sum, item) => sum + item.count, 0);
   const dataWithPercentage = data.map(item => ({
     ...item,
-    percentage: (item.count / total) * 100,
+    percentage: ((item.count / total) * 100).toFixed(2),
   }));
   return (
     <Card>
