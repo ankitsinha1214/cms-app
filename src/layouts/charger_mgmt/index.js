@@ -148,8 +148,9 @@ function Charger_mgmt() {
         } else {
           enqueueSnackbar(response.data.message, { variant: 'error' });
           setIsLoading(false);
-          // console.log("status is false ");
+          // console.log("status is false "); 
         }
+        setSelected("All Chargers");
       })
       .catch((error) => {
         console.log(error);
@@ -198,13 +199,66 @@ function Charger_mgmt() {
       headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
     }).then((response) => {
       if (response.data.success) {
-        const updatedRows = response.data.data.map(session => ({
-          ...session,
-          status: session.status === "Started" ? "Active"
-            : session.status === "Stopped" ? "Unpaid"
-              : session.status === "Completed" ? "Paid"
-                : session.status // Keep it unchanged if it doesn't match
-        }));
+        // const updatedRows = response.data.data.map(session => ({
+        //   ...session,
+        //   status: session.status === "Started" ? "Active"
+        //     : session.status === "Stopped" ? "Unpaid"
+        //       : session.status === "Completed" ? "Paid"
+        //         : session.status // Keep it unchanged if it doesn't match
+        // }));
+        // const updatedRows = response.data.data.map(session => {
+        //   const metadata = session.metadata || [];
+
+        //   // Get the first and last metadata values
+        //   const firstEntry = metadata[0]?.values?.["Energy.Active.Import.Register"];
+        //   const lastEntry = metadata[metadata.length - 1]?.values?.["Energy.Active.Import.Register"];
+
+        //   // Extract numeric values and handle missing values
+        //   const firstMeterValue = firstEntry ? parseFloat(firstEntry.split(" ")[0]) : 0;
+        //   const lastMeterValue = lastEntry ? parseFloat(lastEntry.split(" ")[0]) : 0;
+
+        //   // Calculate energy consumed
+        //   const energyConsumed = lastMeterValue && firstMeterValue ? (lastMeterValue - firstMeterValue).toFixed(4) : "0";
+
+        //   return {
+        //     ...session,
+        //     status: session.status === "Started" ? "Active"
+        //       : session.status === "Stopped" ? "Unpaid"
+        //         : session.status === "Completed" ? "Paid"
+        //           : session.status, // Keep it unchanged if it doesn't match
+        //     energy_disp: `${energyConsumed} Wh`
+        //   };
+        // });
+        const updatedRows = response.data.data.map(session => {
+          const metadata = session.metadata || [];
+      
+          // Get the first and last metadata values
+          const firstEntry = metadata[0]?.values?.["Energy.Active.Import.Register"];
+          const lastEntry = metadata[metadata.length - 1]?.values?.["Energy.Active.Import.Register"];
+      
+          // Extract numeric values and handle missing values
+          const firstMeterValue = firstEntry ? parseFloat(firstEntry.split(" ")[0]) : 0;
+          const lastMeterValue = lastEntry ? parseFloat(lastEntry.split(" ")[0]) : 0;
+      
+          // Calculate energy consumed
+          const energyConsumed = lastMeterValue && firstMeterValue ? (lastMeterValue - firstMeterValue).toFixed(4) : "0";
+      
+          // Mask userPhone (assuming it's a string)
+          const userPhone = session.userPhone || "";
+          const maskedPhone = userPhone.length > 4 
+              ? `+91 ${"x".repeat(userPhone.length - 7)}${userPhone.slice(-4)}`
+              : userPhone; // If phone is too short, keep it as is
+      
+          return {
+              ...session,
+              status: session.status === "Started" ? "Active"
+                    : session.status === "Stopped" ? "Unpaid"
+                    : session.status === "Completed" ? "Paid"
+                    : session.status, // Keep it unchanged if it doesn't match
+              energy_disp: `${energyConsumed} Wh`,
+              userPhone: maskedPhone
+          };
+      });
         setRows(updatedRows);
         // setRows(response.data.data);  // Assuming transactions data can be mapped similarly
       } else {
@@ -389,14 +443,14 @@ function Charger_mgmt() {
             // (row.row.original.status === "Available") ?
             :
             (row.row.original.status === "Active") ?
-            <CircleIcon style={{ color: "#1A73E8" }} />
-            // <CircleIcon style={{ color: "#800080" }} />
-            :
-            // (row.row.original.status === "SuspendedEVSE") ?
-            //   <CircleIcon style={{ color: "orange" }} />
-            //   :
-            (row.row.original.status === "Paid") ?
-            <CircleIcon style={{ color: "#198038" }} />
+              <CircleIcon style={{ color: "#1A73E8" }} />
+              // <CircleIcon style={{ color: "#800080" }} />
+              :
+              // (row.row.original.status === "SuspendedEVSE") ?
+              //   <CircleIcon style={{ color: "orange" }} />
+              //   :
+              (row.row.original.status === "Paid") ?
+                <CircleIcon style={{ color: "#198038" }} />
                 // :
                 // (row.row.original.status === "Preparing") ?
                 //   <CircleIcon style={{ color: "#F1C21B" }} />
@@ -408,6 +462,14 @@ function Charger_mgmt() {
     },
     {
       header: "Charger ID", accessorKey: "chargerId", align: "center", muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      },
+    },
+    {
+      header: "User Phone", accessorKey: "userPhone", align: "center", muiTableHeadCellProps: {
         align: 'center',
       },
       muiTableBodyCellProps: {
@@ -430,14 +492,6 @@ function Charger_mgmt() {
         align: 'center',
       },
     },
-    // {
-    //   header: "L Type", accessorKey: "l_type", align: "center", muiTableHeadCellProps: {
-    //     align: 'center',
-    //   },
-    //   muiTableBodyCellProps: {
-    //     align: 'center',
-    //   },
-    // },
     {
       header: "City", accessorKey: "chargerLocation.city", align: "center", muiTableHeadCellProps: {
         align: 'center',
@@ -462,58 +516,46 @@ function Charger_mgmt() {
         align: 'center',
       },
     },
-    // {
-    //   header: "Last ping", accessorKey: "last_ping", align: "center",
-    //   muiTableHeadCellProps: {
-    //     align: 'center',
-    //   },
-    //   muiTableBodyCellProps: {
-    //     align: 'center',
-    //   },
-    //   Cell: ({ cell }) => {
-    //     return convertUTCtoIST(cell.getValue());
-    //   },
-    // },
-    // {
-    //   header: "Action",
-    //   accessorKey: "action",
-    //   enableColumnFilter: false,
-    //   align: "center", muiTableHeadCellProps: {
-    //     align: 'center',
-    //   },
-    //   muiTableBodyCellProps: {
-    //     align: 'center',
-    //   },
-    //   Cell: (row) => (
-    //     <div style={{
-    //       position: 'sticky',
-    //       right: '0',
-    //       // backgroundColor:'white',
-    //       zIndex: '111',
-    //     }}>
-    //       <MDButton
-    //         onClick={(e) => handleEdit(row.row.original)}
-    //         variant="gradient"
-    //         color="info"
-    //         iconOnly
-    //       >
-    //         <LaunchIcon />
-    //       </MDButton>
-    //       <MDButton
-    //         sx={{
-    //           marginLeft: 2,
-    //         }}
-    //         onClick={(e) => handleDelete(row.row.original)}
-    //         variant="gradient"
-    //         color="info"
-    //         // color="secondary"
-    //         iconOnly
-    //       >
-    //         <DeleteIcon />
-    //       </MDButton>
-    //     </div>
-    //   ),
-    // },
+    {
+      header: "Action",
+      accessorKey: "action",
+      enableColumnFilter: false,
+      align: "center", muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      },
+      Cell: (row) => (
+        <div style={{
+          position: 'sticky',
+          right: '0',
+          // backgroundColor:'white',
+          zIndex: '111',
+        }}>
+          <MDButton
+            onClick={(e) => handleTransactionEdit(row.row.original)}
+            variant="gradient"
+            color="info"
+            iconOnly
+          >
+            <LaunchIcon />
+          </MDButton>
+          {/* <MDButton
+            sx={{
+              marginLeft: 2,
+            }}
+            onClick={(e) => handleDelete(row.row.original)}
+            variant="gradient"
+            color="info"
+            // color="secondary"
+            iconOnly
+          >
+            <DeleteIcon />
+          </MDButton> */}
+        </div>
+      ),
+    },
   ];
   useEffect(() => {
     setColumns(column);
@@ -522,6 +564,10 @@ function Charger_mgmt() {
   const handleEdit = (row_data) => {
     // navigate("/view/user", { state: row_data });
     navigate("/charger/view", { state: row_data });
+  };
+  const handleTransactionEdit = (row_data) => {
+    // navigate("/view/user", { state: row_data });
+    navigate("/transaction/view", { state: row_data });
   };
   const handleDelete = (row_data) => {
     var bodyFormData = new FormData();

@@ -62,6 +62,7 @@ import PowerIcon from '@mui/icons-material/Power';
 import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 import TextSnippetIcon from '@mui/icons-material/TextSnippet';
 import UpdateLocation from "layouts/location_mgmt/UpdateLocation";
+import ViewTransaction from "layouts/charger_mgmt/ViewTransaction";
 
 const userRole = localStorage.getItem("role");
 const serviceID = JSON.parse(localStorage.getItem("data"))?.serviceID;
@@ -147,6 +148,15 @@ export const superAdminRoutes = [
     // icon: <Icon fontSize="small">receipt_long</Icon>,
     route: "/charger/view",
     component: <ViewCharger />,
+  },
+  (userRole === "Admin" || (userRole === "Manager" && serviceID.includes("1"))) &&
+  {
+    // type: "collapse",
+    // name: "Update User",
+    key: "transaction-View",
+    // icon: <Icon fontSize="small">receipt_long</Icon>,
+    route: "/transaction/view",
+    component: <ViewTransaction />,
   },
   (userRole === "Admin" || (userRole === "Manager" && serviceID.includes("3"))) &&
   {
