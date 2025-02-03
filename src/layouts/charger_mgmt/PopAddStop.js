@@ -152,7 +152,7 @@ function PopAddStop(props) {
                                 />
                             </MDBox>
 
-                            <MDBox p={1}>
+                            {/* <MDBox p={1}>
                                 <MDInput
                                     type="text"
                                     label="Location"
@@ -164,7 +164,7 @@ function PopAddStop(props) {
                                     fullWidth={true}
                                     onChange={handleChange}
                                 />
-                            </MDBox>
+                            </MDBox> */}
                             <MDBox p={1}>
                                 <MDInput
                                     type="text"
@@ -181,7 +181,7 @@ function PopAddStop(props) {
                             <MDBox p={1}>
                                 <MDInput
                                     type="text"
-                                    label="Start reason"
+                                    label="Stop reason"
                                     value={values.reason}
                                     name="reason"
                                     multiline

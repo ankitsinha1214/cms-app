@@ -246,7 +246,7 @@ function Charger_mgmt() {
           // Mask userPhone (assuming it's a string)
           const userPhone = session.userPhone || "";
           const maskedPhone = userPhone.length > 4 
-              ? `+91 ${"x".repeat(userPhone.length - 7)}${userPhone.slice(-4)}`
+              ? `+91 ${"X".repeat(userPhone.length - 7)}${userPhone.slice(-4)}`
               : userPhone; // If phone is too short, keep it as is
       
           return {
@@ -255,7 +255,7 @@ function Charger_mgmt() {
                     : session.status === "Stopped" ? "Unpaid"
                     : session.status === "Completed" ? "Paid"
                     : session.status, // Keep it unchanged if it doesn't match
-              energy_disp: `${energyConsumed} Wh`,
+              energy_disp1: `${energyConsumed} Wh`,
               userPhone: maskedPhone
           };
       });
@@ -509,7 +509,7 @@ function Charger_mgmt() {
       },
     },
     {
-      header: "Energy disp", accessorKey: "energy_disp", align: "center", muiTableHeadCellProps: {
+      header: "Energy disp", accessorKey: "energy_disp1", align: "center", muiTableHeadCellProps: {
         align: 'center',
       },
       muiTableBodyCellProps: {
@@ -518,7 +518,7 @@ function Charger_mgmt() {
     },
     {
       header: "Action",
-      accessorKey: "action",
+      accessorKey: "actions",
       enableColumnFilter: false,
       align: "center", muiTableHeadCellProps: {
         align: 'center',
@@ -567,32 +567,70 @@ function Charger_mgmt() {
   };
   const handleTransactionEdit = (row_data) => {
     // navigate("/view/user", { state: row_data });
-    navigate("/transaction/view", { state: row_data });
+    navigate("/session", { state: row_data });
   };
   const handleDelete = (row_data) => {
-    var bodyFormData = new FormData();
-    bodyFormData.append("id", row_data.id);
+    console.log(row_data);
+    return;
+    const payload = {
+      "location_id": row_data?._id,
+      "charger_id": row_data?._id
+    };
     axios({
-      method: "post",
-      url: process.env.REACT_APP_BASEURL + "jbackend/deleteservice",
-      data: bodyFormData
+      method: "delete",
+      url: process.env.REACT_APP_BASEURL + "charger-locations/delete-charger",
+      data: payload, // JSON payload
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`
+      },
+      // headers: {
+      //   "Content-Type": "application/json", 
+      // },
     })
       .then((response) => {
-        console.log(response);
-
-        if (response.data.status === true) {
-          console.log(response);
+        if (response.data.success === true) {
+          // console.log(response);
           // setIsBackdrop(false);
           // setDialogMessage(response.data.message);
           // setIsDialog(true);
+          // alert(response.data.message);
+          enqueueSnackbar(response.data.message, { variant: 'success' });
+          navigate("/location");
+          // window.location.reload();
         } else {
-          console.log("status is false ");
+          // console.log("status is false ");
+          enqueueSnackbar(response.data.message, { variant: 'error' });
         }
       })
       .catch((error) => {
-        console.log(error);
+        // console.log(error);
+        enqueueSnackbar("Error Occurred while Deleting Charger. Please try again later.", { variant: 'error' });
       });
   };
+  // const handleDelete = (row_data) => {
+  //   var bodyFormData = new FormData();
+  //   bodyFormData.append("id", row_data.id);
+  //   axios({
+  //     method: "post",
+  //     url: process.env.REACT_APP_BASEURL + "jbackend/deleteservice",
+  //     data: bodyFormData
+  //   })
+  //     .then((response) => {
+  //       console.log(response);
+
+  //       if (response.data.status === true) {
+  //         console.log(response);
+  //         // setIsBackdrop(false);
+  //         // setDialogMessage(response.data.message);
+  //         // setIsDialog(true);
+  //       } else {
+  //         console.log("status is false ");
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //     });
+  // };
   const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#FFF1CD',
     ...theme.typography.body2,

@@ -155,7 +155,7 @@ export const superAdminRoutes = [
     // name: "Update User",
     key: "transaction-View",
     // icon: <Icon fontSize="small">receipt_long</Icon>,
-    route: "/transaction/view",
+    route: "/session",
     component: <ViewTransaction />,
   },
   (userRole === "Admin" || (userRole === "Manager" && serviceID.includes("3"))) &&

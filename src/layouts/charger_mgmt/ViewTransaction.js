@@ -31,6 +31,21 @@ import Projects from "layouts/dashboard/components/Projects";
 import OrdersOverview from "layouts/dashboard/components/OrdersOverview";
 import { useSnackbar } from "notistack";
 
+
+// Helper function to calculate time difference
+const timeAgo = (timestamp) => {
+    const now = new Date();
+    const timeDifference = Math.floor((now - new Date(timestamp)) / 1000 / 60); // Difference in minutes
+    console.log(new Date(timestamp))
+    if (timeDifference === 0) {
+        return "just updated";
+    } else if (timeDifference === 1) {
+        return "updated 1 min ago";
+    } else {
+        return `updated ${timeDifference} mins ago`;
+    }
+};
+
 function ViewTransaction() {
     const [controller] = useMaterialUIController();
     const { darkMode } = controller;
@@ -38,82 +53,49 @@ function ViewTransaction() {
     const location = useLocation();
     console.log(location.state);
     const [content, setContent] = useState([]);
+    // State to store dynamic timestamp
+    const [timestamp, setTimestamp] = useState(new Date().toLocaleTimeString());
     useEffect(() => {
         setContent(location.state);
     }, []);
     const [metadata, setMetadata] = useState([]);
+    const [currentData, setCurrentData] = useState({
+        labels: [],
+        datasets: { label: "", data: [] },
+    });
+    const [powerData, setPowerData] = useState({
+        labels: [],
+        datasets: { label: "", data: [] },
+    });
+    const [energyData, setEnergyData] = useState({
+        labels: [],
+        datasets: { label: "", data: [] },
+    });
     const [locations, setLocations] = useState([]);
     const [dashboardData, setDashboardData] = useState({});
     const navigate = useNavigate();
     const { enqueueSnackbar } = useSnackbar();
-    const data1 = [
-        {
-            "name": "Jan",
-            "This Year": 650,
-            "Last Year": 600
-        },
-        {
-            "name": "Feb",
-            "This Year": 700,
-            "Last Year": 550
-        },
-        {
-            "name": "Mar",
-            "This Year": 200,
-            "Last Year": 980
-        },
-        {
-            "name": "Apr",
-            "This Year": 278,
-            "Last Year": 390
-        },
-        {
-            "name": "May",
-            "This Year": 189,
-            "Last Year": 480
-        },
-        {
-            "name": "Jun",
-            "This Year": 239,
-            "Last Year": 380
-        },
-        {
-            "name": "Jul",
-            "This Year": 349,
-            "Last Year": 430
-        },
-        {
-            "name": "Aug",
-            "This Year": 390,
-            "Last Year": 410
-        },
-        {
-            "name": "Sep",
-            "This Year": 490,
-            "Last Year": 430
-        },
-        {
-            "name": "Oct",
-            "This Year": 430,
-            "Last Year": 320
-        },
-        {
-            "name": "Nov",
-            "This Year": 430,
-            "Last Year": 320
-        },
-        {
-            "name": "Dec",
-            "This Year": 430,
-            "Last Year": 320
-        },
-    ]
+    // const powerData = {
+    //     labels: ["00:00", "03:00", "06:00", "09:00", "12:00", "15:00", "18:00", "21:00"],
+    //     datasets: [
+    //       {
+    //         label: "Power (kW)",
+    //         data: [5, 15, 30, 20, 40, 50, 35, 45], // Example power values
+    //         borderColor: "green",
+    //         backgroundColor: "rgba(0, 255, 0, 0.1)",
+    //         fill: true,
+    //         tension: 0.4,
+    //       },
+    //     ],
+    //   };
     useEffect(() => {
         if (
             localStorage.getItem("login_status") !== "true"
         ) {
             navigate("/sign-in");
         }
+        // Set timestamp when page is visited
+        // setTimestamp(new Date().toLocaleTimeString());
         // axios({
         //   method: "get",
         //   url: process.env.REACT_APP_BASEURL + "charger-locations",
@@ -173,58 +155,91 @@ function ViewTransaction() {
         //     console.log(error);
         //   });
         const metadataResponse = location.state.metadata;
-        // const metadataResponse = [
-        //     {
-        //         "timestamp": "2025-01-31T07:19:55Z",
-        //         "values": {
-        //             "Energy.Active.Import.Register": "307.402 Wh",
-        //             "Power.Active.Import": "0.00 kW",
-        //             "Voltage": "228.65 V",
-        //             "Current.Import": "0.00 A",
-        //             "Temperature": "0.00 Celsius",
-        //             "Frequency": "50"
-        //         }
-        //     },
-        //     {
-        //         "timestamp": "2025-01-31T07:20:55Z",
-        //         "values": {
-        //             "Energy.Active.Import.Register": "308.500 Wh",
-        //             "Power.Active.Import": "1.50 kW",
-        //             "Voltage": "230.00 V",
-        //             "Current.Import": "2.00 A",
-        //             "Temperature": "25.00 Celsius",
-        //             "Frequency": "49.9"
-        //         }
-        //     }
-        // ];
         // Transform metadata into graph-compatible format
-        const transformedData = metadataResponse.map(entry => ({
-            timestamp: new Date(entry.timestamp).toLocaleTimeString(), // Format timestamp
-            energy: parseFloat(entry.values["Energy.Active.Import.Register"]), // Wh
-            power: parseFloat(entry.values["Power.Active.Import"]), // kW
-            voltage: parseFloat(entry.values["Voltage"]), // V
-            current: parseFloat(entry.values["Current.Import"]), // A
-            temperature: parseFloat(entry.values["Temperature"]), // Celsius
-            frequency: parseFloat(entry.values["Frequency"]) // Hz
-        }));
+        setTimestamp(metadataResponse[0].timestamp);
+        // Get the first energy value (to subtract it from the rest of the data)
+        const firstEnergyValue = parseFloat(metadataResponse[0].values["Energy.Active.Import.Register"]);
+        const transformedData = metadataResponse.map(entry => {
+            const energy = parseFloat(entry.values["Energy.Active.Import.Register"]);
+            return {
+                timestamp: new Date(entry.timestamp).toLocaleTimeString(), // Format timestamp
+                // energy: parseFloat(entry.values["Energy.Active.Import.Register"]), // Wh
+                energy: (energy - firstEnergyValue).toFixed(4), // Subtract the first energy value
+                power: parseFloat(entry.values["Power.Active.Import"]), // kW
+                voltage: parseFloat(entry.values["Voltage"]), // V
+                current: parseFloat(entry.values["Current.Import"]), // A
+                temperature: parseFloat(entry.values["Temperature"]), // Celsius
+                frequency: parseFloat(entry.values["Frequency"]) // Hz
+            };
+        });
+        // Extract distinct values for each field
+        // const distinctValues = {
+        //     energy: [...new Set(transformedData.map(item => item.energy))],
+        //     power: [...new Set(transformedData.map(item => item.power))],
+        //     voltage: [...new Set(transformedData.map(item => item.voltage))],
+        //     current: [...new Set(transformedData.map(item => item.current))],
+        //     temperature: [...new Set(transformedData.map(item => item.temperature))],
+        //     frequency: [...new Set(transformedData.map(item => item.frequency))]
+        // };
+
+        // console.log("Distinct Values:", distinctValues);
 
         setMetadata(transformedData);
+        setPowerData({
+            labels: transformedData.map(item => item.timestamp),
+            datasets:
+            {
+                label: "Power (kW)",
+                data: transformedData.map(item => item.power),
+                borderColor: "green",
+                backgroundColor: "rgba(0, 255, 0, 0.1)",
+                fill: true,
+                tension: 0.4,
+            },
+        });
+        setCurrentData({
+            labels: transformedData.map(item => item.timestamp),
+            datasets:
+            {
+                label: "Current (A)",
+                data: transformedData.map(item => item.current),
+                borderColor: "green",
+                backgroundColor: "rgba(0, 255, 0, 0.1)",
+                fill: true,
+                tension: 0.4,
+            },
+        });
+        setEnergyData({
+            labels: transformedData.map(item => item.timestamp),
+            datasets:
+            {
+                label: "Energy (Wh)",
+                data: transformedData.map(item => item.energy),
+                borderColor: "green",
+                backgroundColor: "rgba(0, 255, 0, 0.1)",
+                fill: true,
+                tension: 0.4,
+            },
+        });
     }, []);
+    // Get the most recent timestamp (or pick one of the entries)
+    const lastUpdated = metadata.length > 0 ? metadata[metadata.length - 1].timestamp : null;
+    // console.log(powerData)
     return (
         <DashboardLayout>
-            <DashboardNavbar />
-            <MDBox py={3}>
+            <DashboardNavbar absolute isMini />
+            <MDBox pt={8}>
+                {/* <MDBox py={3}> */}
 
-                <Grid container spacing={3}>
-                    <Grid item xs={12} md={12} lg={8}
+                {/* <Grid container spacing={3}> */}
+                {/* <Grid item xs={12} md={12} lg={8}
                         // mt={4}
                         mb={8}
-                    >
-                        <MDBox mt={6}>
-
-                            {/* <MDBox mt={4.5}> */}
-                            <Grid container spacing={3}>
-                                {/* <Grid item xs={12} md={6} lg={6}>
+                    > */}
+                {/* <MDBox mt={6}>
+                            <Grid container spacing={3}> */}
+                {/* <MDBox mt={4.5}> */}
+                {/* <Grid item xs={12} md={6} lg={6}>
                   <MDBox mb={3}>
                     <ReportsBarChart
                       color="info"
@@ -250,7 +265,7 @@ function ViewTransaction() {
                     />
                   </MDBox>
                 </Grid> */}
-                                {/* <Grid item xs={12} md={6} lg={4}>
+                {/* <Grid item xs={12} md={6} lg={4}>
               <MDBox mb={3}>
                 <ReportsLineChart
                   color="dark"
@@ -261,13 +276,11 @@ function ViewTransaction() {
                 />
               </MDBox>
             </Grid> */}
-                            </Grid>
-                        </MDBox>
-                    </Grid>
-                </Grid>
-                {/* <MDBox mt={4.5}>
-                    <Grid container spacing={3}>
-                        <Grid item xs={12} md={6} lg={4}>
+                {/* </Grid>
+                        </MDBox> */}
+                {/* </Grid> */}
+                {/* </Grid> */}
+                {/* <Grid item xs={12} md={6} lg={4}>
                             <MDBox mb={3}>
                                 <ReportsBarChart
                                     color="info"
@@ -277,38 +290,10 @@ function ViewTransaction() {
                                     chart={reportsBarChartData}
                                 />
                             </MDBox>
-                        </Grid>
-                        <Grid item xs={12} md={6} lg={4}>
-                            <MDBox mb={3}>
-                                <ReportsLineChart
-                                    color="success"
-                                    title="daily sales"
-                                    description={
-                                        <>
-                                            (<strong>+15%</strong>) increase in today sales.
-                                        </>
-                                    }
-                                    date="updated 4 min ago"
-                                    chart={sales}
-                                />
-                            </MDBox>
-                        </Grid>
-                        <Grid item xs={12} md={6} lg={4}>
-                            <MDBox mb={3}>
-                                <ReportsLineChart
-                                    color="dark"
-                                    title="completed tasks"
-                                    description="Last Campaign Performance"
-                                    date="just updated"
-                                    chart={tasks}
-                                />
-                            </MDBox>
-                        </Grid>
-                    </Grid>
-                </MDBox> */}
+                        </Grid> */}
                 <Card>
                     <MDBox p={3}>
-                        <MDTypography variant="h6">Transaction Data</MDTypography>
+                        <MDTypography variant="h6" mb={2}>Session Information</MDTypography>
                         <ResponsiveContainer width="100%" height={300}>
                             <LineChart data={metadata}>
                                 <CartesianGrid strokeDasharray="3 3" />
@@ -326,6 +311,59 @@ function ViewTransaction() {
                         </ResponsiveContainer>
                     </MDBox>
                 </Card>
+                <MDBox mt={8}>
+                    {/* <MDBox mt={4.5}> */}
+                    <Grid container spacing={3}>
+                        <Grid item xs={12} md={6} lg={4}>
+                            <MDBox mb={3}>
+                                <ReportsLineChart
+                                    color="info"
+                                    title="Energy Dispersed (Wh)"
+                                    description="Total energy dispersed in watt-hours over a given period."
+                                    // description={
+                                    //     <>
+                                    //         (<strong>+15%</strong>) increase in today sales.
+                                    //     </>
+                                    // }
+                                    date={lastUpdated ? `${timeAgo(timestamp)}` : "No data available"}
+                                    // date="updated 4 min ago"
+                                    chart={energyData}
+                                />
+                            </MDBox>
+                        </Grid>
+                        <Grid item xs={12} md={6} lg={4}>
+                            <MDBox mb={3}>
+                                <ReportsLineChart
+                                    color="success"
+                                    title="Power (kW)"
+                                    description="Power consumption in kilowatts over a specified time period."
+                                    // description={
+                                    //     <>
+                                    //         (<strong>+15%</strong>) increase in today sales.
+                                    //     </>
+                                    // }
+                                    date={lastUpdated ? `${timeAgo(timestamp)}` : "No data available"}
+                                    // date="updated 4 min ago"
+                                    chart={powerData}
+                                />
+                            </MDBox>
+                        </Grid>
+                        <Grid item xs={12} md={6} lg={4}>
+                            <MDBox mb={3}>
+                                <ReportsLineChart
+                                    color="dark"
+                                    title="Current (A)"
+                                    description="Current (amperage) values recorded over a designated time period."
+                                    // description="Last Campaign Performance"
+                                    // date="just updated"
+                                    // date={`Last updated at: ${timestamp}`} 
+                                    date={lastUpdated ? `${timeAgo(timestamp)}` : "No data available"}
+                                    chart={currentData}
+                                />
+                            </MDBox>
+                        </Grid>
+                    </Grid>
+                </MDBox>
                 {/* <MDBox>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6} lg={8}>

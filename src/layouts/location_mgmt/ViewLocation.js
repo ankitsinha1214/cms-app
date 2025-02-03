@@ -659,7 +659,7 @@ const ViewLocation = () => {
               }} />
           }
 
-          {`${row.row.original.user.firstName} ${row.row.original.user.lastName}`}
+          {`${row.row.original?.user?.firstName} ${row.row.original?.user?.lastName}`}
         </div>
       ),
     },

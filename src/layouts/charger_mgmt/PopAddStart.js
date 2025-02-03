@@ -157,7 +157,7 @@ function PopAddStart(props) {
                                 />
                             </MDBox>
 
-                            <MDBox p={1}>
+                            {/* <MDBox p={1}>
                                 <MDInput
                                     type="text"
                                     label="Location"
@@ -169,7 +169,7 @@ function PopAddStart(props) {
                                     fullWidth={true}
                                     onChange={handleChange}
                                 />
-                            </MDBox>
+                            </MDBox> */}
                             <MDBox p={1}>
                                 <MDInput
                                     type="text"
