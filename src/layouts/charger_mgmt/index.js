@@ -145,8 +145,9 @@ function Charger_mgmt() {
           );
           console.log(transformedData)
           setRows(transformedData);
-          setTotal(transformedData.length)
-          setInactive(transformedData?.filter(row => row.status !== "Inactive").length)
+          setTotal(transformedData.length);
+          setInactive(transformedData?.filter(row => row.status === "Inactive").length);
+          // setInactive(transformedData?.filter(row => row.status !== "Inactive").length);
           // setRows(response.data.data);
           setIsLoading(false);
         } else {

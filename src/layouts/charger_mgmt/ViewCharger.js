@@ -32,6 +32,7 @@ import {
   CheckCircleOutlined,
   ClockCircleOutlined,
   CloseCircleOutlined,
+  LoadingOutlined,
   ExclamationCircleOutlined,
   MinusCircleOutlined,
   SyncOutlined,
@@ -226,16 +227,31 @@ const ViewLocation = () => {
                 <Tag icon={<CheckCircleOutlined />} color="success" style={{ marginBottom: "1rem" }}>
                   Available
                 </Tag>
-                : content?.status === "Inuse" ?
+                : content?.status === "Preparing" ?
                   <Tag icon={<SyncOutlined spin />} color="warning" style={{ marginBottom: "1rem" }}>
-                    Pending
+                    Preparing
                   </Tag>
                   : content?.status === "Inactive" ?
                     <Tag icon={<CloseCircleOutlined />} color="error" style={{ marginBottom: "1rem" }}>
                       Inactive
                     </Tag>
                     :
-                    <Tag icon={<MinusCircleOutlined />} color="default" style={{ marginBottom: "1rem" }}>
+                   content?.status === "Charging" ?
+                    <Tag icon={<LoadingOutlined />} color="#1A73E8" style={{ marginBottom: "1rem" }}>
+                      Charging
+                    </Tag>
+                    :
+                   content?.status === "Finishing" ?
+                    <Tag icon={<ExclamationCircleOutlined />} color="#800080" style={{ marginBottom: "1rem" }}>
+                      Finishing
+                    </Tag>
+                    :
+                   content?.status === "Faulted" ?
+                    <Tag icon={<MinusCircleOutlined />} color="#E64A19" style={{ marginBottom: "1rem" }}>
+                      Faulted
+                    </Tag>
+                    :
+                    <Tag icon={<ClockCircleOutlined />} color="default" style={{ marginBottom: "1rem" }}>
                       {content?.status}
                     </Tag>
               }

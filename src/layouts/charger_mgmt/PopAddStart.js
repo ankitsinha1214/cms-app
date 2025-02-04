@@ -5,6 +5,11 @@ import Dialog from "@mui/material/Dialog";
 import axios from "axios";
 // import Dialog from "assets/theme/components/dialog";
 import MDTypography from "components/MDTypography";
+import InputLabel from '@mui/material/InputLabel';
+import OutlinedInput from "@mui/material/OutlinedInput";
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+// import { Select, Space } from 'antd';
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -22,6 +27,8 @@ import themeDark from "assets/theme-dark";
 import theme from "assets/theme";
 import IconButton from '@mui/material/IconButton';
 import Completion from "./Completion";
+import { Image } from "antd";
+
 function PopAddStart(props) {
     // const data = useSelector((s) => s);
     // console.log(data);
@@ -29,6 +36,7 @@ function PopAddStart(props) {
     const { darkMode } = controller;
     const [isDisabled, setIsDisabled] = useState(false);
     const [fileName, setFileName] = useState("");
+    const [vehicles, setVehicles] = useState([]);
     const [isBackdrop, setIsBackdrop] = useState(false);
     const { onClose } = props;
 
@@ -55,7 +63,7 @@ function PopAddStart(props) {
     //   };
     // };
 
-    const createUser = (tag_id, charger_id, vehicleId, connectorId, reason ) => {
+    const createUser = (tag_id, charger_id, vehicleId, connectorId, reason) => {
         // alert("All input are correct")
         const payload = {
             "action": "start",
@@ -79,13 +87,13 @@ function PopAddStart(props) {
         })
             .then((response) => {
                 if (response.data.status) {
-                        enqueueSnackbar(response.data.message, { variant: 'success' });
-                        // navigate("/location");
+                    enqueueSnackbar(response.data.message, { variant: 'success' });
+                    // navigate("/location");
                     window.location.reload();
                 } else {
                     console.log("status is false ");
                     enqueueSnackbar(response.data.message, { variant: 'error' });
-                    
+
                 }
             })
             .catch((error) => {
@@ -107,13 +115,13 @@ function PopAddStart(props) {
         event.preventDefault();
         console.log(values)
         if (!values.tag_id || !values.charger_id || !values.vehicleId || !values.connectorId || !values.reason) return enqueueSnackbar('Please Fill All The Details !!!', { variant: 'error' })
-        createUser(values.tag_id,values.charger_id, values.vehicleId, values.connectorId, values.reason);
+        createUser(values.tag_id, values.charger_id, values.vehicleId, values.connectorId, values.reason);
     };
     const handleClose = () => {
         onClose(false);
     };
     const pop = () => {
-       setIsBackdrop(false);
+        setIsBackdrop(false);
         onClose(false);
         setIsDisabled(!isDisabled)
         // setIsDialog(true);
@@ -123,21 +131,69 @@ function PopAddStart(props) {
         onClose(false);
         props.onStateChange(true);
     };
+
+    const getAllVehiclesOfUser = () => {
+        const token = localStorage.getItem("token");
+        axios({
+            method: "get",
+            url: process.env.REACT_APP_BASEURL + `users/${values.tag_id}/vehicles`,
+            headers: {
+                "Authorization": `Bearer ${token}`
+            },
+        })
+            .then((response) => {
+                if (response.data.success === true) {
+                    const data = response.data.data;
+                    // const structuredData = {};
+                    // console.log(data);
+                    // data.forEach(stateObj => {
+                    //     const state = Object.keys(stateObj)[0];
+                    //     const cities = stateObj[state];
+                    //     structuredData[state] = cities;
+                    // });
+                    // setStateData(structuredData);
+                    // setVehicles(Object.keys(structuredData));
+                    setVehicles(data);
+                    // setState_show(response.data.data);
+                } else {
+                    console.log("status is false ");
+                    setVehicles([]);
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+                setVehicles([]);
+            });
+    };
+
+    useEffect(() => {
+        if (
+            localStorage.getItem("login_status") !== "true"
+        ) {
+            navigate("/sign-in");
+        }
+        if (values.tag_id) {
+            getAllVehiclesOfUser();
+        }
+        else {
+            setVehicles([]);
+        }
+    }, [values.tag_id]);
     return (
         <>
-        <Completion
+            <Completion
                 isDialog={isDisabled}
                 onClose={setIsDisabled}
                 value={values}
             />
             <MDBackdrop isBackdrop={isBackdrop} />
             <Dialog open={props.isDialog} onClose={handleClose} fullWidth maxWidth="md" >
-                <DialogTitle style={darkMode ? { backgroundColor: "#202940", color: "#ffffff" ,display : "flex", alignItems : "center", justifyContent : "space-between"} : {theme,display : "flex", alignItems : "center", justifyContent : "space-between"}}>
-                <IconButton aria-label="delete" onClick={back} style={darkMode ? {color: "#ffffff"} : theme}>
+                <DialogTitle style={darkMode ? { backgroundColor: "#202940", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "space-between" } : { theme, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <IconButton aria-label="delete" onClick={back} style={darkMode ? { color: "#ffffff" } : theme}>
                         <ArrowBackIcon />
                     </IconButton>
-                         Start transaction
-                    <IconButton aria-label="delete" onClick={handleClose} style={darkMode ? {color: "#ffffff"} : theme}>
+                    Start transaction
+                    <IconButton aria-label="delete" onClick={handleClose} style={darkMode ? { color: "#ffffff" } : theme}>
                         <CloseIcon />
                     </IconButton>
                 </DialogTitle>
@@ -186,6 +242,43 @@ function PopAddStart(props) {
                                 />
                             </MDBox>
                             <MDBox p={1}>
+                                <FormControl fullWidth>
+                                    <InputLabel id="demo-multiple-name-label">Vehicle</InputLabel>
+                                    <Select
+                                        showSearch
+                                        sx={{
+                                            height: 50,
+                                        }}
+                                        labelId="demo-multiple-name-label"
+                                        id="demo-multiple-name"
+                                        placeholder="Select Vehicle"
+                                        value={values.vehicleId}
+                                        name="vehicleId"
+                                        onChange={handleChange}
+                                        input={<OutlinedInput label="Vehicle" />}
+                                    >
+                                        {vehicles.length > 0 ? (
+                                            vehicles.map((city, index) => (
+                                                <MenuItem key={index} value={city._id}>
+                                                    {city.vehicle_img && (
+                                                        <Image src={process.env.REACT_APP_AWS_BASEURL + city.vehicle_img} width={24} height={24} preview={false} alt="logo" />
+                                                    )}
+                                                    {city.make} {city.model} {city.variant}
+                                                </MenuItem>
+                                            ))
+                                        ) : (
+                                            <MenuItem disabled>No Data</MenuItem>
+                                        )}
+                                    </Select>
+                                    {/* <Select
+                                        status="error"
+                                        style={{
+                                            width: '100%',
+                                        }}
+                                    /> */}
+                                </FormControl>
+                            </MDBox>
+                            {/* <MDBox p={1}>
                                 <MDInput
                                     type="text"
                                     label="Vehicle ID"
@@ -197,10 +290,10 @@ function PopAddStart(props) {
                                     fullWidth={true}
                                     onChange={handleChange}
                                 />
-                            </MDBox>
+                            </MDBox> */}
                             <MDBox p={1}>
                                 <MDInput
-                                    type="text"
+                                    type="number"
                                     label="Connector ID"
                                     value={values.connectorId}
                                     name="connectorId"
@@ -228,12 +321,12 @@ function PopAddStart(props) {
                         </MDBox>
                     </MDBox>
                 </DialogContent>
-                <DialogActions style={darkMode ? { backgroundColor: "#202940",justifyContent : "space-evenly", color: "#ffffff" } : {theme,justifyContent : "space-evenly"}}>
+                <DialogActions style={darkMode ? { backgroundColor: "#202940", justifyContent: "space-evenly", color: "#ffffff" } : { theme, justifyContent: "space-evenly" }}>
                     {/* <Button onClick={handleSubmit} autoFocus>
                         Upload File
                     </Button> */}
-                    <MDButton style={{width:"87%",}} variant="gradient" color="info" onClick={handleSubmit}>
-                    START
+                    <MDButton style={{ width: "87%", }} variant="gradient" color="info" onClick={handleSubmit}>
+                        START
                     </MDButton>
                 </DialogActions>
             </Dialog>
