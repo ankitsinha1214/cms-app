@@ -64,7 +64,8 @@ function PopAddStart(props) {
             "payload": {
                 "idTag": tag_id,
                 "connectorId": connectorId,
-            }
+            },
+            "sessionReason": reason
         };
         const token = localStorage.getItem("token");
         axios({

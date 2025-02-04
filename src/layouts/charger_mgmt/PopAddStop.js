@@ -61,7 +61,8 @@ function PopAddStop(props) {
             "chargerId": charger_id,
             "payload": {
                 "sessionId": session_id,
-            }
+            },
+            "sessionReason": reason
         };
         const token = localStorage.getItem("token");
         axios({
