@@ -1,6 +1,7 @@
 // @mui material components
 import axios from "axios";
 import Grid from "@mui/material/Grid";
+import { Typography } from '@mui/material';
 import { useEffect, useState } from "react";
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
@@ -30,10 +31,19 @@ import reportsLineChartData from "layouts/dashboard/data/reportsLineChartData";
 import Projects from "layouts/dashboard/components/Projects";
 import OrdersOverview from "layouts/dashboard/components/OrdersOverview";
 import { useSnackbar } from "notistack";
-
+import {
+    CheckCircleOutlined,
+    ClockCircleOutlined,
+    CloseCircleOutlined,
+    ExclamationCircleOutlined,
+    MinusCircleOutlined,
+    SyncOutlined,
+} from '@ant-design/icons';
+import { Tag } from 'antd';
 
 // Helper function to calculate time difference
 const timeAgo = (timestamp) => {
+    console.log(timestamp)
     const now = new Date();
     const timeDifference = Math.floor((now - new Date(timestamp)) / 1000 / 60); // Difference in minutes
     console.log(new Date(timestamp))
@@ -54,7 +64,8 @@ function ViewTransaction() {
     console.log(location.state);
     const [content, setContent] = useState([]);
     // State to store dynamic timestamp
-    const [timestamp, setTimestamp] = useState(new Date().toLocaleTimeString());
+    const [timestamp, setTimestamp] = useState(new Date());
+    // const [timestamp, setTimestamp] = useState(new Date().toLocaleTimeString());
     useEffect(() => {
         setContent(location.state);
     }, []);
@@ -95,6 +106,7 @@ function ViewTransaction() {
             navigate("/sign-in");
         }
         // Set timestamp when page is visited
+        setTimestamp(new Date());
         // setTimestamp(new Date().toLocaleTimeString());
         // axios({
         //   method: "get",
@@ -156,7 +168,7 @@ function ViewTransaction() {
         //   });
         const metadataResponse = location.state.metadata;
         // Transform metadata into graph-compatible format
-        setTimestamp(metadataResponse[0].timestamp);
+        // setTimestamp(metadataResponse[0].timestamp);
         // Get the first energy value (to subtract it from the rest of the data)
         const firstEnergyValue = parseFloat(metadataResponse[0].values["Energy.Active.Import.Register"]);
         const transformedData = metadataResponse.map(entry => {
@@ -229,6 +241,55 @@ function ViewTransaction() {
         <DashboardLayout>
             <DashboardNavbar absolute isMini />
             <MDBox pt={8}>
+
+
+                {/* Header Section */}
+                <Grid item xs={12} sm={8}>
+                    {/* <Flex gap="4px 0" wrap> */}
+                    {content?.status === "Paid" ?
+                        <Tag icon={<CheckCircleOutlined />} color="success" style={{ marginBottom: "1rem" }}>
+                            Paid
+                        </Tag>
+                        : content?.status === "Active" ?
+                            <Tag icon={<SyncOutlined spin />} color="warning" style={{ marginBottom: "1rem" }}>
+                                Active
+                            </Tag>
+                            : content?.status === "Unpaid" ?
+                                <Tag icon={<CloseCircleOutlined />} color="error" style={{ marginBottom: "1rem" }}>
+                                    Unpaid
+                                </Tag>
+                                :
+                                <Tag icon={<MinusCircleOutlined />} color="default" style={{ marginBottom: "1rem" }}>
+                                    {content?.status}
+                                </Tag>
+                    }
+                    {/* <Tag icon={<ExclamationCircleOutlined />} color="warning">
+                  warning
+                </Tag> */}
+                    {/* {JSON.stringify(data)} */}
+                    {/* </Flex> */}
+                    <Typography variant="h4" component="h1" gutterBottom>
+                        {content?.chargerId}
+                    </Typography>
+                    <Typography variant="subtitle1" sx={{ lineHeight: "36px" }}>
+                        {content?.duration} &nbsp; | &nbsp; {content?.energy_disp1}
+                    </Typography>
+                    <Typography variant="subtitle1" sx={{ lineHeight: "36px" }}>
+                        {content?.chargerLocation?.locationName} &nbsp;|&nbsp; {content?.userPhone}
+                        {/* &nbsp;|&nbsp; Public */}
+                    </Typography>
+                    <Typography variant="body2" sx={{ lineHeight: "36px" }}>
+                        {content?.chargerLocation?.city}, {content?.chargerLocation?.state}
+                    </Typography>
+                    {/* Statistics Section */}
+                    <Grid item xs={12}
+                    // md={6}
+                    // style={{ marginTop: "2rem" }}
+                    >
+                        <br />
+                    </Grid>
+                </Grid>
+
                 {/* <MDBox py={3}> */}
 
                 {/* <Grid container spacing={3}> */}

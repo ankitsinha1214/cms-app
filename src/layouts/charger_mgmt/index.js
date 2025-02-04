@@ -47,6 +47,8 @@ function Charger_mgmt() {
   const [isLoading, setIsLoading] = useState(true);
   const [isDisabled, setIsDisabled] = useState(false);
   const [selected, setSelected] = useState("All Chargers");
+  const [total, setTotal] = useState(0);
+  const [inactive, setInactive] = useState(0);
   const [columns, setColumns] = useState([]);
   const { enqueueSnackbar } = useSnackbar();
   const statusList = [
@@ -77,7 +79,7 @@ function Charger_mgmt() {
       setColumns(column);
     }
     else {
-      handleDropdownSelect('All Transactions');
+      handleDropdownSelect('All Sessions');
       setColumns(sessionColumn);
     }
   };
@@ -106,7 +108,7 @@ function Charger_mgmt() {
       type: 'divider',
     },
     {
-      label: 'All Transactions',
+      label: 'All Sessions',
       key: '2',
     },
   ];
@@ -143,6 +145,8 @@ function Charger_mgmt() {
           );
           console.log(transformedData)
           setRows(transformedData);
+          setTotal(transformedData.length)
+          setInactive(transformedData?.filter(row => row.status !== "Inactive").length)
           // setRows(response.data.data);
           setIsLoading(false);
         } else {
@@ -162,8 +166,8 @@ function Charger_mgmt() {
     if (selectedValue === "All Chargers") {
       // Fetch or filter all chargers data
       fetchAllChargers();
-    } else if (selectedValue === "All Transactions") {
-      // Fetch or filter all transactions data
+    } else if (selectedValue === "All Sessions") {
+      // Fetch or filter all Sessions data
       fetchAllTransactions();
     }
   };
@@ -231,35 +235,38 @@ function Charger_mgmt() {
         // });
         const updatedRows = response.data.data.map(session => {
           const metadata = session.metadata || [];
-      
+
           // Get the first and last metadata values
           const firstEntry = metadata[0]?.values?.["Energy.Active.Import.Register"];
           const lastEntry = metadata[metadata.length - 1]?.values?.["Energy.Active.Import.Register"];
-      
+
           // Extract numeric values and handle missing values
           const firstMeterValue = firstEntry ? parseFloat(firstEntry.split(" ")[0]) : 0;
           const lastMeterValue = lastEntry ? parseFloat(lastEntry.split(" ")[0]) : 0;
-      
+
           // Calculate energy consumed
           const energyConsumed = lastMeterValue && firstMeterValue ? (lastMeterValue - firstMeterValue).toFixed(4) : "0";
-      
+
           // Mask userPhone (assuming it's a string)
           const userPhone = session.userPhone || "";
-          const maskedPhone = userPhone.length > 4 
-              ? `+91 ${"X".repeat(userPhone.length - 7)}${userPhone.slice(-4)}`
-              : userPhone; // If phone is too short, keep it as is
-      
+          const maskedPhone = userPhone.length > 4
+            ? `+91 ${"X".repeat(userPhone.length - 7)}${userPhone.slice(-4)}`
+            : userPhone; // If phone is too short, keep it as is
+
           return {
-              ...session,
-              status: session.status === "Started" ? "Active"
-                    : session.status === "Stopped" ? "Unpaid"
-                    : session.status === "Completed" ? "Paid"
-                    : session.status, // Keep it unchanged if it doesn't match
-              energy_disp1: `${energyConsumed} Wh`,
-              userPhone: maskedPhone
+            ...session,
+            status: session.status === "Started" ? "Active"
+              : session.status === "Stopped" ? "Unpaid"
+                : session.status === "Completed" ? "Paid"
+                  : session.status, // Keep it unchanged if it doesn't match
+            energy_disp1: `${energyConsumed} Wh`,
+            userPhone: maskedPhone
           };
-      });
-        setRows(updatedRows);
+        });
+        // Sort by createdAt in descending order (latest first)
+        const sortedRows = updatedRows.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        setRows(sortedRows);
+        // setRows(updatedRows);
         // setRows(response.data.data);  // Assuming transactions data can be mapped similarly
       } else {
         enqueueSnackbar(response.data.message, { variant: 'error' });
@@ -461,6 +468,14 @@ function Charger_mgmt() {
       ),
     },
     {
+      header: "Session ID", accessorKey: "_id", align: "center", muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      },
+    },
+    {
       header: "Charger ID", accessorKey: "chargerId", align: "center", muiTableHeadCellProps: {
         align: 'center',
       },
@@ -571,7 +586,7 @@ function Charger_mgmt() {
   };
   const handleDelete = (row_data) => {
     console.log(row_data);
-    return;
+    return enqueueSnackbar("Error Occurred while Deleting Charger. Please try again later.", { variant: 'error' });
     const payload = {
       "location_id": row_data?._id,
       "charger_id": row_data?._id
@@ -686,11 +701,11 @@ function Charger_mgmt() {
                 imgicon={`${process.env.REACT_APP_AWS_BASEURL}cms-icons/Total+charger.png`}
                 title1="Active"
                 title2="Inactive"
-                count={rows?.length || 0}
+                count={total || 0}
                 // count={300}
                 // count1={240}
-                count1={rows?.filter(row => row.status !== "Inactive").length || 0} // Count of Available chargers
-                count2={rows?.filter(row => row.status === "Inactive").length || 0}
+                count1={total - inactive || 0} // Count of Available chargers
+                count2={inactive || 0}
                 percentage={{
                   color: "success",
                   amount: "+55%",

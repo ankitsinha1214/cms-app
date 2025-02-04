@@ -2,6 +2,7 @@ import MDBox from "components/MDBox";
 import MDInput from "components/MDInput";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
+import axios from "axios";
 // import Dialog from "assets/theme/components/dialog";
 import MDTypography from "components/MDTypography";
 import DialogActions from "@mui/material/DialogActions";
@@ -54,45 +55,43 @@ function PopAddStart(props) {
     //   };
     // };
 
-    const createUser = (first_name, last_name, phone_number, email, gender, clas, state, city, paidup_capital, activity_code, activity_description, registered_office_address) => {
-        const axios = require("axios");
-        alert("All input are correct")
-        // var bodyFormData = new FormData();
-        // bodyFormData.append("user", localStorage.getItem("userId"));
-        // bodyFormData.append("first_name", first_name);
-        // bodyFormData.append("last_name", last_name);
-        // bodyFormData.append("phone_number", phone_number);
-        // bodyFormData.append("state", state);
-        // bodyFormData.append("roc", roc);
-        // bodyFormData.append("company_status", company_status);
-        // bodyFormData.append("gender", gender);
-        // bodyFormData.append("date_of_birth", clas);
-        // bodyFormData.append("state", state);
-        // bodyFormData.append("city", city);
-        // bodyFormData.append("paidup_capital", paidup_capital);
-        // bodyFormData.append("activity_code", activity_code);
-        // bodyFormData.append("activity_description", activity_description);
-        // bodyFormData.append("registered_office_address", registered_office_address);
-        // bodyFormData.append("email", email);
-        // setIsBackdrop(true);
-        // axios({
-        //   method: "post",
-        //   url: BASE_URL + "jbackend/createuser",
-        //   data: bodyFormData,
-        // })
-        //   .then((response) => {
-        //     console.log(response.data.message);
-        //     setLLP_data(response.data);
-        //     setIsBackdrop(false);
-        //     setDialogMessage(response.data.message);
-        //     setIsDialog(true);
-        //   })
-        //   .catch((error) => {
-        //     console.log(error);
-        //     setIsBackdrop(false);
-        //     setDialogMessage(error);
-        //     setIsDialog(true);
-        //   });
+    const createUser = (tag_id, charger_id, vehicleId, connectorId, reason ) => {
+        // alert("All input are correct")
+        const payload = {
+            "action": "start",
+            "chargerId": charger_id,
+            "vehicleId": vehicleId,
+            "payload": {
+                "idTag": tag_id,
+                "connectorId": connectorId,
+            }
+        };
+        const token = localStorage.getItem("token");
+        axios({
+            method: "post",
+            url: process.env.REACT_APP_BASEURL + "session/transaction",
+            data: payload, // JSON payload
+            headers: {
+                "Content-Type": "application/json", // Set the Content-Type header
+                "Authorization": `Bearer ${token}`,
+            },
+        })
+            .then((response) => {
+                if (response.data.status) {
+                        enqueueSnackbar(response.data.message, { variant: 'success' });
+                        // navigate("/location");
+                    window.location.reload();
+                } else {
+                    console.log("status is false ");
+                    enqueueSnackbar(response.data.message, { variant: 'error' });
+                    
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+                enqueueSnackbar("An error occurred while stopping the charger.", { variant: 'error' });
+                // enqueueSnackbar(error, { variant: 'error' });
+            });
     };
 
     const [values, setValues] = useState(props.value);
@@ -105,7 +104,9 @@ function PopAddStart(props) {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        createUser(values.first_name, values.last_name, values.phone_number, values.email, values.gender, values.date_of_birth, values.state, values.city, values.paidup_capital, values.activity_code, values.activity_description, values.registered_office_address);
+        console.log(values)
+        if (!values.tag_id || !values.charger_id || !values.vehicleId || !values.connectorId || !values.reason) return enqueueSnackbar('Please Fill All The Details !!!', { variant: 'error' })
+        createUser(values.tag_id,values.charger_id, values.vehicleId, values.connectorId, values.reason);
     };
     const handleClose = () => {
         onClose(false);
@@ -186,12 +187,38 @@ function PopAddStart(props) {
                             <MDBox p={1}>
                                 <MDInput
                                     type="text"
+                                    label="Vehicle ID"
+                                    value={values.vehicleId}
+                                    name="vehicleId"
+                                    // multiline
+                                    // rows={5}
+                                    margin="dense"
+                                    fullWidth={true}
+                                    onChange={handleChange}
+                                />
+                            </MDBox>
+                            <MDBox p={1}>
+                                <MDInput
+                                    type="text"
+                                    label="Connector ID"
+                                    value={values.connectorId}
+                                    name="connectorId"
+                                    // multiline
+                                    // rows={5}
+                                    margin="dense"
+                                    fullWidth={true}
+                                    onChange={handleChange}
+                                />
+                            </MDBox>
+                            <MDBox p={1}>
+                                <MDInput
+                                    type="text"
                                     label="Start reason"
                                     value={values.reason}
                                     name="reason"
                                     multiline
                                     rows={5}
-                                    placeholder="Enter start reason"
+                                    placeholder="Enter Reason for Starting the Charger.. "
                                     margin="dense"
                                     fullWidth={true}
                                     onChange={handleChange}
@@ -204,7 +231,7 @@ function PopAddStart(props) {
                     {/* <Button onClick={handleSubmit} autoFocus>
                         Upload File
                     </Button> */}
-                    <MDButton style={{width:"87%",}} variant="gradient" color="info" onClick={pop}>
+                    <MDButton style={{width:"87%",}} variant="gradient" color="info" onClick={handleSubmit}>
                     START
                     </MDButton>
                 </DialogActions>
