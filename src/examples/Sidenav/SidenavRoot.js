@@ -73,7 +73,8 @@ export default styled(Drawer)(({ theme, ownerState }) => {
     "& .MuiDrawer-paper": {
       boxShadow: xxl,
       border: "none",
-      zIndex: "1000",
+      zIndex: "10000",
+      // zIndex: "1000",
       ...(miniSidenav ? drawerCloseStyles() : drawerOpenStyles()),
     },
   };

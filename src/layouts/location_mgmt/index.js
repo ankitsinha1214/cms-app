@@ -47,6 +47,7 @@ import EditIcon from '@mui/icons-material/Edit';
 // import "mapbox-gl/dist/mapbox-gl.css";
 // import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import './Somecss.css';
 
 // Custom Next Arrow Component
 const NextArrow = ({ onClick }) => (
@@ -151,6 +152,10 @@ function Location_mgmt() {
         },
       },
     ],
+    beforeChange: (current, next) => {
+      const dots = document.querySelector('.slick-dots');
+      dots.scrollLeft = next * (dots.offsetWidth / settings.slidesToShow); // Adjust scroll position
+    },
   };
   // const items = [
   //   {

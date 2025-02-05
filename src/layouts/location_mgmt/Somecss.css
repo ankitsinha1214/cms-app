@@ -5,3 +5,34 @@
 .ant-select-dropdown{
     z-index: 9999 !important;
 }
+
+/* .slick-dots {
+    display: flex !important;
+    justify-content: center;
+    padding: 0;
+  }
+  
+  .slick-dots li {
+    display: inline-block !important;
+    margin: 0 5px;
+  } */
+
+  .slick-dots {
+    display: flex !important;
+    justify-content: center;
+    padding: 0;
+    overflow-x: auto;  /* Allows horizontal scrolling */
+    scroll-snap-type: x mandatory;  /* Ensures smooth scroll snapping */
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on mobile */
+    max-width: 100%;  /* Prevents overflow of dots beyond container */
+    padding-right: 2rem;
+  }
+  
+  .slick-dots li {
+    display: inline-block !important;
+    margin: 0 5px;
+    list-style: none;
+  }
+  
+
+  
