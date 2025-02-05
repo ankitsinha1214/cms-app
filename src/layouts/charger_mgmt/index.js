@@ -30,6 +30,7 @@ import Paper from '@mui/material/Paper';
 import authorsTableData from "layouts/charger_mgmt/data/authorsTableData";
 import projectsTableData from "layouts/charger_mgmt/data/projectsTableData";
 import PopAddMain from "./PopAddMain";
+import PopReset from "./PopReset";
 import LaunchIcon from "@mui/icons-material/Launch";
 import DeleteIcon from '@mui/icons-material/Delete';
 import CircleIcon from '@mui/icons-material/Circle';
@@ -43,9 +44,10 @@ function Charger_mgmt() {
   // const navigate = useNavigate();
   // const { columns, rows } = authorsTableData();
   // const { columns: pColumns, rows: pRows } = projectsTableData();
-  const [isDisabled2, setIsDisabled2] = useState(false);
+  // const [isDisabled2, setIsDisabled2] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isDisabled, setIsDisabled] = useState(false);
+  const [isDisabled1, setIsDisabled1] = useState(false);
   const [selected, setSelected] = useState("All Chargers");
   const [total, setTotal] = useState(0);
   const [inactive, setInactive] = useState(0);
@@ -67,6 +69,14 @@ function Charger_mgmt() {
     'Paid'
     // 'Inuse'
   ];
+  const getValues = () => {
+    return {
+      charger_id: "",
+      type: "",
+      reason: ""
+    };
+  };
+  const [values, setValues] = useState(getValues);
   const [controller] = useMaterialUIController();
   const { darkMode } = controller;
 
@@ -664,6 +674,9 @@ function Charger_mgmt() {
   const handleStateChange = (newState) => {
     setIsDisabled(newState);
   };
+  const handleStateChange1 = (newState) => {
+    setIsDisabled1(newState);
+  };
   return (
     <DashboardLayout>
       <PopAddMain
@@ -671,6 +684,13 @@ function Charger_mgmt() {
         onClose={setIsDisabled}
         // value={values}
         onStateChange={handleStateChange}
+      // onHandleChange={handleChange}
+      />
+      <PopReset
+        isDialog={isDisabled1}
+        onClose={setIsDisabled1}
+        value={values}
+        onStateChange={handleStateChange1}
       // onHandleChange={handleChange}
       />
       <DashboardNavbar />
@@ -694,7 +714,7 @@ function Charger_mgmt() {
           </Grid>
         </Grid>
       </Box> */}
-          {/* <Grid item xs={2}>
+      {/* <Grid item xs={2}>
           <Item>xs=4</Item>
         </Grid> */}
       {/* <MDBox mt={0} pt={6} pb={3}> */}
@@ -833,7 +853,37 @@ function Charger_mgmt() {
                   </Space>
                 </a>
               </Dropdown> */}
+              <MDBox className="admin_btnsHeaderCont" style={{
+                display: "flex",
+                // width:"50%",
+                justifyContent: "space-between"
+              }}>
+                 <MDButton
+                onClick={() => setIsDisabled1(!isDisabled1)}
+                variant="outlined"
+                color="white"
+                style={{ fontFamily: "Montserrat", fontWeight: "600", lineHeight: "19.5px" }}
+              >
+                Reset Charger
+              </MDButton>
+              <MDButton
+                onClick={() => setIsDisabled(!isDisabled)}
+                variant="outlined"
+                color="white"
+                style={{ fontFamily: "Montserrat", fontWeight: "600", lineHeight: "19.5px", marginLeft: "1rem"  }}
+              >
+                Start / Stop transaction
+              </MDButton>
+              </MDBox>
 
+              {/* <MDButton
+                onClick={() => setIsDisabled(!isDisabled)}
+                variant="outlined"
+                color="white"
+                style={{ fontFamily: "Montserrat", fontWeight: "600", lineHeight: "19.5px" }}
+              >
+                Reset Charger
+              </MDButton>
               <MDButton
                 onClick={() => setIsDisabled(!isDisabled)}
                 variant="outlined"
@@ -841,7 +891,7 @@ function Charger_mgmt() {
                 style={{ fontFamily: "Montserrat", fontWeight: "600", lineHeight: "19.5px" }}
               >
                 Start / Stop transaction
-              </MDButton>
+              </MDButton> */}
             </Grid>
           </MDBox>
           {isLoading ? (
