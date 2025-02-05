@@ -133,8 +133,11 @@ function Charger_mgmt() {
             location.chargerInfo.map(charger => ({
               status: charger.status,
               charger_id: charger.name,
+              powerOutput: charger.powerOutput,
               // charger_id: charger._id,
               c_type: `${charger.type}`,
+              locationId: location._id,
+              address: location.address,
               location: location.locationName,
               l_type: location.locationType,
               city: location.city,
@@ -181,7 +184,10 @@ function Charger_mgmt() {
           location.chargerInfo.map(charger => ({
             status: charger.status,
             charger_id: charger.name,
+            powerOutput: charger.powerOutput,
             c_type: `${charger.type}`,
+            locationId: location._id,
+            address: location.address,
             location: location.locationName,
             l_type: location.locationType,
             city: location.city,
@@ -668,7 +674,7 @@ function Charger_mgmt() {
       // onHandleChange={handleChange}
       />
       <DashboardNavbar />
-      <Box sx={{ flexGrow: 1 }} mt={2}>
+      {/* <Box sx={{ flexGrow: 1 }} mt={2}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <Item style={{ fontFamily: "Montserrat", fontSize: "18px", fontWeight: "600", lineHeight: "21.94px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -686,12 +692,13 @@ function Charger_mgmt() {
               </Box>
             </Item>
           </Grid>
+        </Grid>
+      </Box> */}
           {/* <Grid item xs={2}>
           <Item>xs=4</Item>
         </Grid> */}
-        </Grid>
-      </Box>
-      <MDBox mt={0} pt={6} pb={3}>
+      {/* <MDBox mt={0} pt={6} pb={3}> */}
+      <MDBox mt={0} pt={2} pb={3}>
         <Grid container spacing={3}>
           <Grid item xs={12} md={6} lg={3}>
             <MDBox mb={1.5}>

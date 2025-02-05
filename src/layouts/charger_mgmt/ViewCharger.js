@@ -133,9 +133,13 @@ function ColorlibStepIcon(props) {
 
   const icons = {
     1: <DoneIcon />, // Tick
-    2: <ScheduleIcon />, // Clock
-    3: <ScheduleIcon />, // Clock
-    4: <CloseIcon />, // Cross
+    2: <DoneIcon />, // Clock
+    3: <DoneIcon />, // Clock
+    4: <ScheduleIcon />, // Cross
+    // 1: <DoneIcon />, // Tick
+    // 2: <ScheduleIcon />, // Clock
+    // 3: <ScheduleIcon />, // Clock
+    // 4: <CloseIcon />, // Cross
   };
 
   return (
@@ -288,6 +292,7 @@ const ViewLocation = () => {
                           '& .MuiStepLabel-label': {
                             color: 'black !important', // Enforce black color for all labels
                             fontWeight: 'bold', // Optional: Make the text bold
+                            fontSize: '1rem', // Optional: Make the text bold
                             textTransform: 'none', // Optional: Disable automatic text transform
                           },
                           '& .MuiStepLabel-label.Mui-active': {
@@ -486,7 +491,7 @@ const ViewLocation = () => {
                               }}
                             >
                               <Typography variant="body2" fontWeight="bold">Location Name:</Typography>
-                              <Typography variant="body2" width={"60%"}>Orion Mall Brigade Gateway</Typography>
+                              <Typography variant="body2" width={"60%"}>{content?.location}</Typography>
                             </Box>
                             <Link style={{cursor: "pointer"}}>Edit</Link>
                           </Box>
@@ -500,7 +505,7 @@ const ViewLocation = () => {
                               }}
                             >
                               <Typography variant="body2" fontWeight="bold">Location Type:</Typography>
-                              <Typography variant="body2" width={"60%"}>Mall</Typography>
+                              <Typography variant="body2" width={"60%"}>{content?.l_type}</Typography>
                             </Box>
                             <Link style={{cursor: "pointer"}}>Edit</Link>
                           </Box>
@@ -515,11 +520,11 @@ const ViewLocation = () => {
                             >
                               <Typography variant="body2" fontWeight="bold">Location Address:</Typography>
                               {/* <Typography variant="body2">Lorem ipsum dolor sit amet consectetur...</Typography> */}
-                              <Typography variant="body2" width={"60%"}>Lorem ipsum dolor sit amet consectetur.ipsum dolor sit amet consectetur.</Typography>
+                              <Typography variant="body2" width={"60%"}>{content?.address}</Typography>
                             </Box>
                             <Link style={{cursor: "pointer"}}>Edit</Link>
                           </Box>
-                          <Link href="#">View Location</Link>
+                          <Link href="/location">View Location</Link>
                         </Box>
                       </Box>
                     </AccordionDetails>
@@ -548,7 +553,7 @@ const ViewLocation = () => {
                               }}
                             >
                               <Typography variant="body2" fontWeight="bold">Charger Name/ID:</Typography>
-                              <Typography variant="body2" width={"60%"}>Offline</Typography>
+                              <Typography variant="body2" width={"60%"}>{content?.charger_id}</Typography>
                             </Box>
                             <Link style={{cursor: "pointer"}}>Edit</Link>
                           </Box>
@@ -562,7 +567,7 @@ const ViewLocation = () => {
                               }}
                             >
                               <Typography variant="body2" fontWeight="bold">Charger Type:</Typography>
-                              <Typography variant="body2" width={"60%"}>Lorem ipsum</Typography>
+                              <Typography variant="body2" width={"60%"}>{content?.c_type}</Typography>
                             </Box>
                             <Link style={{cursor: "pointer"}}>Edit</Link>
                           </Box>
@@ -576,7 +581,7 @@ const ViewLocation = () => {
                               }}
                             >
                               <Typography variant="body2" fontWeight="bold">Charger Power:</Typography>
-                              <Typography variant="body2" width={"60%"}>5 sec</Typography>
+                              <Typography variant="body2" width={"60%"}>{content?.powerOutput}</Typography>
                             </Box>
                             <Link style={{cursor: "pointer"}}>Edit</Link>
                           </Box>
@@ -590,7 +595,7 @@ const ViewLocation = () => {
                               }}
                             >
                               <Typography variant="body2" fontWeight="bold">Make:</Typography>
-                              <Typography variant="body2" width={"60%"}>Lorem ipsum</Typography>
+                              <Typography variant="body2" width={"60%"}>ChrgUp</Typography>
                             </Box>
                             <Link style={{cursor: "pointer"}}>Edit</Link>
                           </Box>
@@ -604,7 +609,7 @@ const ViewLocation = () => {
                               }}
                             >
                               <Typography variant="body2" fontWeight="bold">Model:</Typography>
-                              <Typography variant="body2" width={"60%"}>Lorem ipsum</Typography>
+                              <Typography variant="body2" width={"60%"}>Chrgup7</Typography>
                             </Box>
                             <Link style={{cursor: "pointer"}}>Edit</Link>
                           </Box>
@@ -618,7 +623,7 @@ const ViewLocation = () => {
                               }}
                             >
                               <Typography variant="body2" fontWeight="bold">OCPP Version:</Typography>
-                              <Typography variant="body2" width={"60%"}>5 sec</Typography>
+                              <Typography variant="body2" width={"60%"}>1.6</Typography>
                             </Box>
                             <Link style={{cursor: "pointer"}}>Edit</Link>
                           </Box>
@@ -632,7 +637,7 @@ const ViewLocation = () => {
                               }}
                             >
                               <Typography variant="body2" fontWeight="bold">Firmware Version:</Typography>
-                              <Typography variant="body2" width={"60%"}>Lorem ipsum</Typography>
+                              <Typography variant="body2" width={"60%"}>0.0.4.6</Typography>
                             </Box>
                             <Link style={{cursor: "pointer"}}>Edit</Link>
                           </Box>
@@ -646,7 +651,7 @@ const ViewLocation = () => {
                               }}
                             >
                               <Typography variant="body2" fontWeight="bold">Serial Number:</Typography>
-                              <Typography variant="body2" width={"60%"}>Lorem ipsum</Typography>
+                              <Typography variant="body2" width={"60%"}>{content?.charger_id}</Typography>
                             </Box>
                             <Link style={{cursor: "pointer"}}>Edit</Link>
                           </Box>

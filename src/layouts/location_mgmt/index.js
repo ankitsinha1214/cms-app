@@ -650,7 +650,7 @@ function Location_mgmt() {
       />
       <DashboardNavbar />
       {/* <MDBox mt={8}> */}
-      <Box sx={{ flexGrow: 1 }} mt={2}>
+      {/* <Box sx={{ flexGrow: 1 }} mt={2}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <Item style={{ fontFamily: "Montserrat", fontSize: "18px", fontWeight: "600", lineHeight: "21.94px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -668,14 +668,15 @@ function Location_mgmt() {
               </Box>
             </Item>
           </Grid>
+        </Grid>
+      </Box> */}
           {/* <Grid item xs={2}>
           <Item>xs=4</Item>
         </Grid> */}
-        </Grid>
-      </Box>
       <MDBox
         py={3}
-        mt={4}
+        mt={0}
+        // mt={4}
       >
         <Grid container
           // spacing={2} 

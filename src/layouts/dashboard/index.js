@@ -335,15 +335,20 @@ function Dashboard() {
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="name"
                         tick={{
-                          stroke: darkMode ? 'white': "black",
+                          stroke: darkMode ? 'white': "#344767",
+                          // stroke: darkMode ? 'white': "black",
                           fontFamily: "Roboto",
-                          fontSize: 12
+                          fontSize: "0.875 rem",
+                          fontWeight: "600",
+                          // fontSize: 12
                         }} />
                       <YAxis tick={{
-                          stroke: darkMode ? 'white': "black",
+                          stroke: darkMode ? 'white': "#344767",
                           fontFamily: "Roboto",
                         // stroke: 'white', 
-                        fontSize: 12
+                        // fontSize: 12
+                          fontSize: "0.875 rem",
+                          fontWeight: "600",
                       }} />
                       <Tooltip />
                       <Legend />
