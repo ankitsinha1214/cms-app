@@ -599,7 +599,8 @@ function Charger_mgmt() {
   };
   const handleTransactionEdit = (row_data) => {
     // navigate("/view/user", { state: row_data });
-    navigate("/session", { state: row_data });
+    navigate("/session", { state: { _id: row_data?._id } });
+    // navigate("/session", { state: row_data });
   };
   const handleDelete = (row_data) => {
     console.log(row_data);

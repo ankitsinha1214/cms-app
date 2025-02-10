@@ -61,13 +61,14 @@ function ViewTransaction() {
     const { darkMode } = controller;
     const { sales, tasks } = reportsLineChartData;
     const location = useLocation();
-    console.log(location.state);
     const [content, setContent] = useState([]);
+    console.log(location.state);
+    // console.log(content);
     // State to store dynamic timestamp
     const [timestamp, setTimestamp] = useState(new Date());
     // const [timestamp, setTimestamp] = useState(new Date().toLocaleTimeString());
     useEffect(() => {
-        setContent(location.state);
+        // setContent(location.state);
     }, []);
     const [metadata, setMetadata] = useState([]);
     const [currentData, setCurrentData] = useState({
@@ -99,6 +100,126 @@ function ViewTransaction() {
     //       },
     //     ],
     //   };
+
+    const fetchSession = async() => {
+        await axios.get(process.env.REACT_APP_BASEURL + `session/${location.state._id}`, {
+          headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
+        }).then((response) => {
+          if (response.data.success) {
+            const session = response.data.data;
+            // const updatedRows = response.data.data.map(session => {
+                if (session) {
+              const metadata = session.metadata || [];
+    
+              // Get the first and last metadata values
+              const firstEntry = metadata[0]?.values?.["Energy.Active.Import.Register"];
+              const lastEntry = metadata[metadata.length - 1]?.values?.["Energy.Active.Import.Register"];
+    
+              // Extract numeric values and handle missing values
+              const firstMeterValue = firstEntry ? parseFloat(firstEntry.split(" ")[0]) : 0;
+              const lastMeterValue = lastEntry ? parseFloat(lastEntry.split(" ")[0]) : 0;
+    
+              // Calculate energy consumed
+              const energyConsumed = lastMeterValue && firstMeterValue ? (lastMeterValue - firstMeterValue).toFixed(4) : "0";
+    
+              // Mask userPhone (assuming it's a string)
+              const userPhone = session.userPhone || "";
+              const maskedPhone = userPhone.length > 4
+                ? `+91 ${"X".repeat(userPhone.length - 7)}${userPhone.slice(-4)}`
+                : userPhone; // If phone is too short, keep it as is
+    
+            //   return {
+                const updatedSession = {
+                ...session,
+                status: session.status === "Started" ? "Active"
+                  : session.status === "Stopped" ? "Unpaid"
+                    : session.status === "Completed" ? "Paid"
+                      : session.status, // Keep it unchanged if it doesn't match
+                energy_disp1: `${energyConsumed} Wh`,
+                userPhone: maskedPhone
+              };
+              // });
+              // Sort by createdAt in descending order (latest first)
+              // const sortedRows = updatedRows.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+              console.log(updatedSession)
+              setContent(updatedSession);
+              const metadataResponse = updatedSession?.metadata;
+              // const metadataResponse = location.state.metadata;
+              // Transform metadata into graph-compatible format
+              // setTimestamp(metadataResponse[0].timestamp);
+              // Get the first energy value (to subtract it from the rest of the data)
+              const firstEnergyValue = parseFloat(metadataResponse[0].values["Energy.Active.Import.Register"]);
+              const transformedData = metadataResponse.map(entry => {
+                  const energy = parseFloat(entry.values["Energy.Active.Import.Register"]);
+                  return {
+                      timestamp: new Date(entry.timestamp).toLocaleTimeString(), // Format timestamp
+                      // energy: parseFloat(entry.values["Energy.Active.Import.Register"]), // Wh
+                      energy: (energy - firstEnergyValue).toFixed(4), // Subtract the first energy value
+                      power: parseFloat(entry.values["Power.Active.Import"]), // kW
+                      voltage: parseFloat(entry.values["Voltage"]), // V
+                      current: parseFloat(entry.values["Current.Import"]), // A
+                      temperature: parseFloat(entry.values["Temperature"]), // Celsius
+                      frequency: parseFloat(entry.values["Frequency"]) // Hz
+                  };
+              });
+              // Extract distinct values for each field
+              // const distinctValues = {
+              //     energy: [...new Set(transformedData.map(item => item.energy))],
+              //     power: [...new Set(transformedData.map(item => item.power))],
+              //     voltage: [...new Set(transformedData.map(item => item.voltage))],
+              //     current: [...new Set(transformedData.map(item => item.current))],
+              //     temperature: [...new Set(transformedData.map(item => item.temperature))],
+              //     frequency: [...new Set(transformedData.map(item => item.frequency))]
+              // };
+      
+              // console.log("Distinct Values:", distinctValues);
+      
+              setMetadata(transformedData);
+              setPowerData({
+                  labels: transformedData.map(item => item.timestamp),
+                  datasets:
+                  {
+                      label: "Power (kW)",
+                      data: transformedData.map(item => item.power),
+                      borderColor: "green",
+                      backgroundColor: "rgba(0, 255, 0, 0.1)",
+                      fill: true,
+                      tension: 0.4,
+                  },
+              });
+              setCurrentData({
+                  labels: transformedData.map(item => item.timestamp),
+                  datasets:
+                  {
+                      label: "Current (A)",
+                      data: transformedData.map(item => item.current),
+                      borderColor: "green",
+                      backgroundColor: "rgba(0, 255, 0, 0.1)",
+                      fill: true,
+                      tension: 0.4,
+                  },
+              });
+              setEnergyData({
+                  labels: transformedData.map(item => item.timestamp),
+                  datasets:
+                  {
+                      label: "Energy (Wh)",
+                      data: transformedData.map(item => item.energy),
+                      borderColor: "green",
+                      backgroundColor: "rgba(0, 255, 0, 0.1)",
+                      fill: true,
+                      tension: 0.4,
+                  },
+              });
+            }
+            // setContent(sortedRows);
+          } else {
+            enqueueSnackbar(response.data.message, { variant: 'error' });
+          }
+        }).catch(error => {
+          console.error(error);
+        });
+      };
     useEffect(() => {
         if (
             localStorage.getItem("login_status") !== "true"
@@ -107,6 +228,7 @@ function ViewTransaction() {
         }
         // Set timestamp when page is visited
         setTimestamp(new Date());
+        fetchSession();
         // setTimestamp(new Date().toLocaleTimeString());
         // axios({
         //   method: "get",
@@ -166,73 +288,74 @@ function ViewTransaction() {
         //   .catch((error) => {
         //     console.log(error);
         //   });
-        const metadataResponse = location.state.metadata;
-        // Transform metadata into graph-compatible format
-        // setTimestamp(metadataResponse[0].timestamp);
-        // Get the first energy value (to subtract it from the rest of the data)
-        const firstEnergyValue = parseFloat(metadataResponse[0].values["Energy.Active.Import.Register"]);
-        const transformedData = metadataResponse.map(entry => {
-            const energy = parseFloat(entry.values["Energy.Active.Import.Register"]);
-            return {
-                timestamp: new Date(entry.timestamp).toLocaleTimeString(), // Format timestamp
-                // energy: parseFloat(entry.values["Energy.Active.Import.Register"]), // Wh
-                energy: (energy - firstEnergyValue).toFixed(4), // Subtract the first energy value
-                power: parseFloat(entry.values["Power.Active.Import"]), // kW
-                voltage: parseFloat(entry.values["Voltage"]), // V
-                current: parseFloat(entry.values["Current.Import"]), // A
-                temperature: parseFloat(entry.values["Temperature"]), // Celsius
-                frequency: parseFloat(entry.values["Frequency"]) // Hz
-            };
-        });
-        // Extract distinct values for each field
-        // const distinctValues = {
-        //     energy: [...new Set(transformedData.map(item => item.energy))],
-        //     power: [...new Set(transformedData.map(item => item.power))],
-        //     voltage: [...new Set(transformedData.map(item => item.voltage))],
-        //     current: [...new Set(transformedData.map(item => item.current))],
-        //     temperature: [...new Set(transformedData.map(item => item.temperature))],
-        //     frequency: [...new Set(transformedData.map(item => item.frequency))]
-        // };
+        // const metadataResponse = content?.metadata;
+        // // const metadataResponse = location.state.metadata;
+        // // Transform metadata into graph-compatible format
+        // // setTimestamp(metadataResponse[0].timestamp);
+        // // Get the first energy value (to subtract it from the rest of the data)
+        // const firstEnergyValue = parseFloat(metadataResponse[0].values["Energy.Active.Import.Register"]);
+        // const transformedData = metadataResponse.map(entry => {
+        //     const energy = parseFloat(entry.values["Energy.Active.Import.Register"]);
+        //     return {
+        //         timestamp: new Date(entry.timestamp).toLocaleTimeString(), // Format timestamp
+        //         // energy: parseFloat(entry.values["Energy.Active.Import.Register"]), // Wh
+        //         energy: (energy - firstEnergyValue).toFixed(4), // Subtract the first energy value
+        //         power: parseFloat(entry.values["Power.Active.Import"]), // kW
+        //         voltage: parseFloat(entry.values["Voltage"]), // V
+        //         current: parseFloat(entry.values["Current.Import"]), // A
+        //         temperature: parseFloat(entry.values["Temperature"]), // Celsius
+        //         frequency: parseFloat(entry.values["Frequency"]) // Hz
+        //     };
+        // });
+        // // Extract distinct values for each field
+        // // const distinctValues = {
+        // //     energy: [...new Set(transformedData.map(item => item.energy))],
+        // //     power: [...new Set(transformedData.map(item => item.power))],
+        // //     voltage: [...new Set(transformedData.map(item => item.voltage))],
+        // //     current: [...new Set(transformedData.map(item => item.current))],
+        // //     temperature: [...new Set(transformedData.map(item => item.temperature))],
+        // //     frequency: [...new Set(transformedData.map(item => item.frequency))]
+        // // };
 
-        // console.log("Distinct Values:", distinctValues);
+        // // console.log("Distinct Values:", distinctValues);
 
-        setMetadata(transformedData);
-        setPowerData({
-            labels: transformedData.map(item => item.timestamp),
-            datasets:
-            {
-                label: "Power (kW)",
-                data: transformedData.map(item => item.power),
-                borderColor: "green",
-                backgroundColor: "rgba(0, 255, 0, 0.1)",
-                fill: true,
-                tension: 0.4,
-            },
-        });
-        setCurrentData({
-            labels: transformedData.map(item => item.timestamp),
-            datasets:
-            {
-                label: "Current (A)",
-                data: transformedData.map(item => item.current),
-                borderColor: "green",
-                backgroundColor: "rgba(0, 255, 0, 0.1)",
-                fill: true,
-                tension: 0.4,
-            },
-        });
-        setEnergyData({
-            labels: transformedData.map(item => item.timestamp),
-            datasets:
-            {
-                label: "Energy (Wh)",
-                data: transformedData.map(item => item.energy),
-                borderColor: "green",
-                backgroundColor: "rgba(0, 255, 0, 0.1)",
-                fill: true,
-                tension: 0.4,
-            },
-        });
+        // setMetadata(transformedData);
+        // setPowerData({
+        //     labels: transformedData.map(item => item.timestamp),
+        //     datasets:
+        //     {
+        //         label: "Power (kW)",
+        //         data: transformedData.map(item => item.power),
+        //         borderColor: "green",
+        //         backgroundColor: "rgba(0, 255, 0, 0.1)",
+        //         fill: true,
+        //         tension: 0.4,
+        //     },
+        // });
+        // setCurrentData({
+        //     labels: transformedData.map(item => item.timestamp),
+        //     datasets:
+        //     {
+        //         label: "Current (A)",
+        //         data: transformedData.map(item => item.current),
+        //         borderColor: "green",
+        //         backgroundColor: "rgba(0, 255, 0, 0.1)",
+        //         fill: true,
+        //         tension: 0.4,
+        //     },
+        // });
+        // setEnergyData({
+        //     labels: transformedData.map(item => item.timestamp),
+        //     datasets:
+        //     {
+        //         label: "Energy (Wh)",
+        //         data: transformedData.map(item => item.energy),
+        //         borderColor: "green",
+        //         backgroundColor: "rgba(0, 255, 0, 0.1)",
+        //         fill: true,
+        //         tension: 0.4,
+        //     },
+        // });
     }, []);
     // Get the most recent timestamp (or pick one of the entries)
     const lastUpdated = metadata.length > 0 ? metadata[metadata.length - 1].timestamp : null;
