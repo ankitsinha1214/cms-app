@@ -109,7 +109,7 @@ function Dashboard() {
   ];
   const headers = [
     { label: "#", flex: 1, index: 0 },
-    { label: "Vehicle", flex: 4, index: 1 },
+    { label: "Location", flex: 4, index: 1 },
     { label: "Visits", flex: 1, index: 2 },
   ];
   const sampleData1 = [

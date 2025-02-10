@@ -57,55 +57,13 @@ function PopAddBasic(props) {
     const [isDialogOpen, setIsDialogOpen] = useState(props.isDialog);
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
-    const [fileList, setFileList] = useState([
-        // {
-        //     uid: '-1',
-        //     name: 'image.png',
-        //     status: 'done',
-        //     url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-        // },
-        // {
-        //     uid: '-2',
-        //     name: 'image.png',
-        //     status: 'done',
-        //     url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-        // },
-        // {
-        //     uid: '-3',
-        //     name: 'image.png',
-        //     status: 'done',
-        //     url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-        // },
-        // {
-        //     uid: '-4',
-        //     name: 'image.png',
-        //     status: 'done',
-        //     url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-        // },
-        // {
-        //     uid: '-xxx',
-        //     percent: 50,
-        //     name: 'image.png',
-        //     status: 'uploading',
-        //     url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-        // },
-        // {
-        //     uid: '-5',
-        //     name: 'image.png',
-        //     status: 'error',
-        // },
-    ]);
+    const [fileList, setFileList] = useState([]);
     const handlePreview = async (file) => {
         setIsBackdrop(false);
         setIsDialogOpen(false);
         if (!file.url && !file.preview) {
             file.preview = await getBase64(file.originFileObj);
         }
-        // if (file.url) {
-        //     window.open(file.url, '_blank');
-        // } else {
-        //     window.open(file.preview, '_blank');
-        // }
         setPreviewImage(file.url || file.preview);
         setPreviewOpen(true);
     };
@@ -283,34 +241,7 @@ function PopAddBasic(props) {
         values.parkingCost = parkingCost;
         // setIsDialog(true);
     };
-    // const getState = () => {
-    //     axios({
-    //         method: "get",
-    //         url: process.env.REACT_APP_BASEURL + "charger-locations/all-location",
-    //     })
-    //         .then((response) => {
-    //             if (response.data.success === true) {
-    //                 const data = response.data.data;
-    //                 const structuredData = {};
-    //                 console.log(data);
-    //                 data.forEach(stateObj => {
-    //                     const state = Object.keys(stateObj)[0];
-    //                     const cities = stateObj[state];
-    //                     structuredData[state] = cities;
-    //                 });
 
-    //                 setStateData(structuredData);
-    //                 setStates(Object.keys(structuredData));
-
-    //                 // setState_show(response.data.data);
-    //             } else {
-    //                 console.log("status is false ");
-    //             }
-    //         })
-    //         .catch((error) => {
-    //             console.log(error);
-    //         });
-    // };
     const handleStateChange = (event) => {
         const selectedState = event.target.value;
         setValues((prevValues) => ({
