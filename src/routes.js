@@ -277,14 +277,14 @@ export const superAdminRoutes = [
     route: "/service-maintenace/notifications-service-and-maintenance",
     component: <Notification_service_maintenace_mgmt />,
   },
-  {
-    type: "collapse",
-    name: "App Mgmt",
-    key: "app_mgmt",
-    icon: <Icon fontSize="small">receipt_long</Icon>,
-    route: "/app_mgmt",
-    component: <AppMgmt />,
-  },
+  // {
+  //   type: "collapse",
+  //   name: "App Mgmt",
+  //   key: "app_mgmt",
+  //   icon: <Icon fontSize="small">receipt_long</Icon>,
+  //   route: "/app_mgmt",
+  //   component: <AppMgmt />,
+  // },
   // ...(userRole === "Manager" && serviceID.includes("2") ? [
     (userRole === "Admin" || (userRole === "Manager" && serviceID.includes("5"))) &&
   {
@@ -295,15 +295,15 @@ export const superAdminRoutes = [
     route: "/notifications",
     component: <Notifications />,
   },
-  (userRole === "Admin" || (userRole === "Manager" && serviceID.includes("6"))) &&
-  {
-    type: "collapse",
-    name: "Customer service",
-    key: "customer_service",
-    icon: <SupportAgentIcon />,
-    route: "/customer_service",
-    component: <CustomerService />,
-  },
+  // (userRole === "Admin" || (userRole === "Manager" && serviceID.includes("6"))) &&
+  // {
+  //   type: "collapse",
+  //   name: "Customer service",
+  //   key: "customer_service",
+  //   icon: <SupportAgentIcon />,
+  //   route: "/customer_service",
+  //   component: <CustomerService />,
+  // },
   (userRole === "Admin" || (userRole === "Manager" && serviceID.includes("7"))) &&
   {
     type: "collapse",

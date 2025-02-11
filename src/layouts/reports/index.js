@@ -54,12 +54,13 @@ const Reports = () => {
                 // Extract file name from content-disposition header if available
                 if (contentDisposition) {
                     const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
-                    if (fileNameMatch.length === 2) fileName = fileNameMatch[1];
+                    if (fileNameMatch?.length === 2) fileName = fileNameMatch[1];
                 }
         
                 // Create a new Blob object using the response data
                 const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
                 const url = window.URL.createObjectURL(blob);
+                window.open(url); 
                 const link = document.createElement('a');
                 link.href = url;
                 link.setAttribute('download', fileName); // Set filename for download

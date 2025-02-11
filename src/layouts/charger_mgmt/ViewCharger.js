@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from "axios";
 import { Box, Container, Grid, Typography, Paper, Avatar, IconButton, Card, CardContent, CardMedia, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import { green } from '@mui/material/colors';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -13,6 +14,9 @@ import PropTypes from 'prop-types';
 import { styled } from '@mui/material/styles';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
+import MDTypography from "components/MDTypography";
+import Loader from "components/custom/Loader";
+import MDBox from "components/MDBox";
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
@@ -28,6 +32,8 @@ import { Divider } from 'antd';
 import InfoCard from '../location_mgmt/components/Infocard';
 import Tooltip from '@mui/material/Tooltip';
 import { useLocation } from 'react-router-dom';
+import { useMaterialUIController } from "context";
+import { useNavigate } from "react-router-dom";
 import {
   CheckCircleOutlined,
   ClockCircleOutlined,
@@ -38,6 +44,11 @@ import {
   SyncOutlined,
 } from '@ant-design/icons';
 import { Flex, Tag } from 'antd';
+import { useSnackbar } from "notistack";
+import { MaterialReactTable } from 'material-react-table';
+import MDButton from "components/MDButton";
+import LaunchIcon from "@mui/icons-material/Launch";
+import CircleIcon from '@mui/icons-material/Circle';
 import './somestyle.css';
 
 const QontoStepIconRoot = styled('div')(({ theme }) => ({
@@ -209,15 +220,246 @@ const data = {
     }
   }
 };
+const statusList1 = [
+  'Active',
+  'Unpaid',
+  'Paid'
+  // 'Inuse'
+];
 
-const ViewLocation = () => {
+const ViewCharger = () => {
   // const { energyCons } = reportsLineChartData;
   const location = useLocation();
+  const { enqueueSnackbar } = useSnackbar();
   console.log(location.state);
   const [content, setContent] = useState([]);
+  const [columns, setColumns] = useState([]);
+  const [rows1, setRows1] = useState([]);
+  const [co2Saved, setCo2Saved] = useState('0 kg');
+  const [kmsPowered, setKmsPowered] = useState('0 km');
+  const [uptimeRate, setUptimeRate] = useState('99 %');
+  const [isLoading1, setIsLoading1] = useState(true);
+  const [controller] = useMaterialUIController();
+  const { darkMode } = controller;
+  const navigate = useNavigate();
+  const handleTransactionEdit = (row_data) => {
+    navigate("/session", { state: { _id: row_data?._id } });
+  };
+  const fetchSession = async () => {
+    // await axios.post(process.env.REACT_APP_BASEURL + `session/get-session-by-charger`, {
+    //   headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
+    // })
+    const payload = {
+      "chargerId": location.state.charger_id
+    };
+    await axios({
+      method: "post",
+      url: process.env.REACT_APP_BASEURL + "session/get-session-by-charger",
+      data: payload,
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`
+      },
+    })
+      .then((response) => {
+        if (response.data.success) {
+          setCo2Saved(response.data.data.CO2Saved);
+          setKmsPowered(response.data.data.kmsPowered);
+          setUptimeRate(response.data.data.uptimeRate);
+          const updatedRows = response.data.data.sessions.map(session => {
+            const metadata = session.metadata || [];
+
+            // Get the first and last metadata values
+            const firstEntry = metadata[0]?.values?.["Energy.Active.Import.Register"];
+            const lastEntry = metadata[metadata.length - 1]?.values?.["Energy.Active.Import.Register"];
+
+            // Extract numeric values and handle missing values
+            const firstMeterValue = firstEntry ? parseFloat(firstEntry.split(" ")[0]) : 0;
+            const lastMeterValue = lastEntry ? parseFloat(lastEntry.split(" ")[0]) : 0;
+
+            // Calculate energy consumed
+            const energyConsumed = lastMeterValue && firstMeterValue ? (lastMeterValue - firstMeterValue).toFixed(4) : "0";
+
+            // Mask userPhone (assuming it's a string)
+            const userPhone = session.userPhone || "";
+            const maskedPhone = userPhone.length > 4
+              ? `+91 ${"X".repeat(userPhone.length - 7)}${userPhone.slice(-4)}`
+              : userPhone; // If phone is too short, keep it as is
+
+            return {
+              ...session,
+              status: session.status === "Started" ? "Active"
+                : session.status === "Stopped" ? "Unpaid"
+                  : session.status === "Completed" ? "Paid"
+                    : session.status, // Keep it unchanged if it doesn't match
+              energy_disp1: `${energyConsumed} Wh`,
+              userPhone: maskedPhone
+            };
+          });
+          // Sort by createdAt in descending order (latest first)
+          const sortedRows = updatedRows.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+          setRows1(sortedRows);
+          setIsLoading1(false);
+          // setContent(sortedRows);
+        } else {
+          enqueueSnackbar(response.data.message, { variant: 'error' });
+          setIsLoading1(false);
+        }
+      }).catch(error => {
+        console.error(error);
+      });
+  };
+  console.log(isLoading1)
   useEffect(() => {
     setContent(location.state);
+    fetchSession();
+    setColumns(sessionColumn);
   }, []);
+  const sessionColumn = [
+    {
+      header: "Status",
+      accessorKey: "status",
+      filterVariant: 'select',
+      filterSelectOptions: statusList1,
+      align: "center",
+      fixed: "true", muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      },
+      Cell: (row) => (
+        <div>
+          {(row.row.original.status === "Unpaid") ?
+            <CircleIcon style={{ color: "#DA1E28" }} />
+            // :
+            // (row.row.original.status === "Inactive") ?
+            //   <CircleIcon style={{ color: "#7B7B7B" }} />
+            // :
+            // (row.row.original.status === "Available") ?
+            :
+            (row.row.original.status === "Active") ?
+              <CircleIcon style={{ color: "#1A73E8" }} />
+              // <CircleIcon style={{ color: "#800080" }} />
+              :
+              // (row.row.original.status === "SuspendedEVSE") ?
+              //   <CircleIcon style={{ color: "orange" }} />
+              //   :
+              (row.row.original.status === "Paid") ?
+                <CircleIcon style={{ color: "#198038" }} />
+                // :
+                // (row.row.original.status === "Preparing") ?
+                //   <CircleIcon style={{ color: "#F1C21B" }} />
+                :
+                <CircleIcon style={{ color: "yellow" }} />
+          }
+        </div>
+      ),
+    },
+    {
+      header: "Session ID", accessorKey: "_id", align: "center", muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      },
+    },
+    {
+      header: "Charger ID", accessorKey: "chargerId", align: "center", muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      },
+    },
+    {
+      header: "User Phone", accessorKey: "userPhone", align: "center", muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      },
+    },
+    {
+      header: "Duration", accessorKey: "duration", align: "center", muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      },
+    },
+    {
+      header: "Location", accessorKey: "chargerLocation.locationName", align: "center", muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      },
+    },
+    {
+      header: "City", accessorKey: "chargerLocation.city", align: "center", muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      },
+    },
+    {
+      header: "State", accessorKey: "chargerLocation.state", align: "center", muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      },
+    },
+    {
+      header: "Energy disp", accessorKey: "energy_disp1", align: "center", muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      },
+    },
+    {
+      header: "Action",
+      accessorKey: "actions",
+      enableColumnFilter: false,
+      align: "center", muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      },
+      Cell: (row) => (
+        <div style={{
+          position: 'sticky',
+          right: '0',
+          // backgroundColor:'white',
+          zIndex: '111',
+        }}>
+          <MDButton
+            onClick={(e) => handleTransactionEdit(row.row.original)}
+            variant="gradient"
+            color="info"
+            iconOnly
+          >
+            <LaunchIcon />
+          </MDButton>
+          {/* <MDButton
+            sx={{
+              marginLeft: 2,
+            }}
+            onClick={(e) => handleDelete(row.row.original)}
+            variant="gradient"
+            color="info"
+            // color="secondary"
+            iconOnly
+          >
+            <DeleteIcon />
+          </MDButton> */}
+        </div>
+      ),
+    },
+  ];
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -240,24 +482,24 @@ const ViewLocation = () => {
                       Inactive
                     </Tag>
                     :
-                   content?.status === "Charging" ?
-                    <Tag icon={<LoadingOutlined />} color="#1A73E8" style={{ marginBottom: "1rem" }}>
-                      Charging
-                    </Tag>
-                    :
-                   content?.status === "Finishing" ?
-                    <Tag icon={<ExclamationCircleOutlined />} color="#800080" style={{ marginBottom: "1rem" }}>
-                      Finishing
-                    </Tag>
-                    :
-                   content?.status === "Faulted" ?
-                    <Tag icon={<MinusCircleOutlined />} color="#E64A19" style={{ marginBottom: "1rem" }}>
-                      Faulted
-                    </Tag>
-                    :
-                    <Tag icon={<ClockCircleOutlined />} color="default" style={{ marginBottom: "1rem" }}>
-                      {content?.status}
-                    </Tag>
+                    content?.status === "Charging" ?
+                      <Tag icon={<LoadingOutlined />} color="#1A73E8" style={{ marginBottom: "1rem" }}>
+                        Charging
+                      </Tag>
+                      :
+                      content?.status === "Finishing" ?
+                        <Tag icon={<ExclamationCircleOutlined />} color="#800080" style={{ marginBottom: "1rem" }}>
+                          Finishing
+                        </Tag>
+                        :
+                        content?.status === "Faulted" ?
+                          <Tag icon={<MinusCircleOutlined />} color="#E64A19" style={{ marginBottom: "1rem" }}>
+                            Faulted
+                          </Tag>
+                          :
+                          <Tag icon={<ClockCircleOutlined />} color="default" style={{ marginBottom: "1rem" }}>
+                            {content?.status}
+                          </Tag>
               }
               {/* <Tag icon={<ExclamationCircleOutlined />} color="warning">
                   warning
@@ -317,13 +559,13 @@ const ViewLocation = () => {
               >
                 <Grid container spacing={2}>
                   <Grid item xs={6} lg={4}>
-                    <InfoCard value='30000' label="KMS powered (km)" />
+                    <InfoCard value={kmsPowered} label="KMS powered (km)" />
                   </Grid>
                   <Grid item xs={6} lg={4}>
-                    <InfoCard value='1245' label="CO2 saved (kg)" />
+                    <InfoCard value={co2Saved} label="CO2 saved (kg)" />
                   </Grid>
                   <Grid item xs={6} lg={4}>
-                    <InfoCard value='90%' label="Uptime rate (%)" />
+                    <InfoCard value={uptimeRate} label="Uptime rate (%)" />
                   </Grid>
                 </Grid>
               </Grid>
@@ -349,6 +591,111 @@ const ViewLocation = () => {
                 borderColor: 'rgba(0, 0, 0, 0.15)',
               }}
             />
+            <Grid item xs={12}>
+            <Card
+              style={{ marginTop: '2rem' }}
+            // style={{ marginTop: '4rem' }}
+            >
+              <MDBox mx={2} mt={-3} py={3} px={2} variant="gradient" bgColor="info" borderRadius="lg" coloredShadow="info">
+                <Grid container direction="row" justifyContent="space-between" alignItems="center">
+                  <MDTypography variant="h6" color="white">
+                    All Sessions of Chargers {content?.charger_id}
+                  </MDTypography>
+                  {/* <Button icon={<AddIcon />} iconPosition="start" variant="outlined" size="large" onClick={() => setOpenDialog(true)}>
+              Add Charger
+            </Button> */}
+                </Grid>
+              </MDBox>
+              {isLoading1 ? (
+                <Loader />
+              ) : (<MaterialReactTable
+                id="tble"
+                columns={columns}
+                data={rows1}
+                initialState={{ showColumnFilters: true }}
+                muiTableContainerProps={{
+                  id: 'tble', // Attach the ID here to the container of the table
+                }}
+                muiTableProps={{
+                  sx: darkMode ?
+                    {
+                      backgroundColor: "#202940", color: "#ffffff",
+                      '& td': {
+                        fontFamily: "Montserrat",
+                        fontSize: "14px",
+                        fontWeight: "500",
+                        lineHeight: "17.07px",
+                        color: "#ffffff"
+                        // backgroundColor: '#f5f5f5',
+                      },
+                    } :
+                    {
+                      '& td': {
+                        fontFamily: "Montserrat",
+                        fontSize: "14px",
+                        fontWeight: "500",
+                        lineHeight: "17.07px",
+                        backgroundColor: '#f5f5f5',
+                      },
+                    },
+                }}
+                muiTopToolbarProps={{
+                  sx: darkMode ?
+                    {
+                      color: "#ffffff",
+                      '& svg': {
+                        fontFamily: "Montserrat",
+                        fontSize: "14px",
+                        fontWeight: "500",
+                        lineHeight: "17.07px",
+                        color: "#ffffff"
+                        // backgroundColor: '#f5f5f5',
+                      },
+                    } : {
+                      backgroundColor: '#f5f5f5',
+                    }
+                }}
+                muiTableHeadCellProps={{
+                  sx: darkMode ?
+                    {
+                      color: "#ffffff",
+                      '& svg': {
+                        fontFamily: "Montserrat",
+                        fontSize: "14px",
+                        fontWeight: "500",
+                        lineHeight: "17.07px",
+                        color: "#ffffff"
+                        // backgroundColor: '#f5f5f5',
+                      },
+                    } : {
+                      backgroundColor: '#f5f5f5',
+                    }
+                }}
+                muiBottomToolbarProps={{
+                  sx: darkMode ?
+                    {
+                      color: "#ffffff",
+                      '& p,button,div': {
+                        fontFamily: "Montserrat",
+                        // fontSize : "14px",
+                        fontWeight: "500",
+                        lineHeight: "17.07px",
+                        color: "#ffffff"
+                        // backgroundColor: '#f5f5f5',
+                      },
+                    } : {
+                      backgroundColor: '#f5f5f5',
+                    }
+                }}
+                muiTableBodyCellProps={{
+                  sx: {
+                    borderBottom: '2px solid #e0e0e0', //add a border between columns
+
+                  },
+                }}
+              />)}
+            </Card>
+            </Grid>
             <Grid item xs={12} sm={8} sx={{ my: 4 }}>
               <Box sx={{ height: 300 }}>
                 <Grid item xs={12}>
@@ -391,7 +738,7 @@ const ViewLocation = () => {
                               <Typography variant="body2" fontWeight="bold">Registration State:</Typography>
                               <Typography variant="body2" width={"60%"}>Accepted</Typography>
                             </Box>
-                            <Link style={{cursor: "pointer"}}>Edit</Link>
+                            <Link style={{ cursor: "pointer" }}>Edit</Link>
                           </Box>
                           <Box display="flex" justifyContent="space-between">
                             <Box display="flex" justifyContent="space-between" width={"80%"}
@@ -405,7 +752,7 @@ const ViewLocation = () => {
                               <Typography variant="body2" fontWeight="bold">Heartbeat Interval:</Typography>
                               <Typography variant="body2" width={"60%"}>5 sec</Typography>
                             </Box>
-                            <Link style={{cursor: "pointer"}}>Edit</Link>
+                            <Link style={{ cursor: "pointer" }}>Edit</Link>
                           </Box>
                           <Box display="flex" justifyContent="space-between">
                             <Box display="flex" justifyContent="space-between" width={"80%"}
@@ -419,7 +766,7 @@ const ViewLocation = () => {
                               <Typography variant="body2" fontWeight="bold">Site Survey Team:</Typography>
                               <Typography variant="body2" width={"60%"}>Lorem ipsum</Typography>
                             </Box>
-                            <Link style={{cursor: "pointer"}}>Edit</Link>
+                            <Link style={{ cursor: "pointer" }}>Edit</Link>
                           </Box>
                           <Box display="flex" justifyContent="space-between">
                             <Box display="flex" justifyContent="space-between" width={"80%"}
@@ -433,7 +780,7 @@ const ViewLocation = () => {
                               <Typography variant="body2" fontWeight="bold">Diagnostics:</Typography>
                               <Typography variant="body2" width={"60%"}>Lorem ipsum</Typography>
                             </Box>
-                            <Link style={{cursor: "pointer"}}>Edit</Link>
+                            <Link style={{ cursor: "pointer" }}>Edit</Link>
                           </Box>
                           <Box display="flex" justifyContent="space-between">
                             <Box display="flex" justifyContent="space-between" width={"80%"}
@@ -447,7 +794,7 @@ const ViewLocation = () => {
                               <Typography variant="body2" fontWeight="bold">Firmware Update:</Typography>
                               <Typography variant="body2" width={"60%"}>Lorem ipsum</Typography>
                             </Box>
-                            <Link style={{cursor: "pointer"}}>Edit</Link>
+                            <Link style={{ cursor: "pointer" }}>Edit</Link>
                           </Box>
                           <Box display="flex" justifyContent="space-between">
                             <Box display="flex" justifyContent="space-between" width={"80%"}
@@ -461,13 +808,12 @@ const ViewLocation = () => {
                               <Typography variant="body2" fontWeight="bold">Installation Team:</Typography>
                               <Typography variant="body2" width={"60%"}>Lorem ipsum</Typography>
                             </Box>
-                            <Link style={{cursor: "pointer"}}>Edit</Link>
+                            <Link style={{ cursor: "pointer" }}>Edit</Link>
                           </Box>
                         </Box>
                       </Box>
                     </AccordionDetails>
                   </Accordion>
-
                   <Accordion>
                     <AccordionSummary
                       expandIcon={<ExpandMoreIcon />}
@@ -493,7 +839,7 @@ const ViewLocation = () => {
                               <Typography variant="body2" fontWeight="bold">Location Name:</Typography>
                               <Typography variant="body2" width={"60%"}>{content?.location}</Typography>
                             </Box>
-                            <Link style={{cursor: "pointer"}}>Edit</Link>
+                            <Link style={{ cursor: "pointer" }}>Edit</Link>
                           </Box>
                           <Box display="flex" justifyContent="space-between">
                             <Box display="flex" justifyContent="space-between" width={"80%"}
@@ -507,7 +853,7 @@ const ViewLocation = () => {
                               <Typography variant="body2" fontWeight="bold">Location Type:</Typography>
                               <Typography variant="body2" width={"60%"}>{content?.l_type}</Typography>
                             </Box>
-                            <Link style={{cursor: "pointer"}}>Edit</Link>
+                            <Link style={{ cursor: "pointer" }}>Edit</Link>
                           </Box>
                           <Box display="flex" justifyContent="space-between">
                             <Box display="flex" justifyContent="space-between" width={"80%"}
@@ -522,14 +868,13 @@ const ViewLocation = () => {
                               {/* <Typography variant="body2">Lorem ipsum dolor sit amet consectetur...</Typography> */}
                               <Typography variant="body2" width={"60%"}>{content?.address}</Typography>
                             </Box>
-                            <Link style={{cursor: "pointer"}}>Edit</Link>
+                            <Link style={{ cursor: "pointer" }}>Edit</Link>
                           </Box>
                           <Link href="/location">View Location</Link>
                         </Box>
                       </Box>
                     </AccordionDetails>
                   </Accordion>
-
                   <Accordion>
                     <AccordionSummary
                       expandIcon={<ExpandMoreIcon />}
@@ -555,7 +900,7 @@ const ViewLocation = () => {
                               <Typography variant="body2" fontWeight="bold">Charger Name/ID:</Typography>
                               <Typography variant="body2" width={"60%"}>{content?.charger_id}</Typography>
                             </Box>
-                            <Link style={{cursor: "pointer"}}>Edit</Link>
+                            <Link style={{ cursor: "pointer" }}>Edit</Link>
                           </Box>
                           <Box display="flex" justifyContent="space-between">
                             <Box display="flex" justifyContent="space-between" width={"80%"}
@@ -569,7 +914,7 @@ const ViewLocation = () => {
                               <Typography variant="body2" fontWeight="bold">Charger Type:</Typography>
                               <Typography variant="body2" width={"60%"}>{content?.c_type}</Typography>
                             </Box>
-                            <Link style={{cursor: "pointer"}}>Edit</Link>
+                            <Link style={{ cursor: "pointer" }}>Edit</Link>
                           </Box>
                           <Box display="flex" justifyContent="space-between" >
                             <Box display="flex" justifyContent="space-between" width={"80%"}
@@ -583,7 +928,7 @@ const ViewLocation = () => {
                               <Typography variant="body2" fontWeight="bold">Charger Power:</Typography>
                               <Typography variant="body2" width={"60%"}>{content?.powerOutput}</Typography>
                             </Box>
-                            <Link style={{cursor: "pointer"}}>Edit</Link>
+                            <Link style={{ cursor: "pointer" }}>Edit</Link>
                           </Box>
                           <Box display="flex" justifyContent="space-between">
                             <Box display="flex" justifyContent="space-between" width={"80%"}
@@ -597,7 +942,7 @@ const ViewLocation = () => {
                               <Typography variant="body2" fontWeight="bold">Make:</Typography>
                               <Typography variant="body2" width={"60%"}>ChrgUp</Typography>
                             </Box>
-                            <Link style={{cursor: "pointer"}}>Edit</Link>
+                            <Link style={{ cursor: "pointer" }}>Edit</Link>
                           </Box>
                           <Box display="flex" justifyContent="space-between">
                             <Box display="flex" justifyContent="space-between" width={"80%"}
@@ -611,7 +956,7 @@ const ViewLocation = () => {
                               <Typography variant="body2" fontWeight="bold">Model:</Typography>
                               <Typography variant="body2" width={"60%"}>Chrgup7</Typography>
                             </Box>
-                            <Link style={{cursor: "pointer"}}>Edit</Link>
+                            <Link style={{ cursor: "pointer" }}>Edit</Link>
                           </Box>
                           <Box display="flex" justifyContent="space-between">
                             <Box display="flex" justifyContent="space-between" width={"80%"}
@@ -625,7 +970,7 @@ const ViewLocation = () => {
                               <Typography variant="body2" fontWeight="bold">OCPP Version:</Typography>
                               <Typography variant="body2" width={"60%"}>1.6</Typography>
                             </Box>
-                            <Link style={{cursor: "pointer"}}>Edit</Link>
+                            <Link style={{ cursor: "pointer" }}>Edit</Link>
                           </Box>
                           <Box display="flex" justifyContent="space-between">
                             <Box display="flex" justifyContent="space-between" width={"80%"}
@@ -639,7 +984,7 @@ const ViewLocation = () => {
                               <Typography variant="body2" fontWeight="bold">Firmware Version:</Typography>
                               <Typography variant="body2" width={"60%"}>0.0.4.6</Typography>
                             </Box>
-                            <Link style={{cursor: "pointer"}}>Edit</Link>
+                            <Link style={{ cursor: "pointer" }}>Edit</Link>
                           </Box>
                           <Box display="flex" justifyContent="space-between">
                             <Box display="flex" justifyContent="space-between" width={"80%"}
@@ -653,7 +998,7 @@ const ViewLocation = () => {
                               <Typography variant="body2" fontWeight="bold">Serial Number:</Typography>
                               <Typography variant="body2" width={"60%"}>{content?.charger_id}</Typography>
                             </Box>
-                            <Link style={{cursor: "pointer"}}>Edit</Link>
+                            <Link style={{ cursor: "pointer" }}>Edit</Link>
                           </Box>
                         </Box>
                       </Box>
@@ -663,13 +1008,14 @@ const ViewLocation = () => {
               </Box>
             </Grid>
             <Grid item xs={12} sm={4} sx={{ my: 4, textAlign: 'right' }}>
-              <Link href="#" sx={{textDecoration: 'underlined !important'}}>Activity log</Link>
+              <Link href="#" sx={{ textDecoration: 'underlined !important' }}>Activity log</Link>
             </Grid>
           </Grid>
+
         </Box>
       </Container>
     </DashboardLayout>
   );
 };
 
-export default ViewLocation;
+export default ViewCharger;
