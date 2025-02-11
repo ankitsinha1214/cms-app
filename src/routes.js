@@ -77,14 +77,14 @@ export const adminRoutes = [
     route: "/admins",
     component: <Admin />,
   },
-  {
-    type: "collapse",
-    name: "Settings",
-    key: "settings",
-    icon: <Icon fontSize="small">settings</Icon>,
-    route: "/settings",
-    component: <Settings />,
-  },
+  // {
+  //   type: "collapse",
+  //   name: "Settings",
+  //   key: "settings",
+  //   icon: <Icon fontSize="small">settings</Icon>,
+  //   route: "/settings",
+  //   component: <Settings />,
+  // },
 ];
 export const superAdminRoutes = [
   // const superAdminRoutes = [
