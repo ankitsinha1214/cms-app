@@ -461,7 +461,7 @@ const ViewCharger = () => {
     },
   ];
   const handleView = (row_data) => {
-    console.log(content)
+    // console.log(content)
     navigate("/location/view", { state: content?.locationId });
   };
   return (
