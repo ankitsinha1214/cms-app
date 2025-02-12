@@ -21,7 +21,7 @@ import { useMaterialUIController } from "context";
 import themeDark from "assets/theme-dark";
 import theme from "assets/theme";
 import IconButton from '@mui/material/IconButton';
-function PopAddStop(props) {
+function PopAddStopSession(props) {
     // const data = useSelector((s) => s);
     // console.log(data);
     const [controller] = useMaterialUIController();
@@ -93,6 +93,12 @@ function PopAddStop(props) {
     };
 
     const [values, setValues] = useState(props.value);
+    console.log(props.value)
+    useEffect(() => {
+        if (props.value) {
+            setValues(props.value);
+        }
+    }, [props.value]); 
     const handleChange = (event) => {
         setValues((prevValues) => ({
             ...prevValues,
@@ -115,20 +121,20 @@ function PopAddStop(props) {
     //     setIsDisabled(!isDisabled)
     //     // setIsDialog(true);
     // };
-    const back = () => {
-        setIsBackdrop(false);
-        onClose(false);
-        props.onStateChange(true);
-    };
+    // const back = () => {
+    //     setIsBackdrop(false);
+    //     onClose(false);
+    //     props.onStateChange(true);
+    // };
     return (
         <>
             <MDBackdrop isBackdrop={isBackdrop} />
             <Dialog open={props.isDialog} onClose={handleClose} fullWidth maxWidth="md" >
                 <DialogTitle style={darkMode ? { backgroundColor: "#202940", color: "#ffffff" ,display : "flex", alignItems : "center", justifyContent : "space-between"} : {theme,display : "flex", alignItems : "center", justifyContent : "space-between"}}>
-                <IconButton aria-label="delete" onClick={back} style={darkMode ? {color: "#ffffff"} : theme}>
+                {/* <IconButton aria-label="delete" onClick={back} style={darkMode ? {color: "#ffffff"} : theme}>
                         <ArrowBackIcon />
-                    </IconButton>
-                         Stop transaction
+                    </IconButton> */}
+                         Stop Session
                     <IconButton aria-label="delete" onClick={handleClose} style={darkMode ? {color: "#ffffff"} : theme}>
                         <CloseIcon />
                     </IconButton>
@@ -164,7 +170,9 @@ function PopAddStop(props) {
                                     onChange={handleChange}
                                 />
                             </MDBox> */}
-                            <MDBox p={1}>
+
+
+                            {/* <MDBox p={1}>
                                 <MDInput
                                     type="text"
                                     label="Charger name / ID"
@@ -176,8 +184,8 @@ function PopAddStop(props) {
                                     fullWidth={true}
                                     onChange={handleChange}
                                 />
-                            </MDBox>
-                            <MDBox p={1}>
+                            </MDBox> */}
+                            {/* <MDBox p={1}>
                                 <MDInput
                                     type="text"
                                     label="Session ID"
@@ -189,7 +197,7 @@ function PopAddStop(props) {
                                     fullWidth={true}
                                     onChange={handleChange}
                                 />
-                            </MDBox>
+                            </MDBox> */}
                             <MDBox p={1}>
                                 <MDInput
                                     type="text"
@@ -219,4 +227,4 @@ function PopAddStop(props) {
     );
 }
 
-export default PopAddStop;
+export default PopAddStopSession;

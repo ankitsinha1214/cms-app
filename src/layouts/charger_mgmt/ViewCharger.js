@@ -460,6 +460,10 @@ const ViewCharger = () => {
       ),
     },
   ];
+  const handleView = (row_data) => {
+    console.log(content)
+    navigate("/location/view", { state: content?.locationId });
+  };
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -579,7 +583,7 @@ const ViewCharger = () => {
                       component="img"
                       height="600"
                       image={first}
-                      alt="main image"
+                      alt="Charger Image"
                       style={{ width: '100%', margin: 0, borderRadius: 0, objectFit: "fill" }}
                     />
                   </Card>
@@ -870,7 +874,7 @@ const ViewCharger = () => {
                             </Box>
                             <Link style={{ cursor: "pointer" }}>Edit</Link>
                           </Box>
-                          <Link href="/location">View Location</Link>
+                          <Link style={{ cursor: "pointer" }} onClick={handleView}>View Location</Link>
                         </Box>
                       </Box>
                     </AccordionDetails>

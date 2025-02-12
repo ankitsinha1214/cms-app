@@ -105,47 +105,6 @@ const { Option } = Select;
 //   `,
 // }));
 
-const data = {
-  locationName: 'MCC - Mysore road',
-  address: 'Bangalore, Karnataka',
-  type: 'Mall',
-  accessibility: 'Public',
-  stats: {
-    total: 5,
-    ac: 2,
-    dc: 1,
-    twoWheelerDC: 1,
-    energyDispersed: 3000,
-    visits: 90,
-    occupancyRate: 75,
-    kmsPowered: 30000,
-    co2Saved: 1245,
-    uptimeRate: 90
-  },
-  contact: {
-    phone: '+91 9090909090',
-    spoc: {
-      name: 'Visswanath',
-      phone: '9876543210'
-    },
-    accounts: {
-      name: 'Visswanath',
-      phone: '9876543210'
-    },
-    maintenance: {
-      name: 'Visswanath',
-      phone: '9876543210'
-    },
-    gm: {
-      name: 'Visswanath',
-      phone: '9876543210'
-    },
-    siteEngineer: {
-      name: 'Visswanath',
-      phone: '9876543210'
-    }
-  }
-};
 
 const iconMap = {
   "Petrol Pumps": <LocalGasStationIcon />,
@@ -212,7 +171,7 @@ const ViewLocation = () => {
     window.location.reload();
   };
   const navEdit = () => {
-    navigate("/location/edit", { state: location?.state });
+    navigate("/location/edit", { state: content });
   };
   const statusList = [
     'Available',
@@ -284,7 +243,7 @@ const ViewLocation = () => {
     // console.log(location.state);
     // return;
     const payload = {
-      "location_id": location?.state?._id,
+      "location_id": location?.state,
       "charger_id": row_data?._id
     };
     axios({
@@ -337,7 +296,7 @@ const ViewLocation = () => {
         // console.log(updatedChargerData);
         // return;
         const payload = {
-          "location_id": location?.state?._id,
+          "location_id": location?.state,
           "charger_id": chargerData?._id,
           "updatedChargerInfo": updatedChargerData,
         };
@@ -431,14 +390,37 @@ const ViewLocation = () => {
         enqueueSnackbar('Please fill in all required fields.', { variant: 'warning' });
       });
   };
+  const fetchLocation = async () => {
+    await axios.get(process.env.REACT_APP_BASEURL + `charger-locations/${location.state}`, {
+      headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
+    }).then((response) => {
+      if (response.data.success) {
+        const location = response.data.data;
+        setContent(location)
+        if (location) {
+          setRows(location.chargerInfo);
+          setIsLoading(false);
+          setAdditionalImages(location.locationImage);
+        }
+      } else {
+        enqueueSnackbar(response.data.message, { variant: 'error' });
+      }
+    }).catch(error => {
+      console.error(error);
+    });
+  };
   useEffect(() => {
     if (
       localStorage.getItem("login_status") !== "true") {
       navigate("/sign-in");
     }
+    if (!location.state) {
+      navigate("/location");
+    }
+    fetchLocation();
     axios({
       method: "get",
-      url: process.env.REACT_APP_BASEURL + "reviews/location/" + location.state._id,
+      url: process.env.REACT_APP_BASEURL + "reviews/location/" + location.state,
       headers: {
         "Authorization": `Bearer ${localStorage.getItem("token")}`
       },
@@ -462,7 +444,7 @@ const ViewLocation = () => {
       .catch((error) => {
         console.log(error);
       });
-    setAdditionalImages(location.state.locationImage);
+    // setAdditionalImages(location.state.locationImage);
   }, []);
 
   const column = [
@@ -731,10 +713,53 @@ const ViewLocation = () => {
     setColumns1(column1);
   }, []);
   useEffect(() => {
-    setContent(location.state);
-    setRows(location.state.chargerInfo);
-    setIsLoading(false);
+    // setContent(location.state);
+    // setRows(location.state.chargerInfo);
+    // setIsLoading(false);
   }, []);
+
+  const data = {
+    locationName: 'MCC - Mysore road',
+    address: 'Bangalore, Karnataka',
+    type: 'Mall',
+    accessibility: 'Public',
+    stats: {
+      total: rows.length || 0,
+      ac: rows.filter(charger => charger.type === 'AC').length || 0,
+      dc: rows.filter(charger => charger.type === 'DC').length || 0,
+      twoWheelerDC: rows.filter(charger => charger.type === 'twoWheelerDC').length || 0,
+      energyDispersed: 3000,
+      visits: 90,
+      occupancyRate: 75,
+      kmsPowered: 30000,
+      co2Saved: 1245,
+      uptimeRate: 90
+    },
+    contact: {
+      phone: '+91 9090909090',
+      spoc: {
+        name: 'Visswanath',
+        phone: '9876543210'
+      },
+      accounts: {
+        name: 'Visswanath',
+        phone: '9876543210'
+      },
+      maintenance: {
+        name: 'Visswanath',
+        phone: '9876543210'
+      },
+      gm: {
+        name: 'Visswanath',
+        phone: '9876543210'
+      },
+      siteEngineer: {
+        name: 'Visswanath',
+        phone: '9876543210'
+      }
+    }
+  };
+
   const renderContactDetails = (contact) => (
     Object.keys(contact).map((key) => (
       key !== 'phone' && (
@@ -992,8 +1017,8 @@ const ViewLocation = () => {
                           <Image
                             // srcSet={`${process.env.REACT_APP_AWS_BASEURL}${item}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
                             // src={`${process.env.REACT_APP_AWS_BASEURL}${item}?w=164&h=164&fit=crop&auto=format`}
-                            src={`${process.env.REACT_APP_AWS_BASEURL}${location.state.locationImage[0]}`}
-                            alt={`Pre Delivery Image`}
+                            src={`${process.env.REACT_APP_AWS_BASEURL}${content?.locationImage?.[0]}`}
+                            alt={`Location Image`}
                             loading="lazy"
                             style={{ objectFit: 'cover', height: '198px' }}
                           />
@@ -1027,7 +1052,7 @@ const ViewLocation = () => {
                                   // srcSet={`${process.env.REACT_APP_AWS_BASEURL}${item}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
                                   // src={`${process.env.REACT_APP_AWS_BASEURL}${item}?w=164&h=164&fit=crop&auto=format`}
                                   src={`${process.env.REACT_APP_AWS_BASEURL}${image}`}
-                                  alt={`Pre Delivery Image`}
+                                  alt={`Location Image`}
                                   loading="lazy"
                                   style={{ objectFit: 'cover', height: '164px' }}
                                 />
@@ -1049,7 +1074,7 @@ const ViewLocation = () => {
                           <Typography variant="h6">Phone no</Typography>
                           <Typography mb={3}>{data.contact.phone}</Typography>
                           <Typography variant="h6">Hours</Typography>
-                          <Typography mb={3}>{content?.workingDays} {content?.workingHours === "12am-12am" ? "( Anytime )" : content?.workingHours }</Typography>
+                          <Typography mb={3}>{content?.workingDays} {content?.workingHours === "12am-12am" ? "( Anytime )" : content?.workingHours}</Typography>
 
                           <Grid container spacing={1} >
                             <Grid item xs={6}>
@@ -1061,23 +1086,23 @@ const ViewLocation = () => {
                               <Typography mb={3}>{content?.freepaid?.parking ? 'FREE' : content?.parkingCost?.amount + ' ' + content?.parkingCost?.currency}</Typography>
                             </Grid>
                           </Grid>
-                          </Grid>
-                          {/* Facilities */}
-                          <Grid item xs={12} mb={2}>
-                            <Typography variant="h6" mb={1.5}>Facilities</Typography>
-                            <Grid container spacing={2}>
-                              {Array.isArray(content?.facilities) && content?.facilities.map((facility, index) => (
-                                <Tooltip title={facility.name} key={facility.name || index}>
-                                  <Grid item xs={4} sm={2} md={4} lg={2} key={index}>
-                                    <Avatar sx={{ bgcolor: green[500], width: 40, height: 40 }}>
-                                      {iconMap[facility.name] || <MoreHorizIcon />}
-                                    </Avatar>
-                                  </Grid>
-                                </Tooltip>
-                              ))}
-                            </Grid>
+                        </Grid>
+                        {/* Facilities */}
+                        <Grid item xs={12} mb={2}>
+                          <Typography variant="h6" mb={1.5}>Facilities</Typography>
+                          <Grid container spacing={2}>
+                            {Array.isArray(content?.facilities) && content?.facilities.map((facility, index) => (
+                              <Tooltip title={facility.name} key={facility.name || index}>
+                                <Grid item xs={4} sm={2} md={4} lg={2} key={index}>
+                                  <Avatar sx={{ bgcolor: green[500], width: 40, height: 40 }}>
+                                    {iconMap[facility.name] || <MoreHorizIcon />}
+                                  </Avatar>
+                                </Grid>
+                              </Tooltip>
+                            ))}
                           </Grid>
                         </Grid>
+                      </Grid>
                     </Box>
                     {/* Personal Information */}
                     <Grid item xs={12}>

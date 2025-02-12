@@ -509,6 +509,22 @@ function Charger_mgmt() {
       },
     },
     {
+      header: "Started By", accessorKey: "startCreatedBy", align: "center", muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      },
+    },
+    {
+      header: "Stopped By", accessorKey: "stopCreatedBy", align: "center", muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      },
+    },
+    {
       header: "Duration", accessorKey: "duration", align: "center", muiTableHeadCellProps: {
         align: 'center',
       },

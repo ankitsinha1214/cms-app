@@ -553,7 +553,7 @@ function Location_mgmt() {
     // console.log(column);
   }, []);
   const handleView = (row_data) => {
-    navigate("/location/view", { state: row_data });
+    navigate("/location/view", { state: row_data?._id });
   };
   // const handleEdit = (row_data) => {
   //   // navigate("/location/view", { state: row_data });

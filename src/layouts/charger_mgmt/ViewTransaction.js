@@ -5,6 +5,7 @@ import { Typography } from '@mui/material';
 import { useEffect, useState } from "react";
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
+import Link from '@mui/material/Link';
 import { BarChart, CartesianGrid, XAxis, YAxis, Legend, Bar, Tooltip, ResponsiveContainer } from "recharts";
 import { LineChart, Line } from "recharts";
 import { useMaterialUIController } from "context";
@@ -19,7 +20,9 @@ import StackedBarCard from "examples/Cards/StatisticsCards/StackedBarCard";
 import ComplexStatisticsCard from "examples/Cards/StatisticsCards/ComplexStatisticsCard";
 import ComplexStatisticsCard1 from "examples/Cards/StatisticsCards/ComplexStatisticsCard1";
 import LocationVisitsCard from "examples/Cards/StatisticsCards/ComplexStatisticsCard2";
-
+import { Button } from "antd";
+import { StopOutlined } from "@ant-design/icons";
+import { Avatar, List } from 'antd';
 import MapComponent from "../location_mgmt/components/MapComponent";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from 'react-router-dom';
@@ -40,6 +43,7 @@ import {
     SyncOutlined,
 } from '@ant-design/icons';
 import { Tag } from 'antd';
+import PopAddStopSession from "./PopAddStopSession";
 
 // Helper function to calculate time difference
 const timeAgo = (timestamp) => {
@@ -57,12 +61,15 @@ const timeAgo = (timestamp) => {
 };
 
 function ViewTransaction() {
+
     const [controller] = useMaterialUIController();
     const { darkMode } = controller;
     const { sales, tasks } = reportsLineChartData;
     const location = useLocation();
     const [content, setContent] = useState([]);
+    const [isDisabled2, setIsDisabled2] = useState(false);
     console.log(location.state);
+    // console.log(values1);
     // console.log(content);
     // State to store dynamic timestamp
     const [timestamp, setTimestamp] = useState(new Date());
@@ -101,125 +108,129 @@ function ViewTransaction() {
     //     ],
     //   };
 
-    const fetchSession = async() => {
-        await axios.get(process.env.REACT_APP_BASEURL + `session/${location.state._id}`, {
-          headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
+    const fetchSession = async () => {
+        await axios.get(process.env.REACT_APP_BASEURL + `session/${location.state?._id}`, {
+            headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
         }).then((response) => {
-          if (response.data.success) {
-            const session = response.data.data;
-            // const updatedRows = response.data.data.map(session => {
+            if (response.data.success) {
+                const session = response.data.data;
+                // const updatedRows = response.data.data.map(session => {
                 if (session) {
-              const metadata = session.metadata || [];
-    
-              // Get the first and last metadata values
-              const firstEntry = metadata[0]?.values?.["Energy.Active.Import.Register"];
-              const lastEntry = metadata[metadata.length - 1]?.values?.["Energy.Active.Import.Register"];
-    
-              // Extract numeric values and handle missing values
-              const firstMeterValue = firstEntry ? parseFloat(firstEntry.split(" ")[0]) : 0;
-              const lastMeterValue = lastEntry ? parseFloat(lastEntry.split(" ")[0]) : 0;
-    
-              // Calculate energy consumed
-              const energyConsumed = lastMeterValue && firstMeterValue ? (lastMeterValue - firstMeterValue).toFixed(4) : "0";
-    
-              // Mask userPhone (assuming it's a string)
-              const userPhone = session.userPhone || "";
-              const maskedPhone = userPhone.length > 4
-                ? `+91 ${"X".repeat(userPhone.length - 7)}${userPhone.slice(-4)}`
-                : userPhone; // If phone is too short, keep it as is
-    
-            //   return {
-                const updatedSession = {
-                ...session,
-                status: session.status === "Started" ? "Active"
-                  : session.status === "Stopped" ? "Unpaid"
-                    : session.status === "Completed" ? "Paid"
-                      : session.status, // Keep it unchanged if it doesn't match
-                energy_disp1: `${energyConsumed} Wh`,
-                userPhone: maskedPhone
-              };
-              // });
-              // Sort by createdAt in descending order (latest first)
-              // const sortedRows = updatedRows.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-              console.log(updatedSession)
-              setContent(updatedSession);
-              const metadataResponse = updatedSession?.metadata;
-              // const metadataResponse = location.state.metadata;
-              // Transform metadata into graph-compatible format
-              // setTimestamp(metadataResponse[0].timestamp);
-              // Get the first energy value (to subtract it from the rest of the data)
-              const firstEnergyValue = parseFloat(metadataResponse[0].values["Energy.Active.Import.Register"]);
-              const transformedData = metadataResponse.map(entry => {
-                  const energy = parseFloat(entry.values["Energy.Active.Import.Register"]);
-                  return {
-                      timestamp: new Date(entry.timestamp).toLocaleTimeString(), // Format timestamp
-                      // energy: parseFloat(entry.values["Energy.Active.Import.Register"]), // Wh
-                      energy: (energy - firstEnergyValue).toFixed(4), // Subtract the first energy value
-                      power: parseFloat(entry.values["Power.Active.Import"]), // kW
-                      voltage: parseFloat(entry.values["Voltage"]), // V
-                      current: parseFloat(entry.values["Current.Import"]), // A
-                      temperature: parseFloat(entry.values["Temperature"]), // Celsius
-                      frequency: parseFloat(entry.values["Frequency"]) // Hz
-                  };
-              });
-              // Extract distinct values for each field
-              // const distinctValues = {
-              //     energy: [...new Set(transformedData.map(item => item.energy))],
-              //     power: [...new Set(transformedData.map(item => item.power))],
-              //     voltage: [...new Set(transformedData.map(item => item.voltage))],
-              //     current: [...new Set(transformedData.map(item => item.current))],
-              //     temperature: [...new Set(transformedData.map(item => item.temperature))],
-              //     frequency: [...new Set(transformedData.map(item => item.frequency))]
-              // };
-      
-              // console.log("Distinct Values:", distinctValues);
-      
-              setMetadata(transformedData);
-              setPowerData({
-                  labels: transformedData.map(item => item.timestamp),
-                  datasets:
-                  {
-                      label: "Power (kW)",
-                      data: transformedData.map(item => item.power),
-                      borderColor: "green",
-                      backgroundColor: "rgba(0, 255, 0, 0.1)",
-                      fill: true,
-                      tension: 0.4,
-                  },
-              });
-              setCurrentData({
-                  labels: transformedData.map(item => item.timestamp),
-                  datasets:
-                  {
-                      label: "Current (A)",
-                      data: transformedData.map(item => item.current),
-                      borderColor: "green",
-                      backgroundColor: "rgba(0, 255, 0, 0.1)",
-                      fill: true,
-                      tension: 0.4,
-                  },
-              });
-              setEnergyData({
-                  labels: transformedData.map(item => item.timestamp),
-                  datasets:
-                  {
-                      label: "Energy (Wh)",
-                      data: transformedData.map(item => item.energy),
-                      borderColor: "green",
-                      backgroundColor: "rgba(0, 255, 0, 0.1)",
-                      fill: true,
-                      tension: 0.4,
-                  },
-              });
+                    const metadata = session.metadata || [];
+
+                    // Get the first and last metadata values
+                    const firstEntry = metadata[0]?.values?.["Energy.Active.Import.Register"];
+                    const lastEntry = metadata[metadata.length - 1]?.values?.["Energy.Active.Import.Register"];
+
+                    // Extract numeric values and handle missing values
+                    const firstMeterValue = firstEntry ? parseFloat(firstEntry.split(" ")[0]) : 0;
+                    const lastMeterValue = lastEntry ? parseFloat(lastEntry.split(" ")[0]) : 0;
+
+                    // Calculate energy consumed
+                    const energyConsumed = lastMeterValue && firstMeterValue ? (lastMeterValue - firstMeterValue).toFixed(4) : "0";
+
+                    // Mask userPhone (assuming it's a string)
+                    const userPhone = session.userPhone || "";
+                    const maskedPhone = userPhone.length > 4
+                        ? `+91 ${"X".repeat(userPhone.length - 7)}${userPhone.slice(-4)}`
+                        : userPhone; // If phone is too short, keep it as is
+
+                    //   return {
+                    const updatedSession = {
+                        ...session,
+                        status: session.status === "Started" ? "Active"
+                            : session.status === "Stopped" ? "Unpaid"
+                                : session.status === "Completed" ? "Paid"
+                                    : session.status, // Keep it unchanged if it doesn't match
+                        energy_disp1: `${energyConsumed} Wh`,
+                        userPhone: maskedPhone
+                    };
+                    // });
+                    // Sort by createdAt in descending order (latest first)
+                    // const sortedRows = updatedRows.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                    console.log(updatedSession)
+                    setContent(updatedSession);
+                    // setValues1((prevValues) => ({
+                    //     ...prevValues,
+                    //     charger_id: updatedSession.chargerId, // Update only charger_id
+                    //   }));
+                    const metadataResponse = updatedSession?.metadata;
+                    // const metadataResponse = location.state.metadata;
+                    // Transform metadata into graph-compatible format
+                    // setTimestamp(metadataResponse[0].timestamp);
+                    // Get the first energy value (to subtract it from the rest of the data)
+                    const firstEnergyValue = parseFloat(metadataResponse[0].values["Energy.Active.Import.Register"]);
+                    const transformedData = metadataResponse.map(entry => {
+                        const energy = parseFloat(entry.values["Energy.Active.Import.Register"]);
+                        return {
+                            timestamp: new Date(entry.timestamp).toLocaleTimeString(), // Format timestamp
+                            // energy: parseFloat(entry.values["Energy.Active.Import.Register"]), // Wh
+                            energy: (energy - firstEnergyValue).toFixed(4), // Subtract the first energy value
+                            power: parseFloat(entry.values["Power.Active.Import"]), // kW
+                            voltage: parseFloat(entry.values["Voltage"]), // V
+                            current: parseFloat(entry.values["Current.Import"]), // A
+                            temperature: parseFloat(entry.values["Temperature"]), // Celsius
+                            frequency: parseFloat(entry.values["Frequency"]) // Hz
+                        };
+                    });
+                    // Extract distinct values for each field
+                    // const distinctValues = {
+                    //     energy: [...new Set(transformedData.map(item => item.energy))],
+                    //     power: [...new Set(transformedData.map(item => item.power))],
+                    //     voltage: [...new Set(transformedData.map(item => item.voltage))],
+                    //     current: [...new Set(transformedData.map(item => item.current))],
+                    //     temperature: [...new Set(transformedData.map(item => item.temperature))],
+                    //     frequency: [...new Set(transformedData.map(item => item.frequency))]
+                    // };
+
+                    // console.log("Distinct Values:", distinctValues);
+
+                    setMetadata(transformedData);
+                    setPowerData({
+                        labels: transformedData.map(item => item.timestamp),
+                        datasets:
+                        {
+                            label: "Power (kW)",
+                            data: transformedData.map(item => item.power),
+                            borderColor: "green",
+                            backgroundColor: "rgba(0, 255, 0, 0.1)",
+                            fill: true,
+                            tension: 0.4,
+                        },
+                    });
+                    setCurrentData({
+                        labels: transformedData.map(item => item.timestamp),
+                        datasets:
+                        {
+                            label: "Current (A)",
+                            data: transformedData.map(item => item.current),
+                            borderColor: "green",
+                            backgroundColor: "rgba(0, 255, 0, 0.1)",
+                            fill: true,
+                            tension: 0.4,
+                        },
+                    });
+                    setEnergyData({
+                        labels: transformedData.map(item => item.timestamp),
+                        datasets:
+                        {
+                            label: "Energy (Wh)",
+                            data: transformedData.map(item => item.energy),
+                            borderColor: "green",
+                            backgroundColor: "rgba(0, 255, 0, 0.1)",
+                            fill: true,
+                            tension: 0.4,
+                        },
+                    });
+                }
+                // setContent(sortedRows);
+            } else {
+                enqueueSnackbar(response.data.message, { variant: 'error' });
             }
-            // setContent(sortedRows);
-          } else {
-            enqueueSnackbar(response.data.message, { variant: 'error' });
-          }
         }).catch(error => {
-          console.error(error);
+            console.error(error);
         });
-      };
+    };
     useEffect(() => {
         if (
             localStorage.getItem("login_status") !== "true"
@@ -360,56 +371,167 @@ function ViewTransaction() {
     // Get the most recent timestamp (or pick one of the entries)
     const lastUpdated = metadata.length > 0 ? metadata[metadata.length - 1].timestamp : null;
     // console.log(powerData)
+    const getValues1 = () => {
+        return {
+            charger_id: content?.chargerId || "",
+            session_id: location.state?._id || "",
+            reason: ""
+        };
+    };
+    const [values1, setValues1] = useState(getValues1);
+    useEffect(() => {
+        if (content?.chargerId) {
+            setValues1((prevValues) => ({
+                ...prevValues,
+                charger_id: content.chargerId, // Update only charger_id
+            }));
+        }
+    }, [content]);
     return (
         <DashboardLayout>
             <DashboardNavbar absolute isMini />
+            <PopAddStopSession
+                isDialog={isDisabled2}
+                onClose={setIsDisabled2}
+                value={values1}
+            // onStateChange={props.onStateChange}
+            />
             <MDBox pt={8}>
-
-
-                {/* Header Section */}
-                <Grid item xs={12} sm={8}>
-                    {/* <Flex gap="4px 0" wrap> */}
-                    {content?.status === "Paid" ?
-                        <Tag icon={<CheckCircleOutlined />} color="success" style={{ marginBottom: "1rem" }}>
-                            Paid
-                        </Tag>
-                        : content?.status === "Active" ?
-                            <Tag icon={<SyncOutlined spin />} color="warning" style={{ marginBottom: "1rem" }}>
-                                Active
+                <Grid container spacing={3}>
+                    {/* Header Section */}
+                    {/* <Grid item xs={12} sm={8}> */}
+                    <Grid item xs={12} sm={8}>
+                        {/* <Flex gap="4px 0" wrap> */}
+                        {content?.status === "Paid" ?
+                            <Tag icon={<CheckCircleOutlined />} color="success" style={{ marginBottom: "1rem" }}>
+                                Paid
                             </Tag>
-                            : content?.status === "Unpaid" ?
-                                <Tag icon={<CloseCircleOutlined />} color="error" style={{ marginBottom: "1rem" }}>
-                                    Unpaid
+                            : content?.status === "Active" ?
+                                <Tag icon={<SyncOutlined spin />} color="warning" style={{ marginBottom: "1rem" }}>
+                                    Active
                                 </Tag>
-                                :
-                                <Tag icon={<MinusCircleOutlined />} color="default" style={{ marginBottom: "1rem" }}>
-                                    {content?.status}
-                                </Tag>
-                    }
-                    {/* <Tag icon={<ExclamationCircleOutlined />} color="warning">
+                                : content?.status === "Unpaid" ?
+                                    <Tag icon={<CloseCircleOutlined />} color="error" style={{ marginBottom: "1rem" }}>
+                                        Unpaid
+                                    </Tag>
+                                    :
+                                    <Tag icon={<MinusCircleOutlined />} color="default" style={{ marginBottom: "1rem" }}>
+                                        {content?.status}
+                                    </Tag>
+                        }
+                        {/* <Tag icon={<ExclamationCircleOutlined />} color="warning">
                   warning
                 </Tag> */}
-                    {/* {JSON.stringify(data)} */}
-                    {/* </Flex> */}
-                    <Typography variant="h4" component="h1" gutterBottom>
-                        {content?.chargerId}
-                    </Typography>
-                    <Typography variant="subtitle1" sx={{ lineHeight: "36px" }}>
-                        {content?.duration} &nbsp; | &nbsp; {content?.energy_disp1}
-                    </Typography>
-                    <Typography variant="subtitle1" sx={{ lineHeight: "36px" }}>
-                        {content?.chargerLocation?.locationName} &nbsp;|&nbsp; {content?.userPhone}
-                        {/* &nbsp;|&nbsp; Public */}
-                    </Typography>
-                    <Typography variant="body2" sx={{ lineHeight: "36px" }}>
-                        {content?.chargerLocation?.city}, {content?.chargerLocation?.state}
-                    </Typography>
-                    {/* Statistics Section */}
-                    <Grid item xs={12}
-                    // md={6}
-                    // style={{ marginTop: "2rem" }}
+                        {/* {JSON.stringify(data)} */}
+                        {/* </Flex> */}
+                        <Typography variant="h4" component="h1" gutterBottom>
+                            {content?.chargerId}
+                        </Typography>
+                        <Typography variant="subtitle1" sx={{ lineHeight: "36px" }}>
+                            {content?.duration} &nbsp; | &nbsp; {content?.energy_disp1}
+                        </Typography>
+                        <Typography variant="subtitle1" sx={{ lineHeight: "36px" }}>
+                            {content?.chargerLocation?.locationName} &nbsp;|&nbsp; {content?.userPhone}
+                            {/* &nbsp;|&nbsp; Public */}
+                        </Typography>
+                        <Typography variant="body2" sx={{ lineHeight: "36px" }}>
+                            {content?.chargerLocation?.city}, {content?.chargerLocation?.state}
+                        </Typography>
+                        {/* Statistics Section */}
+                        <Grid item xs={12}
+                            sx={{
+                                display: {
+                                    xs: 'none',
+                                    md: 'block'
+                                }
+                            }}
+                        // md={6}
+                        // style={{ marginTop: "2rem" }}
+                        >
+                            <br />
+                        </Grid>
+                    </Grid>
+                    <Grid item xs={12} sm={4}
+                        // sx={{ 
+                        //     // my: 4,
+                        //      textAlign: 'right' }}
+                        sx={{
+                            textAlign: {
+                                xs: 'start', // Left-align for extra-small screens
+                                md: 'end',   // Right-align for medium and larger screens
+                            },
+                        }}
                     >
-                        <br />
+                        {
+                            content?.status === "Active" ?
+                                <Button
+                                    type="primary"
+                                    danger
+                                    icon={<StopOutlined />}
+                                    size="large"
+                                    // onClick={() => console.log("Stopping session...")}
+                                    onClick={() => setIsDisabled2(!isDisabled2)}
+                                >
+                                    Stop Session
+                                </Button>
+                                : null
+                        }
+                        {/* <Typography variant="h5" component="h1" gutterBottom>
+                            Started By {content?.startCreatedBy}
+                        </Typography>
+                        <Typography variant="p" sx={{ lineHeight: "36px" }}>
+                            {content?.startCreatedBy} 
+                            &nbsp; | &nbsp; {content?.startReason}
+                            {content?.startReason && <>
+                                &nbsp; | &nbsp; 
+                                {content?.startReason}</>}
+                        </Typography> */}
+                        <List>
+                            <List.Item>
+                                <List.Item.Meta
+                                    // avatar={<Avatar src={`https://api.dicebear.com/7.x/miniavs/svg?seed=0`} />}
+                                    title={<>
+                                        Started By {content?.startCreatedBy}
+                                    </>
+                                    }
+                                    // <a href="https://ant.design">
+                                    // {/* </a> */}
+                                    description={content?.startReason}
+                                />
+                            </List.Item>
+                        </List>
+                        {
+                            content?.stopCreatedBy && (
+                                <>
+                                    <List>
+                                        <List.Item>
+                                            <List.Item.Meta
+                                                // avatar={<Avatar src={`https://api.dicebear.com/7.x/miniavs/svg?seed=0`} />}
+                                                title={<>
+                                                    Stopped By {content?.stopCreatedBy}
+                                                </>
+                                                }
+                                                // <a href="https://ant.design">
+                                                // {/* </a> */}
+                                                description={content?.stopReason}
+                                            />
+                                        </List.Item>
+                                    </List>
+                                    {/* <Typography variant="h5" component="h1" gutterBottom>
+                                        Stopped By {content?.stopCreatedBy}
+                                    </Typography> */}
+                                    {/* <Typography variant="p" sx={{ lineHeight: "36px" }}> */}
+                                    {/* {content?.stopCreatedBy}  */}
+                                    {/* &nbsp; | &nbsp; {content?.startReason} */}
+                                    {/* {content?.stopReason && <> */}
+                                    {/* &nbsp; | &nbsp;  */}
+                                    {/* {content?.stopReason}</>} */}
+                                    {/* </Typography> */}
+                                </>
+                            )
+                        }
+
+                        {/* <Link href="#" sx={{ textDecoration: 'underlined !important' }}>Stop Session</Link> */}
                     </Grid>
                 </Grid>
 
