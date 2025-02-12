@@ -144,6 +144,7 @@ function Charger_mgmt() {
               status: charger.status,
               charger_id: charger.name,
               powerOutput: charger.powerOutput,
+              _id: charger._id,
               // charger_id: charger._id,
               c_type: `${charger.type}`,
               locationId: location._id,
@@ -194,6 +195,7 @@ function Charger_mgmt() {
           location.chargerInfo.map(charger => ({
             status: charger.status,
             charger_id: charger.name,
+            _id: charger._id,
             powerOutput: charger.powerOutput,
             c_type: `${charger.type}`,
             locationId: location._id,
@@ -619,12 +621,13 @@ function Charger_mgmt() {
     // navigate("/session", { state: row_data });
   };
   const handleDelete = (row_data) => {
-    console.log(row_data);
-    return enqueueSnackbar("Error Occurred while Deleting Charger. Please try again later.", { variant: 'error' });
+    // console.log(row_data);
+    // return enqueueSnackbar("Error Occurred while Deleting Charger. Please try again later.", { variant: 'error' });
     const payload = {
-      "location_id": row_data?._id,
-      "charger_id": row_data?._id
+      "location_id": row_data?.locationId,
+      "charger_id": row_data._id
     };
+    // console.log(payload)
     axios({
       method: "delete",
       url: process.env.REACT_APP_BASEURL + "charger-locations/delete-charger",
@@ -644,7 +647,7 @@ function Charger_mgmt() {
           // setIsDialog(true);
           // alert(response.data.message);
           enqueueSnackbar(response.data.message, { variant: 'success' });
-          navigate("/location");
+          navigate("/charger");
           // window.location.reload();
         } else {
           // console.log("status is false ");
