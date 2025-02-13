@@ -314,7 +314,7 @@ const ViewLocation = () => {
           .then((response) => {
             if (response.data.success === true) {
               console.log(response.data);
-              enqueueSnackbar('Charger Added Successfully.', { variant: 'success' });
+              enqueueSnackbar('Charger Updated Successfully.', { variant: 'success' });
               form.resetFields(["chargerInfo"]);  // Reset the form after successful addition
               navigate("/location");
             } else {

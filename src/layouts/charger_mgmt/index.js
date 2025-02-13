@@ -648,7 +648,7 @@ function Charger_mgmt() {
           // alert(response.data.message);
           enqueueSnackbar(response.data.message, { variant: 'success' });
           navigate("/charger");
-          // window.location.reload();
+          window.location.reload();
         } else {
           // console.log("status is false ");
           enqueueSnackbar(response.data.message, { variant: 'error' });

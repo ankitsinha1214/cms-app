@@ -15,6 +15,7 @@ import OutlinedInput from "@mui/material/OutlinedInput";
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { useSnackbar } from "notistack";
+import dayjs from 'dayjs';
 // import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 function UpdateUser() {
@@ -41,7 +42,7 @@ function UpdateUser() {
   });
   const formatDate = (dateString) => {
     if (!dateString) return "";
-    
+
     // Split the date string into parts
     const [day, month, year] = dateString.split("/");
     if (!month || !year) {
@@ -50,28 +51,28 @@ function UpdateUser() {
     // Pad single-digit day and month with leading zeros
     const paddedDay = day.padStart(2, "0");
     const paddedMonth = month.padStart(2, "0");
-    
+
     // Return the date in YYYY-MM-DD format
     return `${year}-${paddedMonth}-${paddedDay}`;
   };
-  
+
   const parseDate = (dateString) => {
     if (!dateString) return "";
-    
+
     // Split the date string into parts
     const [year, month, day] = dateString.split("-");
-    
+
     // Pad single-digit day and month with leading zeros
     const paddedDay = day.padStart(2, "0");
     const paddedMonth = month.padStart(2, "0");
-    
+
     // Return the formatted date string
     return `${paddedDay}/${paddedMonth}/${year}`;
   };
-  
+
   const [values, setValues] = useState(getInitialValues);
   const [dialogMessage, setDialogMessage] = useState("");
-  
+
   useEffect(() => {
     setValues(getInitialValues);
   }, [row_data]);
@@ -84,20 +85,20 @@ function UpdateUser() {
         "Authorization": `Bearer ${localStorage.getItem("token")}`
       },
     })
-    .then((response) => {
-      if (response.data.success === true) {
-        const data = response.data.data[0].India;
-        const structuredData = {};
-        // console.log(data);
-        data.forEach(stateObj => {
-          const state = Object.keys(stateObj)[0];
-          const cities = stateObj[state];
-          structuredData[state] = cities;
+      .then((response) => {
+        if (response.data.success === true) {
+          const data = response.data.data[0].India;
+          const structuredData = {};
+          // console.log(data);
+          data.forEach(stateObj => {
+            const state = Object.keys(stateObj)[0];
+            const cities = stateObj[state];
+            structuredData[state] = cities;
           });
 
           setStateData(structuredData);
           setStates(Object.keys(structuredData));
-          if(structuredData[row_data.state]){
+          if (structuredData[row_data.state]) {
             setCities(structuredData[row_data.state]);
           }
           // setState_show(response.data.data);
@@ -117,11 +118,15 @@ function UpdateUser() {
     values.city = '';
   };
   const createUser = (first_name, last_name, phone_number, email, gender, dob, state, city) => {
+    
+    const formattedDobValue = dayjs(dob).format('DD/MM/YYYY');
     const payload = {
       "firstName": first_name,
       "lastName": last_name,
       "state": values.state,
       "city": values.city,
+      "gender": gender,
+      "dob": formattedDobValue,
     };
     const token = localStorage.getItem("token");
     axios({
@@ -161,7 +166,8 @@ function UpdateUser() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (values.first_name === '' || values.last_name === '' || values.city === '' || values.state === '') {
+    // if (values.first_name === '' || values.last_name === '' || values.city === '' || values.state === '') {
+    if (values.first_name === '' || values.last_name === '') {
       return enqueueSnackbar('All fields are necessary', { variant: 'error' });
     }
     createUser(
@@ -254,8 +260,8 @@ function UpdateUser() {
                   />
                 </MDBox>
                 <MDBox p={1}>
-                  <MDInput
-                    disabled
+                  {/* <MDInput
+                    // disabled
                     type="text"
                     label="Gender"
                     value={values.gender}
@@ -263,7 +269,25 @@ function UpdateUser() {
                     margin="dense"
                     fullWidth
                     onChange={handleChange}
-                  />
+                  /> */}
+                  <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label">Gender</InputLabel>
+                    <Select
+                      sx={{
+                        height: 50,
+                      }}
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={values.gender}
+                      label="Gender"
+                      name="gender"
+                      onChange={handleChange}
+                    >
+                      <MenuItem value={'Male'}>Male</MenuItem>
+                      <MenuItem value={'Female'}>Female</MenuItem>
+                      <MenuItem value={'Other'}>Other</MenuItem>
+                    </Select>
+                  </FormControl>
                 </MDBox>
                 <MDBox p={1}>
                   <FormControl fullWidth variant="outlined" margin="dense">
@@ -274,7 +298,7 @@ function UpdateUser() {
                       Date Of Birth
                     </InputLabel>
                     <OutlinedInput
-                      disabled
+                      // disabled
                       id="date-of-birth"
                       type="date"
                       label="Date Of Birth"
