@@ -40,16 +40,21 @@ import { useMaterialUIController, setMiniSidenav, setSidenavColor, setOpenConfig
 // Chrgup
 import brandWhite from "assets/images/12.png";
 import brandDark from "assets/images/112.png";
+import { analytics } from "./firebase"; // Import the analytics instance
 
 // other vender
 // import brandWhite from "assets/images/logo1212.png";
 // import brandDark from "assets/images/logo1212.png";
 
 export default function App() {
-const userRole = localStorage.getItem("role");
-const [routes,setRoutes] = useState(superAdminRoutes);
-const [routes1, setRoutes1] = useState(superAdminRoutes); 
-// routes = userRole === "Admin" ? routes1 : superAdminRoutes
+  const userRole = localStorage.getItem("role");
+  const [routes,setRoutes] = useState(superAdminRoutes);
+  const [routes1, setRoutes1] = useState(superAdminRoutes); 
+  // routes = userRole === "Admin" ? routes1 : superAdminRoutes
+  
+  useEffect(() => {
+    console.log("Firebase Analytics initialized");
+  }, []);
 useEffect(() => {
   if (userRole === "Admin") {
     // setRoutes1((prevRoutes) => [...prevRoutes, ...adminRoutes]);
