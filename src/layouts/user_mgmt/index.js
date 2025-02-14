@@ -11,6 +11,8 @@ import MDTypography from "components/MDTypography";
 import React, { useState, useEffect } from "react";
 import { MaterialReactTable } from 'material-react-table';
 import theme from "assets/theme";
+import { Avatar as Avatar1 } from 'antd';
+import { UserOutlined } from '@ant-design/icons';
 import { useMaterialUIController } from "context";
 import { useNavigate } from "react-router-dom";
 // Material Dashboard 2 React examples
@@ -250,6 +252,30 @@ function User_mgmt() {
       }, // default
       Cell: (row) => (
         <div>
+          {
+            row.row.original.profilePic !== null ?
+              //   <Avatar1
+              //   style={{
+              //     backgroundColor: '#fde3cf',
+              //     color: '#f56a00',
+              //     marginRight: '1rem'
+              //   }}
+              // >
+              //   U
+              // </Avatar1>
+              <Avatar1 src={row.row.original.profilePic} style={{
+              // <Avatar1 icon={<UserOutlined />} style={{
+                // backgroundColor: '#87d068',
+                // color: '#f56a00',
+                marginRight: '1rem'
+              }} />
+              :
+              <Avatar1 icon={<UserOutlined />} style={{
+                // backgroundColor: '#fde3cf',
+                // color: '#f56a00',
+                marginRight: '1rem'
+              }} />
+          }
           {`${row.row.original.firstName} ${row.row.original.lastName}`}
         </div>
       ),

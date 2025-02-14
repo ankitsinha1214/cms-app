@@ -135,7 +135,8 @@ const MapComponent = ({ locations }) => {
   }
 
   const pop = (row_data) => {
-    navigate("/location/view", { state: row_data });
+    // console.log(row_data)
+    navigate("/location/view", { state: row_data?._id });
   };
 
   return (
