@@ -33,10 +33,6 @@ import NotFoundPage  from "./NotFoundPage";
 import { useMaterialUIController, setMiniSidenav, setSidenavColor, setOpenConfigurator } from "context";
 
 // Images
-// import brandWhite from "assets/images/chargedock-icon.png";
-// import brandDark from "assets/images/chargedock-icon.png";
-// import brandWhite from "assets/images/asa.png";
-
 // Chrgup
 import brandWhite from "assets/images/12.png";
 import brandDark from "assets/images/112.png";

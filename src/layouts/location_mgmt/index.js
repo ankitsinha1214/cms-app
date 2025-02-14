@@ -26,7 +26,6 @@ import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 // images
-import mapImage from "assets/images/map.png";
 import MapComponent from "./components/MapComponent";
 
 import { useSnackbar } from "notistack";
@@ -810,7 +809,6 @@ function Location_mgmt() {
           </Grid> */}
         </Grid>
         <MDBox mt={4} style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-          {/* <img src={mapImage} alt="Map Image" srcset="" /> */}
           {/* <GoogleMap
             mapContainerStyle={mapContainerStyle}
             zoom={10} // Adjust the desired zoom level
@@ -834,16 +832,6 @@ function Location_mgmt() {
               </DeckGL>
             </Grid>
           </Grid> */}
-
-          {/* <MDBox width="96%" minHeight="40vh"
-            sx={{
-              backgroundImage: ({ functions: { linearGradient, rgba }, palette: { gradients } }) =>
-                mapImage && ` url(${mapImage})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              backgroundRepeat: "no-repeat",
-            }}
-          /> */}
           <MapComponent locations={locations} />
         </MDBox>
         <MDBox mt={8}>
