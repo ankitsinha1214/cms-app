@@ -9,7 +9,8 @@ import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 // import reportsLineChartData from "./components/reportsLineChartData";
 // import ReportsLineChart from "examples/Charts/LineCharts/ReportsLineChart/New";
-import first from "../../assets/images/charger.png";
+// import first from "";
+import charger from "../../assets/images/charger.png";
 import PropTypes from 'prop-types';
 import { styled } from '@mui/material/styles';
 import Link from '@mui/material/Link';
@@ -582,7 +583,7 @@ const ViewCharger = () => {
                     <CardMedia
                       component="img"
                       height="600"
-                      image={first}
+                      image={charger}
                       alt="Charger Image"
                       style={{ width: '100%', margin: 0, borderRadius: 0, objectFit: "fill" }}
                     />

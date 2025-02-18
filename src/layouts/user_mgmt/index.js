@@ -250,35 +250,66 @@ function User_mgmt() {
       muiTableBodyCellProps: {
         align: 'center',
       }, // default
-      Cell: (row) => (
-        <div>
-          {
-            row.row.original.profilePic !== null ?
-              //   <Avatar1
-              //   style={{
-              //     backgroundColor: '#fde3cf',
-              //     color: '#f56a00',
-              //     marginRight: '1rem'
-              //   }}
-              // >
-              //   U
-              // </Avatar1>
-              <Avatar1 src={row.row.original.profilePic} style={{
-              // <Avatar1 icon={<UserOutlined />} style={{
-                // backgroundColor: '#87d068',
-                // color: '#f56a00',
-                marginRight: '1rem'
-              }} />
-              :
-              <Avatar1 icon={<UserOutlined />} style={{
-                // backgroundColor: '#fde3cf',
-                // color: '#f56a00',
-                marginRight: '1rem'
-              }} />
-          }
-          {`${row.row.original.firstName} ${row.row.original.lastName}`}
-        </div>
-      ),
+      // Cell: (row) => (
+      //   <div>
+      //     {
+      //       row.row.original.profilePic !== null ?
+      //         //   <Avatar1
+      //         //   style={{
+      //         //     backgroundColor: '#fde3cf',
+      //         //     color: '#f56a00',
+      //         //     marginRight: '1rem'
+      //         //   }}
+      //         // >
+      //         //   U
+      //         // </Avatar1>
+      //         <Avatar1 src={row.row.original.profilePic} style={{
+      //         // <Avatar1 icon={<UserOutlined />} style={{
+      //           // backgroundColor: '#87d068',
+      //           // color: '#f56a00',
+      //           marginRight: '1rem'
+      //         }} />
+      //         :
+      //         <Avatar1 icon={<UserOutlined />} style={{
+      //           // backgroundColor: '#fde3cf',
+      //           // color: '#f56a00',
+      //           marginRight: '1rem'
+      //         }} />
+      //     }
+      //     {`${row.row.original.firstName} ${row.row.original.lastName}`}
+      //   </div>
+      // ),
+      Cell: (row) => {
+        const { profilePic, firstName, lastName } = row.row.original;
+        console.log(profilePic)
+        return (
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            {
+              profilePic ? (
+                // Profile picture exists
+                <Avatar1 
+                  src={profilePic}
+                  // src="https://lh3.googleusercontent.com/a/ACg8ocKK_0ANNSe_f6geg0d4Hk_gKRq000v2p2zhcXB3xsEwQ8TWbWGF=s96-c" 
+                  // src="https://lh3.googleusercontent.com/a/ACg8ocKyQHFUvItpu9Nl3oXa0jEEmpY5JU0cDp2vxLPSdCsCLjO-8w=s96-c" 
+                  alt="Profile Picture" 
+                  style={{ marginRight: '1rem' }}
+                  // style={{ marginRight: '1rem', width: 40, height: 40, objectFit: 'cover' }}
+                />
+              ) : (
+                // Default avatar if no profile picture
+                <Avatar1 
+                  icon={<UserOutlined />} 
+                  style={{ marginRight: '1rem', 
+                    // width: 40, 
+                    // height: 40 
+                  }}
+                />
+              )
+            }
+            <span>{`${firstName} ${lastName}`}</span>
+          </div>
+        );
+      },
     },
     {
       header: "Gender", accessorKey: "gender", align: "center",
