@@ -583,7 +583,8 @@ const ViewCharger = () => {
                     <CardMedia
                       component="img"
                       height="600"
-                      image={charger}
+                      image={process.env.REACT_APP_PUBLICURL + "charger.png"}
+                      // image={charger}
                       alt="Charger Image"
                       style={{ width: '100%', margin: 0, borderRadius: 0, objectFit: "fill" }}
                     />

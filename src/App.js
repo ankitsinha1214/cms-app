@@ -43,8 +43,8 @@ import { analytics } from "./firebase"; // Import the analytics instance
 // import brandDark from "assets/images/logo1212.png";
 // import brandWhite from "assets/images/adani1.png";
 // import brandDark from "assets/images/adani1.png";
-import brandWhite from "assets/images/adani.jpg";
-import brandDark from "assets/images/adani.jpg";
+import brandWhite from "assets/images/adani2.png";
+import brandDark from "assets/images/adani2.png";
 
 export default function App() {
   const userRole = localStorage.getItem("role");
