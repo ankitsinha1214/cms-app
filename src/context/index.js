@@ -60,8 +60,10 @@ function MaterialUIControllerProvider({ children }) {
   const initialState = {
     miniSidenav: false,
     transparentSidenav: false,
-    whiteSidenav: false,
-    sidenavColor: "success",
+    whiteSidenav: true,
+    // whiteSidenav: false,
+    // sidenavColor: "success",
+    sidenavColor: "info",
     transparentNavbar: true,
     fixedNavbar: true,
     openConfigurator: false,
