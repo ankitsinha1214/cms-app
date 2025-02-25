@@ -13,18 +13,19 @@ const StackedBarCard = ({ title, data }) => {
   }));
   return (
     <Card>
-      <MDBox py={2} px={2} display="flex" justifyContent="space-between" alignItems="center">
+      <MDBox py={1} px={2} display="flex" justifyContent="space-between" alignItems="center">
+      {/* <MDBox py={2} px={2} display="flex" justifyContent="space-between" alignItems="center"> */}
         <MDTypography variant="h5" fontWeight="medium">
           {title}
         </MDTypography>
       </MDBox>
       <MDBox px={2}>
-        <MDTypography variant="h4" fontWeight="medium" style={{ display: 'inline',paddingRight: '0.5rem' }}>
+        <MDTypography variant="h2" fontWeight="medium" style={{ display: 'inline',paddingRight: '0.5rem' }}>
           {total}
           {/* Total */}
         </MDTypography>
         <MDTypography variant="button" fontWeight="light" color="text">
-          Total
+          Total Vehicles
         </MDTypography>
       </MDBox>
 
@@ -46,7 +47,8 @@ const StackedBarCard = ({ title, data }) => {
             >
               <div
                 style={{
-                  backgroundColor: item.color,
+                  background: item.color,
+                  // backgroundColor: item.color,
                   width: `${item.percentage}%`, // Adjust width percentage here if necessary
                   height: '9px',
                   borderRadius: borderRadius, // Only apply border-radius to the first and last segment
@@ -68,7 +70,8 @@ const StackedBarCard = ({ title, data }) => {
                     display: "inline-block",
                     width: 12,
                     height: 12,
-                    backgroundColor: item.color,
+                    background: item.color,
+                    // backgroundColor: item.color,
                     borderRadius: "2px",
                     // borderRadius: "50%",
                   }}

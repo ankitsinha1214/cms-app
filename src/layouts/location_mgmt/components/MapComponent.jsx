@@ -7,6 +7,14 @@ import LocationInuse from '../../../assets/images/location_in_use.png';
 import LocationInactive from '../../../assets/images/location_inactive.png';
 import BlueDotIcon from '../../../assets/images/location.png';
 import { MarkerClusterer } from '@googlemaps/markerclusterer';
+import { Alert, Flex, Spin } from 'antd';
+import "../Somecss.css";
+const contentStyle = {
+  padding: 50,
+  background: 'rgba(0, 0, 0, 0.05)',
+  borderRadius: 4,
+};
+const content = <div style={contentStyle} />;
 
 const useCurrentLocation = () => {
   const [location, setLocation] = useState({ lat: null, lng: null });
@@ -34,7 +42,7 @@ const useCurrentLocation = () => {
   return { location, error };
 };
 
-const MapComponent = ({ locations }) => {
+const MapComponent = ({ locations, givenHeight, zoomLevel }) => {
   const [locations1, setLocations1] = useState([]);
   const [mapInstance, setMapInstance] = useState(null);
   const navigate = useNavigate();
@@ -56,7 +64,7 @@ const MapComponent = ({ locations }) => {
   }, [currentLocation]);
 
   const mapContainerStyle = {
-    height: '50vh',
+    height: givenHeight || '50vh',
     width: '100%'
   };
 
@@ -108,8 +116,9 @@ const MapComponent = ({ locations }) => {
     const clusterStyles = [
       {
         textColor: 'white', // Cluster text color
-        url: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m1.png',
+        // url: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m1.png',
         height: 50,
+        url: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m1.png',
         width: 50,
         anchorText: [-10, 0],
         backgroundColor: 'green',
@@ -118,7 +127,7 @@ const MapComponent = ({ locations }) => {
     new MarkerClusterer({
       map,
       markers,
-      // styles: clusterStyles
+      styles: clusterStyles
     });
   };
 
@@ -131,21 +140,145 @@ const MapComponent = ({ locations }) => {
   }
 
   if (!currentLocation.lat || !currentLocation.lng) {
-    return <div>Map Loading...</div>;
+    return <Flex gap="middle" justify="center">
+    <Spin tip="Loading" size="large">
+      {content}
+    </Spin>
+  </Flex>
+    // return <div>Map Loading...</div>;
   }
 
   const pop = (row_data) => {
     // console.log(row_data)
     navigate("/location/view", { state: row_data?._id });
   };
+  const mapOptions = {
+    styles: [
+      {
+        elementType: "geometry",
+        stylers: [{ color: "#212121" }],
+      },
+      {
+        elementType: "labels.icon",
+        stylers: [{ visibility: "off" }],
+      },
+      {
+        elementType: "labels.text.fill",
+        stylers: [{ color: "#757575" }],
+      },
+      {
+        elementType: "labels.text.stroke",
+        stylers: [{ color: "#212121" }],
+      },
+      {
+        featureType: "administrative",
+        elementType: "geometry",
+        stylers: [{ color: "#757575" }],
+      },
+      {
+        featureType: "administrative.country",
+        elementType: "labels.text.fill",
+        stylers: [{ color: "#9e9e9e" }],
+      },
+      {
+        featureType: "administrative.land_parcel",
+        stylers: [{ visibility: "off" }],
+      },
+      {
+        featureType: "administrative.locality",
+        elementType: "labels.text.fill",
+        stylers: [{ color: "#bdbdbd" }],
+      },
+      {
+        featureType: "poi",
+        elementType: "geometry",
+        stylers: [{ color: "#292929" }],
+      },
+      {
+        featureType: "poi",
+        elementType: "labels.text.fill",
+        stylers: [{ color: "#9e9e9e" }],
+      },
+      {
+        featureType: "poi.park",
+        elementType: "geometry",
+        stylers: [{ color: "#181818" }],
+      },
+      {
+        featureType: "poi.park",
+        elementType: "labels.text.fill",
+        stylers: [{ color: "#616161" }],
+      },
+      {
+        featureType: "road",
+        elementType: "geometry.fill",
+        stylers: [{ color: "#2c2c2c" }],
+      },
+      {
+        featureType: "road",
+        elementType: "labels.text.fill",
+        stylers: [{ color: "#8a8a8a" }],
+      },
+      {
+        featureType: "road.arterial",
+        elementType: "geometry",
+        stylers: [{ color: "#373737" }],
+      },
+      {
+        featureType: "road.highway",
+        elementType: "geometry",
+        stylers: [{ color: "#3c3c3c" }],
+      },
+      {
+        featureType: "road.highway.controlled_access",
+        elementType: "geometry",
+        stylers: [{ color: "#4e4e4e" }],
+      },
+      {
+        featureType: "road.local",
+        elementType: "labels.text.fill",
+        stylers: [{ color: "#616161" }],
+      },
+      {
+        featureType: "transit",
+        elementType: "geometry",
+        stylers: [{ color: "#303030" }],
+      },
+      {
+        featureType: "transit.station",
+        elementType: "labels.text.fill",
+        stylers: [{ color: "#9e9e9e" }],
+      },
+      {
+        featureType: "water",
+        elementType: "geometry",
+        stylers: [{ color: "#000000" }],
+      },
+      {
+        featureType: "water",
+        elementType: "labels.text.fill",
+        stylers: [{ color: "#3d3d3d" }],
+      },
+    ],
+    mapTypeId: 'roadmap',
+    // mapTypeId: 'default',
+    // mapTypeId: 'satellite',
+    // disableDefaultUI: true, // Hides default controls
+    disableDefaultUI: true, // Hides all default UI controls
+    zoomControl: true,
+    zoomControlOptions: {
+      position: window.google.maps.ControlPosition.RIGHT_CENTER, // Adjust position if needed
+    },
+  };
 
   return (
     <GoogleMap
       mapContainerStyle={mapContainerStyle}
       center={center}
-      zoom={14}
+      zoom={zoomLevel || 14}
       // onLoad={handleMapLoad}
       onLoad={(map) => setMapInstance(map)}
+      options={mapOptions}
     >
       {/* {isMapLoaded && locations1?.map((loc, index) => (
         <Marker 

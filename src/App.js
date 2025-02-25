@@ -34,8 +34,8 @@ import { useMaterialUIController, setMiniSidenav, setSidenavColor, setOpenConfig
 
 // Images
 // Chrgup
-// import brandWhite from "assets/images/12.png";
-// import brandDark from "assets/images/112.png";
+import brandWhite from "assets/images/12.png";
+import brandDark from "assets/images/112.png";
 import { analytics } from "./firebase"; // Import the analytics instance
 
 // other vender
@@ -43,8 +43,8 @@ import { analytics } from "./firebase"; // Import the analytics instance
 // import brandDark from "assets/images/logo1212.png";
 // import brandWhite from "assets/images/adani1.png";
 // import brandDark from "assets/images/adani1.png";
-import brandWhite from "assets/images/adani2.png";
-import brandDark from "assets/images/adani2.png";
+// import brandWhite from "assets/images/adani2.png";
+// import brandDark from "assets/images/adani2.png";
 
 export default function App() {
   const userRole = localStorage.getItem("role");

@@ -387,6 +387,10 @@ function ViewTransaction() {
             }));
         }
     }, [content]);
+    const dataKeys = ["energy", "power", "voltage", "current", "temperature", "frequency"];
+    // Find the max value across all rows and keys
+    const maxValue = Math.max(...metadata.flatMap((row) => dataKeys.map((key) => row[key])));
+    // console.log(maxValue)
     return (
         <DashboardLayout>
             <DashboardNavbar absolute isMini />
@@ -604,7 +608,10 @@ function ViewTransaction() {
                             <LineChart data={metadata}>
                                 <CartesianGrid strokeDasharray="3 3" />
                                 <XAxis dataKey="timestamp" />
-                                <YAxis />
+                                {/* <YAxis /> */}
+                                {/* <YAxis domain={[0, 'dataMax + 200']} /> */}
+                                {/* <YAxis domain={[0, 'auto']} allowDataOverflow /> */}
+                                <YAxis domain={[0, maxValue + 50]} /> {/* Ensures Y-axis scales properly */}
                                 <Tooltip />
                                 <Legend />
                                 <Line type="monotone" dataKey="energy" stroke="#8884d8" name="Energy (Wh)" />

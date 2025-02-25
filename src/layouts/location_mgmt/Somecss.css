@@ -33,6 +33,15 @@
     margin: 0 5px;
     list-style: none;
   }
+
+  .gm-style button[title="Zoom in"],
+.gm-style button[title="Zoom out"] {
+  z-index: 9999 !important;
+}
+/* .gm-style .gmnoprint {
+    margin-right: 15%; Adjust right margin */
+    /* margin-top: 10%;  Adjust top margin
+  } */
   
 
   

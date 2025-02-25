@@ -29,7 +29,7 @@ function GradientLineChart({ icon, title, description, height, chart }) {
   const chartRef = useRef(null);
   const [chartData, setChartData] = useState({});
   const { data, options } = chartData;
-
+  // Modified
   useEffect(() => {
     const chartDatasets = chart.datasets
       ? chart.datasets.map((dataset) => ({
@@ -48,9 +48,34 @@ function GradientLineChart({ icon, title, description, height, chart }) {
           ),
         }))
       : [];
-
-    setChartData(configs(chart.labels || [], chartDatasets));
+  
+    setChartData({
+      ...configs(chart.labels || [], chartDatasets), // Base configurations
+      options: chart.options || configs(chart.labels || [], chartDatasets).options, // Override options if provided
+    });
   }, [chart]);
+  // actual
+  // useEffect(() => {
+  //   const chartDatasets = chart.datasets
+  //     ? chart.datasets.map((dataset) => ({
+  //         ...dataset,
+  //         tension: 0,
+  //         pointRadius: 0,
+  //         borderWidth: 4,
+  //         borderColor: colors[dataset.color]
+  //           ? colors[dataset.color || "dark"].main
+  //           : colors.dark.main,
+  //         fill: true,
+  //         maxBarThickness: 6,
+  //         backgroundColor: gradientChartLine(
+  //           chartRef.current.children[0],
+  //           colors[dataset.color] ? colors[dataset.color || "dark"].main : colors.dark.main
+  //         ),
+  //       }))
+  //     : [];
+
+  //   setChartData(configs(chart.labels || [], chartDatasets));
+  // }, [chart]);
 
   const renderChart = (
     <MDBox py={2} pr={2} pl={icon.component ? 1 : 2}>

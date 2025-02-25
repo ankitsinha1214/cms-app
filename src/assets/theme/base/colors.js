@@ -71,6 +71,23 @@ const colors = {
     focus: "#2c3c58",
   },
 
+  skyblue: {
+    main: "#A6DBFF",
+    focus: "#A6DBFF",
+  },
+  purple: {
+    main: "#C5C0FF",
+    focus: "#C5C0FF",
+  },
+  lightGreen: {
+    main: "rgba(174, 255, 120, 0.7)",
+    focus: "rgba(174, 255, 120, 1)",
+  },
+  orange: {
+    main: "#FFC484",
+    focus: "#FFC484",
+  },
+
   grey: {
     100: "#f8f9fa",
     200: "#f0f2f5",
@@ -102,6 +119,25 @@ const colors = {
     success: {
       main: "#66BB6A",
       state: "#43A047",
+    },
+    
+    skyblue: {
+      main: "#A6DBFF",
+      state: "#A6DBFF",
+    },
+    purple: {
+      main: "#9F98FE",
+      state: "#9F98FE",
+      // main: "#C5C0FF",
+      // state: "#C5C0FF",
+    },
+    lightGreen: {
+      main: "#BEFE94",
+      state: "#BEFE94",
+    },
+    orange: {
+      main: "#FFC484",
+      state: "#FFC484",
     },
 
     warning: {

@@ -31,6 +31,10 @@ export default styled(Box)(({ theme, ownerState }) => {
     "error",
     "dark",
     "light",
+    "orange",
+    "purple",
+    "skyblue",
+    "lightGreen",
   ];
 
   const validColors = [
@@ -55,6 +59,10 @@ export default styled(Box)(({ theme, ownerState }) => {
     "grey-700",
     "grey-800",
     "grey-900",
+    "orange",
+    "purple",
+    "skyblue",
+    "lightGreen",
   ];
 
   const validBorderRadius = ["xs", "sm", "md", "lg", "xl", "xxl", "section"];

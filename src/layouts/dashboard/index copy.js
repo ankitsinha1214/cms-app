@@ -13,7 +13,6 @@ import {
   Select,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import usersIcon from "../../assets/images/4.svg"
 import { DatePicker } from "antd";
 import dayjs from "dayjs";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
@@ -47,42 +46,10 @@ import PieChart from "examples/Charts/PieChart";
 import EnergyConsumptionCard from "examples/Cards/InfoCards/EnergyConsumptionCard";
 
 import DownloadsIcon from "../../assets/images/download.svg"
-import dashboard3 from "../../assets/images/dashboard3.svg"
-import dashboard2 from "../../assets/images/session.svg"
-import dashboard1 from "../../assets/images/dashboard1.svg"
 import GradientLineChart from "examples/Charts/LineCharts/GradientLineChart";
 import DashboardMap from "examples/Cards/InfoCards/DashboardMap";
-import DashboardCard from "examples/Cards/InfoCards/DashboardCard";
-import DashboardTopCard from "examples/Cards/InfoCards/DashboardTopCard";
-// import Loader from "components/custom/Loader";
-import animationData from "../../assets/animations/animation1.json";
-import zIndex from "@mui/material/styles/zIndex";
 
 function Dashboard() {
-  const [anchorEl1, setAnchorEl1] = useState(null);
-  const [selectedDate1, setSelectedDate1] = useState(dayjs());
-  const [timeRange1, setTimeRange1] = useState("Daily");
-  const handleMenuOpen1 = (event) => setAnchorEl1(event.currentTarget);
-  const handleMenuClose1 = () => setAnchorEl1(null);
-  const handleDownload1 = () => {
-    alert("Download1 function triggered!");
-    handleMenuClose1();
-  };
-  // const [animationData, setAnimationData] = useState(null);
-
-  // useEffect(() => {
-  //   const fetchAnimation = async () => {
-  //     try {
-  //       const response = await axios.get(`${process.env.REACT_APP_AWS_BASEURL}cms-icons/animation1.json`);
-  //     console.log("Fetched animation JSON:", response.data); // ✅ Debugging line
-  //       setAnimationData(response.data);
-  //     } catch (error) {
-  //       console.error("Error loading animation:", error);
-  //     }
-  //   };
-
-  //   fetchAnimation();
-  // }, []);
   const [controller] = useMaterialUIController();
   const { darkMode } = controller;
   const [anchorEl, setAnchorEl] = useState(null);
@@ -104,7 +71,6 @@ function Dashboard() {
   const { sales, tasks } = reportsLineChartData;
   const [locations, setLocations] = useState([]);
   const [dashboardData, setDashboardData] = useState({});
-  const [mapLoaded, setMapLoaded] = useState(false);
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const data1 = [
@@ -243,10 +209,10 @@ function Dashboard() {
     // { label: "Sales", flex: 1, index: 3 },
   ];
   const data = [
-    { name: "2 Wheeler", count: dashboardData.twoWheelerUsers ?? 0, color: "linear-gradient(to right, rgba(145,202,255,0.36), #91caff)" },
+    { name: "2 Wheeler", count: dashboardData.twoWheelerUsers, color: "linear-gradient(to right, rgba(145,202,255,0.36), #91caff)" },
     // { name: "2 Wheeler", count: dashboardData.twoWheelerUsers, color: "linear-gradient(to right, rgba(0,188,212,0.36), rgba(10,221,248,1))" },
-    { name: "3 Wheeler", count: dashboardData.threeWheelerUsers ?? 0, color: "linear-gradient(to right, rgba(251,211,146,1), rgba(255,191,86,1))" },
-    { name: "4 Wheeler", count: dashboardData.fourWheelerUsers ?? 0, color: "linear-gradient(to right, rgba(227,255,208,1), rgba(174,255,120,1))" },
+    { name: "3 Wheeler", count: dashboardData.threeWheelerUsers, color: "linear-gradient(to right, rgba(251,211,146,1), rgba(255,191,86,1))" },
+    { name: "4 Wheeler", count: dashboardData.fourWheelerUsers, color: "linear-gradient(to right, rgba(227,255,208,1), rgba(174,255,120,1))" },
   ];
   // const data = [
   //   { name: "2 Wheeler", count: dashboardData.twoWheelerUsers, color: "#FFDC82" },
@@ -340,25 +306,11 @@ function Dashboard() {
         console.error(error);
       });
   };
-
-  useEffect(() => {
-    if (localStorage.getItem("maploaded") === "true") {
-      setMapLoaded(true);
-    }
-    else {
-      setMapLoaded(false);
-    }
-  }, [localStorage.getItem("maploaded")]);
-
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <MDBox
-      // pb={1}
-      // pb={3}
-      // py={3}
-      >
-        {/* <Grid container spacing={3}>
+      <MDBox py={3}>
+        <Grid container spacing={3}>
           <Grid item xs={12} md={6} lg={3}>
             <MDBox mb={1.5}>
               <ComplexStatisticsCard
@@ -433,341 +385,16 @@ function Dashboard() {
               />
             </MDBox>
           </Grid>
-        </Grid> */}
-        {/* { */}
-        {/* // (mapLoaded) ?
-    // (localStorage.getItem("maploaded") === "true") ? */}
+        </Grid>
+
         <Grid container spacing={3}>
           <Grid item xs={12} md={12}
             // lg={8}
             // mt={4}
             mb={4}
-          // zIndex={1}
           // mb={8}
           >
-            {/* Map Section */}
-            <div className="relative" style={{ height: (mapLoaded) && "80vh", marginBottom: "40px" }}>
-              {/* Header Controls */}
-              {(mapLoaded) &&
-                <Grid container spacing={2}
-                  // mx={8} 
-                  // px={8} 
-                  px={4}
-                  // p={2} 
-                  style={{
-                    position: "relative",
-                    top: "8%",
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    // transform: "translateX(-50%)",
-                    zIndex: 10,
-                    // background: "rgba(255, 255, 255, 0.9)",
-                    // padding: "10px",
-                    // borderRadius: "8px",
-                    // boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)"
-                    // bottom:"53%"
-                  }}>
-                  {/* Charger Stats */}
-                  <div className="flex flex-wrap space-x-4" style={{ display: "flex", flexDirection: "row" }}>
-                    <DashboardTopCard
-                      imgicon={`${process.env.REACT_APP_AWS_BASEURL}cms-icons/total_dash.svg`} label="Total Charger" bgcolor="#66BB6A"
-                      count={(dashboardData?.totalChargers) || 0} />
-                    <DashboardTopCard
-                      imgicon={`${process.env.REACT_APP_AWS_BASEURL}cms-icons/Inactive+Charger.png`} label="Active Charger" bgcolor="#C4EA65" count={(dashboardData?.availableChargers + dashboardData?.inUseChargers) || 0} />
-                    <DashboardTopCard imgicon={`${process.env.REACT_APP_AWS_BASEURL}cms-icons/Active+charger.png`} label="Inactive Charger" bgcolor="#FF7878" count={(dashboardData?.inactiveChargers) || 0} />
-                    {/* <span className="px-3 py-1 bg-green-100 text-green-700 rounded">Total Charger (300)</span>
-                  <span className="px-3 py-1 bg-green-200 text-green-900 rounded">Active Charger (300)</span>
-                  <span className="px-3 py-1 bg-red-200 text-red-900 rounded">Inactive Charger (300)</span> */}
-                  </div>
-
-                  {/* Date & Time Range Picker */}
-                  {/* <div className="flex flex-wrap space-x-4 items-center"> */}
-                  {/* <div className="flex space-x-4 items-center"> */}
-                  <MDBox sx={{ display: "flex", alignItems: "center" }}>
-                    <MDBox sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-
-                      {/* <MDTypography
-            variant="h5"
-            fontWeight="medium"
-            sx={{
-              fontSize: { xs: "1.05rem", sm: "1.15rem", md: "1.25rem" },
-              textAlign: { xs: "left", sm: "left" },
-            }}
-          >
-            Energy Dispersed
-          </MDTypography> */}
-
-                      {/* <div className="flex items-center"> */}
-                      <DatePicker defaultValue={dayjs(selectedDate1, dateFormat)} />
-                      <Select
-                        value={timeRange1}
-                        onChange={(e) => setTimeRange1(e.target.value)}
-                        size="small"
-                        sx={{
-                          mx: 1, height: "2rem",
-                          backgroundColor: "#F6F6F6",
-                        }}
-                      >
-                        <MenuItem value="Daily">Daily</MenuItem>
-                        <MenuItem value="Weekly">Weekly</MenuItem>
-                        <MenuItem value="Monthly">Monthly</MenuItem>
-                      </Select>
-                      <IconButton
-                        onClick={handleDownload1}
-                        sx={{
-                          // width: "1.5rem",
-                          // height: "1.5rem",
-                          // display: "flex",
-                          // alignItems: "center",
-                          // justifyContent: "center",
-                          // backgroundColor: "#F6F6F6",
-                          // padding: "5px",
-                          width: "2rem", // Adjust width for better visibility
-                          height: "2rem", // Keep height as needed
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          backgroundColor: "#F6F6F6",
-                          padding: "5px",
-                          borderRadius: "4px",
-                          transition: "background-color 0.3s ease", // Smooth transition effect
-                          "&:hover": {
-                            backgroundColor: "#A6DBFF", // Light gray on hover
-                          },
-                        }}
-                      >
-                        <img
-                          src={DownloadsIcon}
-                          alt="Download"
-                          style={{
-                            width: "1rem", // Adjust the icon size to match other elements
-                            height: "1rem",
-                            objectFit: "contain",
-                          }}
-                        />
-                      </IconButton>
-                      {/* <IconButton onClick={handleDownload1} sx={{
-                      padding: "0px", color: darkMode ? "white" : "black",
-                      backgroundColor: "#F6F6F6",
-                    }}>
-                      <img src={DownloadsIcon} alt="Download" />
-                    </IconButton> */}
-                    </MDBox>
-                  </MDBox>
-                  {/* </div> */}
-                </Grid>
-              }
-              {/* <MDBox sx={{
-                width: "17%",
-                position: "absolute",
-                top: "10%",
-                zIndex: "14"
-              }}>
-                <DashboardTopCard lottieicon={animationData} label="Live session" bgcolor="#F6F6F6" count={(dashboardData?.inactiveChargers) || 0} />
-              </MDBox> */}
-              {/* <DashboardTopCard lottieicon={`${process.env.REACT_APP_AWS_BASEURL}cms-icons/animation1.json`} label="Live session" bgcolor="#F6F6F6" count={(dashboardData?.inactiveChargers) || 0} /> */}
-              <MapComponent locations={locations} givenHeight="80vh" zoomLevel={4} />
-
-              {(mapLoaded) &&
-                <Grid container spacing={2}
-                  // mx={8} 
-                  // px={8} 
-                  px={2}
-                  // p={2} 
-                  style={{
-                    position: "relative",
-                    bottom: "41%"
-                    // bottom:"53%"
-                  }}>
-
-                  <Grid item xs={12}>
-                    <MDBox sx={{
-                      width: "18%",
-                      position: "relative",
-                      top: "0%",
-                      zIndex: "14",
-                      marginBottom: "1rem"
-                    }}>
-                      {/* <DashboardTopCard lottieicon={`${process.env.REACT_APP_AWS_BASEURL}cms-icons/animation1.json`} label="Live session" bgcolor="#F6F6F6" count={(dashboardData?.inactiveChargers) || 0} /> */}
-                      <DashboardTopCard lottieicon={animationData} label="Live session" bgcolor="#F6F6F6" count={(dashboardData?.activeSessions) || 0} />
-                    </MDBox>
-                  </Grid>
-                  {/* <Grid item xs={12} md={6} lg={3}>
-            <MDBox mb={1.5}>
-              <ComplexStatisticsCard
-                imgicon={`${process.env.REACT_APP_AWS_BASEURL}cms-icons/Total+charger.png`}
-                color="dark"
-                // icon="weekend"
-                title="Total Chargers"
-                count={dashboardData?.totalChargers || 0}
-              // percentage={{
-              //   color: "success",
-              //   amount: "+55%",
-              //   label: "than lask week",
-              // }}
-              />
-            </MDBox>
-          </Grid> */}
-                  {/* <Grid item xs={12} md={6} lg={3}>
-            <MDBox mb={1.5}>
-              <ComplexStatisticsCard
-                // icon="leaderboard"
-                imgicon={`${process.env.REACT_APP_AWS_BASEURL}cms-icons/Inactive+Charger.png`}
-                title="Active Chargers"
-                color="success"
-                count={(dashboardData?.availableChargers + dashboardData?.inUseChargers) || 0}
-                // count="287"
-                percentage={{
-                  color: "success",
-                  amount: "+3%",
-                  label: "than last month",
-                }}
-              />
-            </MDBox>
-          </Grid> */}
-                  {/* <Grid item xs={12} md={6} lg={3}>
-            <MDBox mb={1.5}>
-              <ComplexStatisticsCard
-                color="error"
-                // icon="store"
-                imgicon={`${process.env.REACT_APP_AWS_BASEURL}cms-icons/Active+charger.png`}
-                title="Inactive Chargers"
-                count={(dashboardData?.inactiveChargers) || 0}
-                // count="13"
-                percentage={{
-                  color: "success",
-                  amount: "+1%",
-                  label: "than yesterday",
-                }}
-              />
-            </MDBox>
-          </Grid> */}
-                  {/* <Grid item xs={12} md={6} lg={3}>
-            <MDBox mb={1.5}>
-              <ComplexStatisticsCard
-                color="error"
-                // icon="store"
-                imgicon={`${process.env.REACT_APP_AWS_BASEURL}cms-icons/Active+charger.png`}
-                title="Inactive Chargers"
-                count={(dashboardData?.inactiveChargers) || 0}
-                // count="13"
-                percentage={{
-                  color: "success",
-                  amount: "+1%",
-                  label: "than yesterday",
-                }}
-              />
-            </MDBox>
-          </Grid> */}
-                  <Grid item xs={12} md={6} lg={3}>
-                    <MDBox mb={1.5}>
-                      <DashboardCard
-                        color="info"
-                        colorcode="#49a3f1"
-                        // color="skyblue"
-                        // colorcode="#A6DBFF"
-                        // icon="store"
-                        imgicon={dashboard1}
-                        title="User"
-                        count={(dashboardData?.inactiveChargers) || 0}
-                        // count="13"
-                        percentage={{
-                          color: "success",
-                          amount: "+1%",
-                          label: "than yesterday",
-                        }}
-                      />
-                    </MDBox>
-                  </Grid>
-                  <Grid item xs={12} md={6} lg={3}>
-                    <MDBox mb={1.5}>
-                      <DashboardCard
-                        // color="error"
-                        // colorcode="#EF5350"
-                        color="purple"
-                        colorcode="#C5C0FF"
-                        // icon="store"
-                        imgicon={dashboard2}
-                        title="Session"
-                        count={(dashboardData?.inactiveChargers) || 0}
-                        // count="13"
-                        percentage={{
-                          color: "success",
-                          amount: "+1%",
-                          label: "than yesterday",
-                        }}
-                      />
-                    </MDBox>
-                  </Grid>
-                  <Grid item xs={12} md={6} lg={3}>
-                    <MDBox mb={1.5}>
-                      <DashboardCard
-                        color="success"
-                        // color="lightGreen"
-                        colorcode="#66BB6A"
-                        // colorcode="#BEFE94"
-                        // icon="store"
-                        imgicon={dashboard3}
-                        title="Energy"
-                        count={(dashboardData?.inactiveChargers) || 0}
-                        // count="13"
-                        percentage={{
-                          color: "success",
-                          amount: "+1%",
-                          label: "than yesterday",
-                        }}
-                      />
-                    </MDBox>
-                  </Grid>
-                  <Grid item xs={12} md={6} lg={3}>
-                    <MDBox mb={1.5}>
-                      <DashboardCard
-                        color="warning"
-                        colorcode="#FFA726"
-                        // color="orange"
-                        // colorcode="#FFC484"
-                        // icon="store"
-                        imgicon={usersIcon}
-                        title="Revenue"
-                        count={(dashboardData?.inactiveChargers) || 0}
-                        // count="13"
-                        percentage={{
-                          color: "success",
-                          amount: "+1%",
-                          label: "than yesterday",
-                        }}
-                      />
-                    </MDBox>
-                  </Grid>
-                  {/* <Grid item xs={12} md={6} lg={3}>
-            <MDBox mb={1.5}>
-              <ComplexStatisticsCard1
-                color="dark"
-                // icon="weekend"
-                title="Active Chargers"
-                title1="Inuse"
-                title2="Available"
-                // count={300}
-                // count1={240}
-                count1={(dashboardData?.inUseChargers) || 0}
-                count2={(dashboardData?.availableChargers) || 0}
-                // colorcount1="#C19B16"
-                colorcount1="#95C1DF"
-                // count2={47}
-                colorcount2="#198038"
-              // percentage={{
-              //   color: "success",
-              //   amount: "+55%",
-              //   label: "than lask week",
-              // }}
-              />
-            </MDBox>
-          </Grid> */}
-                </Grid>
-              }
-            </div>
-            {/* <DashboardMap locations={locations} /> */}
+            <DashboardMap locations={locations} />
             {/* <MapComponent locations={locations} /> */}
 
 
@@ -897,9 +524,6 @@ function Dashboard() {
 
 
         </Grid>
-        {/* // :
-        // <Loader /> */}
-        {/* } */}
 
         <Grid container spacing={3}>
           <Grid item xs={12} md={12} lg={8} mb={4} >
@@ -1060,8 +684,7 @@ function Dashboard() {
             <MDBox mb={1.5}>
               <LocationVisitsCard
                 title="Vehicles Data"
-                items={dashboardData?.topVehicles || []}
-                // items={sampleData1}
+                items={sampleData1}
                 headers={headers1}
                 type="location"
               />
@@ -1079,8 +702,7 @@ function Dashboard() {
             <MDBox mb={1.5}>
               <LocationVisitsCard
                 title="Top Locations"
-                items={dashboardData?.topLocations || []}
-                // items={sampleData}
+                items={sampleData}
                 headers={headers}
               />
             </MDBox>

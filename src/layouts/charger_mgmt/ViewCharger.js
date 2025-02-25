@@ -10,7 +10,7 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 // import reportsLineChartData from "./components/reportsLineChartData";
 // import ReportsLineChart from "examples/Charts/LineCharts/ReportsLineChart/New";
 // import first from "";
-import charger from "../../assets/images/charger.png";
+// import charger from "https://chrgup.s3.ap-south-1.amazonaws.com/cms-icons/chrger.png";
 import PropTypes from 'prop-types';
 import { styled } from '@mui/material/styles';
 import Link from '@mui/material/Link';
@@ -238,7 +238,7 @@ const ViewCharger = () => {
   const [rows1, setRows1] = useState([]);
   const [co2Saved, setCo2Saved] = useState('0 kg');
   const [kmsPowered, setKmsPowered] = useState('0 km');
-  const [uptimeRate, setUptimeRate] = useState('99 %');
+  const [uptimeRate, setUptimeRate] = useState('0 %');
   const [isLoading1, setIsLoading1] = useState(true);
   const [controller] = useMaterialUIController();
   const { darkMode } = controller;
@@ -583,8 +583,9 @@ const ViewCharger = () => {
                     <CardMedia
                       component="img"
                       height="600"
-                      image={process.env.REACT_APP_PUBLICURL + "charger.png"}
-                      // image={charger}
+                      // image={process.env.REACT_APP_PUBLICURL + "charger.png"}
+                      image={`${process.env.REACT_APP_AWS_BASEURL}cms-icons/chrger.png`}
+                      // image={"https://chrgup.s3.ap-south-1.amazonaws.com/cms-icons/chrger.png"}
                       alt="Charger Image"
                       style={{ width: '100%', margin: 0, borderRadius: 0, objectFit: "fill" }}
                     />
