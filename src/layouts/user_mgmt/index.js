@@ -516,7 +516,7 @@ function User_mgmt() {
                 // icon="leaderboard"
                 title="Active"
                 imgicon={`${process.env.REACT_APP_AWS_BASEURL}cms-icons/Active+user.png`}
-                count={totalActive}
+                count={totalActive || 0}
                 // count={countActive}
                 percentage={{
                   color: "success",
@@ -531,7 +531,7 @@ function User_mgmt() {
               <ComplexStatisticsCard
                 labelicon={ElectricMopedIcon}
                 title="2 Wheeler"
-                count={totalVehicle["2-Wheeler"]}
+                count={totalVehicle["2-Wheeler"] || 0}
                 percentage={{
                   color: "success",
                   amount: "+1%",
@@ -546,7 +546,7 @@ function User_mgmt() {
                 color="warning"
                 labelicon={ElectricRickshawIcon}
                 title="3 Wheeler"
-                count={totalVehicle["3-Wheeler"]}
+                count={totalVehicle["3-Wheeler"] || 0}
                 percentage={{
                   color: "success",
                   amount: "+1%",
@@ -562,7 +562,7 @@ function User_mgmt() {
                 // icon="person_add"
                 labelicon={ElectricCarIcon}
                 title="4 Wheeler"
-                count={totalVehicle["4-Wheeler"]}
+                count={totalVehicle["4-Wheeler"] || 0}
                 percentage={{
                   color: "success",
                   amount: "",

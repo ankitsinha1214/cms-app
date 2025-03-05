@@ -178,7 +178,12 @@ function LocationVisitsCard({ title, headers, items, type }) {
    // Responsive handling
    const isMobile = useMediaQuery("(max-width:600px)");
   return (
-    <Card>
+    <Card 
+    sx={{
+      height: "100%",
+      overflow: "scroll"
+    }}
+    >
       {/* Card Title */}
       <MDBox py={2} px={2} display="flex" justifyContent="space-between" alignItems="center">
         <MDTypography variant="h5" fontWeight="medium">
@@ -216,6 +221,7 @@ function LocationVisitsCard({ title, headers, items, type }) {
           <MDBox
             key={index}
             display="flex"
+            alignItems="center"
             px={2}
             py={1}
           >

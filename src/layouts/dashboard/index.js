@@ -12,9 +12,12 @@ import {
   MenuItem,
   Select,
 } from "@mui/material";
+import ExcelJS from "exceljs";
+import { saveAs } from "file-saver";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import usersIcon from "../../assets/images/4.svg"
 import { DatePicker } from "antd";
+// import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
 import dayjs from "dayjs";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 // import {CalendarMonthIcon} from '@mui/icons-material/CalendarMonth';
@@ -32,6 +35,7 @@ import ComplexStatisticsCard from "examples/Cards/StatisticsCards/ComplexStatist
 import ComplexStatisticsCard1 from "examples/Cards/StatisticsCards/ComplexStatisticsCard1";
 import LocationVisitsCard from "examples/Cards/StatisticsCards/ComplexStatisticsCard2";
 
+import DashboardDrawer from "./DashboardDrawer";
 import MapComponent from "../location_mgmt/components/MapComponent";
 import { useNavigate } from "react-router-dom";
 // Data
@@ -61,13 +65,19 @@ import zIndex from "@mui/material/styles/zIndex";
 function Dashboard() {
   const [anchorEl1, setAnchorEl1] = useState(null);
   const [selectedDate1, setSelectedDate1] = useState(dayjs());
-  const [timeRange1, setTimeRange1] = useState("Daily");
+  const [timeRange1, setTimeRange1] = useState("hourly");
   const handleMenuOpen1 = (event) => setAnchorEl1(event.currentTarget);
   const handleMenuClose1 = () => setAnchorEl1(null);
   const handleDownload1 = () => {
-    alert("Download1 function triggered!");
+    // alert("Download1 function triggered!");
+    handleDownloadExcel();
     handleMenuClose1();
   };
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [drawerTitle, setDrawerTitle] = useState("");
+  const [drawerRowData, setDrawerRowData] = useState([]); // Store table data
+
   // const [animationData, setAnimationData] = useState(null);
 
   // useEffect(() => {
@@ -87,7 +97,7 @@ function Dashboard() {
   const { darkMode } = controller;
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedDate, setSelectedDate] = useState(dayjs());
-  const [timeRange, setTimeRange] = useState("Daily");
+  const [timeRange, setTimeRange] = useState("hourly");
   const dateFormat = 'YYYY-MM-DD';
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -98,12 +108,14 @@ function Dashboard() {
   };
 
   const handleDownload = () => {
-    alert("Download function triggered!");
+    // alert("Download function triggered!");
+    handleDownloadExcelSingle();
     handleMenuClose();
   };
   const { sales, tasks } = reportsLineChartData;
   const [locations, setLocations] = useState([]);
   const [dashboardData, setDashboardData] = useState({});
+  const [graphData, setGraphData] = useState({});
   const [mapLoaded, setMapLoaded] = useState(false);
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
@@ -187,6 +199,112 @@ function Dashboard() {
     ],
   };
 
+  const [selectedTitle, setSelectedTitle] = useState("User");
+  const [selectedLabels, setSelectedLabels] = useState(graphData?.labels || []);
+  const [selectedData, setSelectedData] = useState(graphData?.users || []);
+  const handleDownloadExcel = async () => {
+    if (!graphData || !graphData.labels) {
+      console.error("Graph data is missing!");
+      return;
+    }
+
+    // Create a new workbook and sheets
+    const workbook = new ExcelJS.Workbook();
+
+    // Function to create a sheet with styling
+    const createStyledSheet = (sheetName, data) => {
+      const sheet = workbook.addWorksheet(sheetName);
+
+      // Add headers (labels)
+      const headerRow = sheet.addRow(["Labels", ...graphData.labels]);
+      headerRow.font = { bold: true, size: 14 };
+      headerRow.alignment = { horizontal: "center", vertical: "middle" };
+
+      // Add data row
+      const dataRow = sheet.addRow(["Data", ...data]);
+
+      // Apply styles (borders, alignment)
+      sheet.eachRow((row) => {
+        row.eachCell((cell) => {
+          cell.alignment = { horizontal: "center", vertical: "middle" };
+          cell.border = {
+            top: { style: "thin" },
+            bottom: { style: "thin" },
+            left: { style: "thin" },
+            right: { style: "thin" },
+          };
+        });
+      });
+
+      // Auto-fit column width
+      sheet.columns.forEach((column) => {
+        column.width = 15;
+      });
+    };
+
+    // Create sheets for each dataset
+    createStyledSheet("Users", graphData.users);
+    createStyledSheet("Energy", graphData.energy);
+    createStyledSheet("Sessions", graphData.sessions);
+    createStyledSheet("Revenue", graphData.revenue);
+
+    // Generate and download the Excel file
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    saveAs(blob, "cms_chrgup_data.xlsx");
+  };
+  const handleDownloadExcelSingle = async () => {
+    if (!selectedTitle || !selectedLabels || !selectedData) {
+      console.error("Some data is missing!");
+      return;
+    }
+
+    // Create a new workbook and sheets
+    const workbook = new ExcelJS.Workbook();
+
+    // Function to create a sheet with styling
+    const createStyledSheet = (sheetName, data) => {
+      const sheet = workbook.addWorksheet(sheetName);
+
+      // Add headers (labels)
+      const headerRow = sheet.addRow(["Labels", ...selectedLabels]);
+      headerRow.font = { bold: true, size: 14 };
+      headerRow.alignment = { horizontal: "center", vertical: "middle" };
+
+      // Add data row
+      const dataRow = sheet.addRow(["Data", ...selectedData]);
+
+      // Apply styles (borders, alignment)
+      sheet.eachRow((row) => {
+        row.eachCell((cell) => {
+          cell.alignment = { horizontal: "center", vertical: "middle" };
+          cell.border = {
+            top: { style: "thin" },
+            bottom: { style: "thin" },
+            left: { style: "thin" },
+            right: { style: "thin" },
+          };
+        });
+      });
+
+      // Auto-fit column width
+      sheet.columns.forEach((column) => {
+        column.width = 15;
+      });
+    };
+
+    // Create sheets for each dataset
+    createStyledSheet(selectedTitle, graphData.users);
+    // createStyledSheet("Energy", graphData.energy);
+    // createStyledSheet("Sessions", graphData.sessions);
+    // createStyledSheet("Revenue", graphData.revenue);
+
+    // Generate and download the Excel file
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    saveAs(blob, "cms_chrgup_data.xlsx");
+  };
+
   const pieChartData = {
     labels: ["In Use", "Available"],
     datasets:
@@ -196,6 +314,61 @@ function Dashboard() {
     },
     // ],
   };
+
+  // Function to fetch data from API when a card is clicked
+  // const handleOpenDrawer = async (title, apiEndpoint) => {
+  //   try {
+  //     const response = await axios.get(apiEndpoint); // Call API
+  //     setDrawerRowData(response.data); // Set table data
+  //     setDrawerTitle(title); // Set drawer title
+  //     setDrawerOpen(true);
+  //   } catch (error) {
+  //     console.error("Error fetching data:", error);
+  //   }
+  // };
+  const handleOpenDrawer = (title, apiEndpoint) => {
+    const dummyData = [
+      { id: 1, name: "Charger A", status: "Active", createdAt: "2024-02-28" },
+      { id: 2, name: "Charger B", status: "Inactive", createdAt: "2024-02-25" },
+      { id: 3, name: "Charger C", status: "Active", createdAt: "2024-02-20" },
+    ];
+    axios({
+      method: "get",
+      url: process.env.REACT_APP_BASEURL + "charger-locations/" + apiEndpoint,
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`
+      },
+    })
+      .then((response) => {
+
+        if (response.data.success === true) {
+          // console.log(response.data);
+          const element = response.data.data;
+          // setIsLoading(false);
+          setDrawerRowData(element);
+          setIsLoading(false);
+          setDrawerTitle(title); // Set drawer title
+          setDrawerOpen(true);
+        } else {
+          enqueueSnackbar(response?.data?.message, { variant: 'error' });
+          const element = response.data.data;
+          setDrawerRowData(element);
+          setIsLoading(false);
+          setDrawerTitle(title); // Set drawer title
+          setDrawerOpen(true);
+          // setIsLoading(false);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        setIsLoading(false);
+        setDrawerTitle(title);
+      });
+    // setIsLoading(false);
+    // setDrawerTitle(title); // Set drawer title
+    // setDrawerOpen(true);
+  };
+
   const sampleData = [
     { name: "Orion mall", visits: 15, energy: "124 kWh", revenue: "₹ 1,25,120", color: 'purple' },
     { name: "Orion mall1", visits: 15, energy: "124 kWh", revenue: "₹ 1,25,120", color: 'purple' },
@@ -318,7 +491,11 @@ function Dashboard() {
         console.log(error);
       });
     fetchAllChargers();
+    fetchAllGraphData();
   }, []);
+  useEffect(() => {
+    fetchAllGraphData();
+  }, [timeRange1]);
   const fetchAllChargers = () => {
     // axios.post(process.env.REACT_APP_BASEURL + "charger-locations/dashboard/get-data", {
     //   headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
@@ -340,6 +517,27 @@ function Dashboard() {
         console.error(error);
       });
   };
+  const fetchAllGraphData = () => {
+    axios({
+      method: "get",
+      url: process.env.REACT_APP_BASEURL + "graph/?filter=" + timeRange1,
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`
+      },
+    })
+      .then((response) => {
+        if (response.data.status) {
+          setGraphData(response.data.data);
+          setSelectedTitle('User');
+          setSelectedLabels(response?.data?.data?.labels);
+          setSelectedData(response?.data?.data?.users);
+        } else {
+          enqueueSnackbar(response?.data?.message, { variant: 'error' });
+        }
+      }).catch(error => {
+        console.error(error);
+      });
+  };
 
   useEffect(() => {
     if (localStorage.getItem("maploaded") === "true") {
@@ -350,15 +548,31 @@ function Dashboard() {
     }
   }, [localStorage.getItem("maploaded")]);
 
+
+  const handleCardClick = (title, labels, data) => {
+    // console.log(data)
+    setSelectedTitle(title);
+    setSelectedLabels(labels);
+    setSelectedData(data);
+  };
+  console.log(selectedLabels)
+  console.log(selectedData)
   return (
     <DashboardLayout>
       <DashboardNavbar />
+      {/* Reusable Drawer with Dynamic Data */}
+      <DashboardDrawer title={drawerTitle} open={drawerOpen} onClose={() => setDrawerOpen(false)} rowData={drawerRowData} isLoading={isLoading} />
       <MDBox
       // pb={1}
       // pb={3}
       // py={3}
       >
-        {/* <Grid container spacing={3}>
+        <Grid container spacing={3} mt={1} sx={{
+          display: {
+            xs: "flex",
+            lg: "none",
+          },
+        }}>
           <Grid item xs={12} md={6} lg={3}>
             <MDBox mb={1.5}>
               <ComplexStatisticsCard
@@ -433,7 +647,7 @@ function Dashboard() {
               />
             </MDBox>
           </Grid>
-        </Grid> */}
+        </Grid>
         {/* { */}
         {/* // (mapLoaded) ?
     // (localStorage.getItem("maploaded") === "true") ? */}
@@ -446,7 +660,13 @@ function Dashboard() {
           // mb={8}
           >
             {/* Map Section */}
-            <div className="relative" style={{ height: (mapLoaded) && "80vh", marginBottom: "40px" }}>
+            <div
+              // className="relative"
+              style={{
+                //  height: (mapLoaded) && "100%",
+                height: (mapLoaded) && "80vh",
+                marginBottom: "40px"
+              }}>
               {/* Header Controls */}
               {(mapLoaded) &&
                 <Grid container spacing={2}
@@ -454,10 +674,19 @@ function Dashboard() {
                   // px={8} 
                   px={4}
                   // p={2} 
-                  style={{
-                    position: "relative",
+                  sx={{
+                    // position: "relative",
+                    position: {
+                      md: "static", // Default position for xs screens
+                      // md: "relative", // Apply relative for md and larger
+                      lg: "relative",
+                    },
+                    display: {
+                      xs: "none",
+                      lg: "flex",
+                    },
                     top: "8%",
-                    display: "flex",
+                    // display: "flex",
                     flexDirection: "row",
                     justifyContent: "space-between",
                     // transform: "translateX(-50%)",
@@ -472,10 +701,16 @@ function Dashboard() {
                   <div className="flex flex-wrap space-x-4" style={{ display: "flex", flexDirection: "row" }}>
                     <DashboardTopCard
                       imgicon={`${process.env.REACT_APP_AWS_BASEURL}cms-icons/total_dash.svg`} label="Total Charger" bgcolor="#66BB6A"
-                      count={(dashboardData?.totalChargers) || 0} />
+                      count={(dashboardData?.totalChargers) || 0}
+                      onClick={() => handleOpenDrawer("Total Chargers", "dashboard/charger?status=all")}
+                    />
                     <DashboardTopCard
-                      imgicon={`${process.env.REACT_APP_AWS_BASEURL}cms-icons/Inactive+Charger.png`} label="Active Charger" bgcolor="#C4EA65" count={(dashboardData?.availableChargers + dashboardData?.inUseChargers) || 0} />
-                    <DashboardTopCard imgicon={`${process.env.REACT_APP_AWS_BASEURL}cms-icons/Active+charger.png`} label="Inactive Charger" bgcolor="#FF7878" count={(dashboardData?.inactiveChargers) || 0} />
+                      imgicon={`${process.env.REACT_APP_AWS_BASEURL}cms-icons/Inactive+Charger.png`} label="Active Charger" bgcolor="#C4EA65" count={(dashboardData?.availableChargers + dashboardData?.inUseChargers) || 0}
+                      onClick={() => handleOpenDrawer("Active Chargers", "dashboard/charger?status=active")}
+                    />
+                    <DashboardTopCard imgicon={`${process.env.REACT_APP_AWS_BASEURL}cms-icons/Active+charger.png`} label="Inactive Charger" bgcolor="#FF7878" count={(dashboardData?.inactiveChargers) || 0}
+                      onClick={() => handleOpenDrawer("Inactive Chargers", "dashboard/charger?status=inactive")}
+                    />
                     {/* <span className="px-3 py-1 bg-green-100 text-green-700 rounded">Total Charger (300)</span>
                   <span className="px-3 py-1 bg-green-200 text-green-900 rounded">Active Charger (300)</span>
                   <span className="px-3 py-1 bg-red-200 text-red-900 rounded">Inactive Charger (300)</span> */}
@@ -509,9 +744,12 @@ function Dashboard() {
                           backgroundColor: "#F6F6F6",
                         }}
                       >
-                        <MenuItem value="Daily">Daily</MenuItem>
-                        <MenuItem value="Weekly">Weekly</MenuItem>
-                        <MenuItem value="Monthly">Monthly</MenuItem>
+                        <MenuItem value="today">Today</MenuItem>
+                        <MenuItem value="yesterday">Yesterday</MenuItem>
+                        <MenuItem value="hourly">Last 24 hours</MenuItem>
+                        <MenuItem value="daily">Last 7 days</MenuItem>
+                        <MenuItem value="last30">Last 30 days</MenuItem>
+                        <MenuItem value="monthly">Last 12 months</MenuItem>
                       </Select>
                       <IconButton
                         onClick={handleDownload1}
@@ -575,8 +813,17 @@ function Dashboard() {
                   // px={8} 
                   px={2}
                   // p={2} 
-                  style={{
-                    position: "relative",
+                  sx={{
+                    // position: "relative",
+                    position: {
+                      md: "static", // Default position for xs screens
+                      // md: "relative", // Apply relative for md and larger
+                      lg: "relative",
+                    },
+                    display: {
+                      xs: "none",
+                      lg: "flex",
+                    },
                     bottom: "41%"
                     // bottom:"53%"
                   }}>
@@ -584,13 +831,24 @@ function Dashboard() {
                   <Grid item xs={12}>
                     <MDBox sx={{
                       width: "18%",
-                      position: "relative",
+                      // position: "relative",
+                      position: {
+                        md: "static", // Default position for xs screens
+                        // md: "relative", // Apply relative for md and larger
+                        lg: "relative",
+                      },
+                      display: {
+                        xs: "none",
+                        lg: "block",
+                      },
                       top: "0%",
                       zIndex: "14",
                       marginBottom: "1rem"
                     }}>
                       {/* <DashboardTopCard lottieicon={`${process.env.REACT_APP_AWS_BASEURL}cms-icons/animation1.json`} label="Live session" bgcolor="#F6F6F6" count={(dashboardData?.inactiveChargers) || 0} /> */}
-                      <DashboardTopCard lottieicon={animationData} label="Live session" bgcolor="#F6F6F6" count={(dashboardData?.activeSessions) || 0} />
+                      <DashboardTopCard lottieicon={animationData} label="Live session" bgcolor="#F6F6F6" count={(dashboardData?.activeSessions) || 0}
+                        onClick={() => handleOpenDrawer("Live Session", "dashboard/charger?status=live")}
+                      />
                     </MDBox>
                   </Grid>
                   {/* <Grid item xs={12} md={6} lg={3}>
@@ -660,7 +918,91 @@ function Dashboard() {
               />
             </MDBox>
           </Grid> */}
-                  <Grid item xs={12} md={6} lg={3}>
+                  <Grid item xs={12} md={6} lg={3} onClick={() => handleCardClick("User", graphData?.labels || [], graphData?.users || [])}>
+                    <MDBox mb={1.5}>
+                      <DashboardCard
+                        color="info"
+                        colorcode="#49a3f1"
+                        selectedCardCode="#E3F2FF"
+                        imgicon={dashboard1}
+                        title="User"
+                        isSelected={selectedTitle === "User"}
+                        count={graphData?.total?.users || 0}
+                        labels={graphData?.labels?.length || 0}
+                        data1={graphData?.users || []}
+                        percentage={{
+                          color: "success",
+                          amount: "+1%",
+                          label: "than yesterday",
+                        }}
+                      />
+                    </MDBox>
+                  </Grid>
+
+                  <Grid item xs={12} md={6} lg={3} onClick={() => handleCardClick("Session", graphData?.labels || [], graphData?.sessions || [])}>
+                    <MDBox mb={1.5}>
+                      <DashboardCard
+                        color="purple"
+                        colorcode="#C5C0FF"
+                        selectedCardCode="#F1F0FF"
+                        imgicon={dashboard2}
+                        title="Session"
+                        isSelected={selectedTitle === "Session"}
+                        count={graphData?.total?.sessions || 0}
+                        labels={graphData?.labels?.length || 0}
+                        data1={graphData?.sessions || []}
+                        percentage={{
+                          color: "success",
+                          amount: "+1%",
+                          label: "than yesterday",
+                        }}
+                      />
+                    </MDBox>
+                  </Grid>
+
+                  <Grid item xs={12} md={6} lg={3} onClick={() => handleCardClick("Energy", graphData?.labels || [], graphData?.energy || [])}>
+                    <MDBox mb={1.5}>
+                      <DashboardCard
+                        color="success"
+                        colorcode="#66BB6A"
+                        selectedCardCode="#EEFFE3"
+                        imgicon={dashboard3}
+                        title="Energy"
+                        isSelected={selectedTitle === "Energy"}
+                        count={(graphData?.total?.energy) + " kWh" || "0 kWh"}
+                        labels={graphData?.labels?.length || 0}
+                        data1={graphData?.energy || []}
+                        percentage={{
+                          color: "success",
+                          amount: "+1%",
+                          label: "than yesterday",
+                        }}
+                      />
+                    </MDBox>
+                  </Grid>
+
+                  <Grid item xs={12} md={6} lg={3} onClick={() => handleCardClick("Revenue", graphData?.labels || [], graphData?.revenue || [])}>
+                    <MDBox mb={1.5}>
+                      <DashboardCard
+                        color="warning"
+                        colorcode="#FFA726"
+                        selectedCardCode="#FFF0DA"
+                        imgicon={usersIcon}
+                        title="Revenue"
+                        isSelected={selectedTitle === "Revenue"}
+                        count={"₹ " + (graphData?.total?.revenue || "₹ 0")}
+                        labels={graphData?.labels?.length || 0}
+                        data1={graphData?.revenue || []}
+                        percentage={{
+                          color: "success",
+                          amount: "+1%",
+                          label: "than yesterday",
+                        }}
+                      />
+                    </MDBox>
+                  </Grid>
+
+                  {/* <Grid item xs={12} md={6} lg={3}>
                     <MDBox mb={1.5}>
                       <DashboardCard
                         color="info"
@@ -670,7 +1012,9 @@ function Dashboard() {
                         // icon="store"
                         imgicon={dashboard1}
                         title="User"
-                        count={(dashboardData?.inactiveChargers) || 0}
+                        count={(graphData?.total?.users) || 0}
+                        labels={(graphData?.labels?.length) || 0}
+                        data1={(graphData?.users) || []}
                         // count="13"
                         percentage={{
                           color: "success",
@@ -690,7 +1034,9 @@ function Dashboard() {
                         // icon="store"
                         imgicon={dashboard2}
                         title="Session"
-                        count={(dashboardData?.inactiveChargers) || 0}
+                        count={(graphData?.total?.sessions) || 0}
+                        labels={(graphData?.labels?.length) || 0}
+                        data1={(graphData?.sessions) || []}
                         // count="13"
                         percentage={{
                           color: "success",
@@ -710,7 +1056,9 @@ function Dashboard() {
                         // icon="store"
                         imgicon={dashboard3}
                         title="Energy"
-                        count={(dashboardData?.inactiveChargers) || 0}
+                        count={(graphData?.total?.energy) + ' kWh' || '0 kWh'}
+                        labels={(graphData?.labels?.length) || 0}
+                        data1={(graphData?.energy) || []}
                         // count="13"
                         percentage={{
                           color: "success",
@@ -730,7 +1078,9 @@ function Dashboard() {
                         // icon="store"
                         imgicon={usersIcon}
                         title="Revenue"
-                        count={(dashboardData?.inactiveChargers) || 0}
+                        count={"₹ " + (graphData?.total?.revenue) || "₹ 0"}
+                        labels={(graphData?.labels?.length) || 0}
+                        data1={(graphData?.revenue) || []}
                         // count="13"
                         percentage={{
                           color: "success",
@@ -739,7 +1089,7 @@ function Dashboard() {
                         }}
                       />
                     </MDBox>
-                  </Grid>
+                  </Grid> */}
                   {/* <Grid item xs={12} md={6} lg={3}>
             <MDBox mb={1.5}>
               <ComplexStatisticsCard1
@@ -924,7 +1274,8 @@ function Dashboard() {
                       textAlign: { xs: "left", sm: "left" }, // Center text on mobile, left-align on larger screens
                     }}
                   >
-                    Energy Dispersed
+                    {/* Energy Dispersed */}
+                    {selectedTitle}
                   </MDTypography>
                   <div style={{ display: "flex", alignItems: "center" }}>
                     {/* <IconButton size="small">
@@ -944,25 +1295,66 @@ function Dashboard() {
                     <DatePicker
                       defaultValue={dayjs(selectedDate, dateFormat)}
                     />
+                    {/* <DateRangePicker
+                      defaultValue={[dayjs('2022-04-17'), dayjs('2022-04-21')]}
+                    /> */}
                     <Select
-                      value={timeRange}
-                      onChange={(e) => setTimeRange(e.target.value)}
+                      value={timeRange1}
+                      onChange={(e) => setTimeRange1(e.target.value)}
                       size="large"
                       sx={{ mx: 1, height: "2rem" }}
                     >
-                      <MenuItem value="Daily">Daily</MenuItem>
-                      <MenuItem value="Weekly">Weekly</MenuItem>
-                      <MenuItem value="Monthly">Monthly</MenuItem>
+                      <MenuItem value="today">Today</MenuItem>
+                      <MenuItem value="yesterday">Yesterday</MenuItem>
+                      <MenuItem value="hourly">Last 24 hours</MenuItem>
+                      {/* <MenuItem value="hourly">Today</MenuItem> */}
+                      <MenuItem value="daily">Last 7 days</MenuItem>
+                      <MenuItem value="last30">Last 30 days</MenuItem>
+                      <MenuItem value="monthly">Last 12 months</MenuItem>
                     </Select>
-                    <IconButton size="large" sx={{ padding: "0px" }} style={{
+                    {/* <IconButton size="large" sx={{ padding: "0px" }} style={{
                       color: darkMode ? "white" : "black"
                     }}>
                       <img src={DownloadsIcon} onClick={handleDownload}
                       //  fontSize="small" 
                       />
-                      {/* <DownloadIcon onClick={handleDownload}
-                      //  fontSize="small" 
-                      /> */}
+                    </IconButton> */}
+                    <IconButton
+                      onClick={handleDownload}
+                      sx={{
+                        // width: "1.5rem",
+                        // height: "1.5rem",
+                        // display: "flex",
+                        // alignItems: "center",
+                        // justifyContent: "center",
+                        // backgroundColor: "#F6F6F6",
+                        // padding: "5px",
+                        width: "2rem", // Adjust width for better visibility
+                        height: "2rem", // Keep height as needed
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        backgroundColor: "#FFF",
+                        // backgroundColor: "#F6F6F6",
+                        border: "1px solid #E3E3E3",
+                        padding: "5px",
+                        borderRadius: "8px",
+                        // borderRadius: "4px",
+                        transition: "background-color 0.3s ease", // Smooth transition effect
+                        "&:hover": {
+                          backgroundColor: "#A6DBFF", // Light gray on hover
+                        },
+                      }}
+                    >
+                      <img
+                        src={DownloadsIcon}
+                        alt="Download"
+                        style={{
+                          width: "1rem", // Adjust the icon size to match other elements
+                          height: "1rem",
+                          objectFit: "contain",
+                        }}
+                      />
                     </IconButton>
                     {/* <IconButton size="small" onClick={handleMenuOpen}>
                       <MoreVertIcon />
@@ -972,7 +1364,12 @@ function Dashboard() {
                     </Menu>
                   </div>
                 </div>
-                <EnergyConsumptionCard />
+                <EnergyConsumptionCard
+                  title={selectedTitle}
+                  labels={selectedLabels}
+                  data1={selectedData}
+                  colorcode={selectedTitle === 'Energy' ? '#66BB6A' : selectedTitle === 'Revenue' ? '#FFA726' : selectedTitle === 'User' ? '#49a3f1' : selectedTitle === 'Session' ? '#C5C0FF' : '#FFF'}
+                />
                 {/* <GradientLineChart
                   // title="Energy Consumption"
                   // description="This chart shows energy consumption trends"
@@ -1057,7 +1454,12 @@ function Dashboard() {
         </MDBox> */}
         <Grid container spacing={3}>
           <Grid item xs={12} md={12} lg={4} >
-            <MDBox mb={1.5}>
+            <MDBox mb={1.5}
+              sx={{
+                height: "340px",
+                // overflow: "scroll"
+              }}
+            >
               <LocationVisitsCard
                 title="Vehicles Data"
                 items={dashboardData?.topVehicles || []}
@@ -1066,7 +1468,9 @@ function Dashboard() {
                 type="location"
               />
             </MDBox>
-            <MDBox mb={1.5}>
+            <MDBox
+            // mb={1.5}
+            >
               <StackedBarCard
                 // title="Vehicle Type"
                 data={data}
@@ -1076,7 +1480,11 @@ function Dashboard() {
             </MDBox>
           </Grid>
           <Grid item xs={12} md={12} lg={8} >
-            <MDBox mb={1.5}>
+            <MDBox mb={1.5}
+              sx={{
+                height: "525px"
+              }}
+            >
               <LocationVisitsCard
                 title="Top Locations"
                 items={dashboardData?.topLocations || []}

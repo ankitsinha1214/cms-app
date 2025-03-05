@@ -618,7 +618,7 @@ const ViewLocation = () => {
       Cell: (row) => (
         <div>
           {
-            row.row.original.user.status === 'active' ?
+            row.row.original?.user?.status === 'active' ?
               //   <Avatar1
               //   style={{
               //     backgroundColor: '#fde3cf',

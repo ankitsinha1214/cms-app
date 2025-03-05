@@ -330,13 +330,14 @@ function Location_mgmt() {
               // console.log(charger);
               const energyValue = parseFloat(charger?.energyConsumptions?.replace(' kWh', ''));
               return total + energyValue;
-            }, 0).toFixed(1) + ' kWh';
+            }, 0).toFixed(2) + ' kWh';
             const chargerInfoRep = location.chargerInfo.map(charger => ({
               locationType: charger.powerOutput,
               chargers: charger.subtype,
               locationName: charger.name,
               energy_disp: charger.energyConsumptions,
-              status: charger.status === "Available" ? "Active" : charger.status === "Inuse" ? "Pending" : "Inactive",
+              status: charger.status === "Available" ? "Active" : charger.status === "Inactive" ? "Inactive" : "Pending",
+              // status: charger.status === "Available" ? "Active" : charger.status === "Inuse" ? "Pending" : "Inactive",
               c_type: charger.type,
             }));
             return { ...location, energy_disp: energyDisp, chargers: location.chargerInfo.length, c_type: `AC: ${acCount}, DC: ${dcCount}`, chargerInfoRep: chargerInfoRep };

@@ -3,7 +3,7 @@ import { Box, Typography } from "@mui/material";
 import Lottie from "lottie-react";
 // import Lottie from 'react-lottie-player'
 
-const DashboardTopCard = ({ lottieicon, imgicon, label, count, bgcolor }) => {
+const DashboardTopCard = ({ lottieicon, imgicon, label, count, bgcolor, onClick }) => {
   return (
     <Box
       sx={{
@@ -17,7 +17,9 @@ const DashboardTopCard = ({ lottieicon, imgicon, label, count, bgcolor }) => {
         border: "1px solid #E0E0E0",
         marginRight: "8px",
         gap: 1.5,
+        cursor: "pointer"
       }}
+      onClick={onClick} // Attach onClick event
     >
       {/* Icon Placeholder */}
       <Box

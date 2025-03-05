@@ -7,9 +7,13 @@ import MDBox from "components/MDBox";
 const StackedBarCard = ({ title, data }) => {
   console.log(data)
   const total = data.reduce((sum, item) => sum + item.count, 0);
+  // const dataWithPercentage = data.map(item => ({
+  //   ...item,
+  //   percentage: ((item.count / total) * 100).toFixed(2),
+  // }));
   const dataWithPercentage = data.map(item => ({
     ...item,
-    percentage: ((item.count / total) * 100).toFixed(2),
+    percentage: total > 0 ? ((item.count / total) * 100).toFixed(2) : "0.00",
   }));
   return (
     <Card>
