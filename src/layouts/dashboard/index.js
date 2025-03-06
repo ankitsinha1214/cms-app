@@ -60,7 +60,7 @@ import DashboardCard from "examples/Cards/InfoCards/DashboardCard";
 import DashboardTopCard from "examples/Cards/InfoCards/DashboardTopCard";
 // import Loader from "components/custom/Loader";
 import animationData from "../../assets/animations/animation1.json";
-import zIndex from "@mui/material/styles/zIndex";
+const { RangePicker } = DatePicker;
 
 function Dashboard() {
   const [anchorEl1, setAnchorEl1] = useState(null);
@@ -77,6 +77,8 @@ function Dashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [drawerTitle, setDrawerTitle] = useState("");
   const [drawerRowData, setDrawerRowData] = useState([]); // Store table data
+  const [fromDate, setFromDate] = useState(null);
+  const [toDate, setToDate] = useState(null);
 
   // const [animationData, setAnimationData] = useState(null);
 
@@ -734,7 +736,19 @@ function Dashboard() {
           </MDTypography> */}
 
                       {/* <div className="flex items-center"> */}
-                      <DatePicker defaultValue={dayjs(selectedDate1, dateFormat)} />
+                      {/* <DatePicker defaultValue={dayjs(selectedDate1, dateFormat)} /> */}
+                      {
+                      timeRange1 === "custom" && <RangePicker
+                      size="medium"
+                      format="YYYY-MM-DD"
+                      // format="YYYY-MM-DD HH:mm:ss"
+                      onChange={(value, dateString) => {
+                        console.log('Formatted Selected Time: ', dateString);
+                        setFromDate(dateString[0]);
+                        setToDate(dateString[1]);
+                      }}
+                    />
+                    }
                       <Select
                         value={timeRange1}
                         onChange={(e) => setTimeRange1(e.target.value)}
@@ -750,6 +764,7 @@ function Dashboard() {
                         <MenuItem value="daily">Last 7 days</MenuItem>
                         <MenuItem value="last30">Last 30 days</MenuItem>
                         <MenuItem value="monthly">Last 12 months</MenuItem>
+                        <MenuItem value="custom">Custom</MenuItem>
                       </Select>
                       <IconButton
                         onClick={handleDownload1}
@@ -1292,9 +1307,21 @@ function Dashboard() {
         </IconButton>
       )}
     /> */}
-                    <DatePicker
+                    {/* <DatePicker
                       defaultValue={dayjs(selectedDate, dateFormat)}
+                    /> */}
+                    {
+                      timeRange1 === "custom" && <RangePicker
+                      size="medium"
+                      format="YYYY-MM-DD"
+                      // format="YYYY-MM-DD HH:mm:ss"
+                      onChange={(value, dateString) => {
+                        console.log('Formatted Selected Time: ', dateString);
+                        setFromDate(dateString[0]);
+                        setToDate(dateString[1]);
+                      }}
                     />
+                    }
                     {/* <DateRangePicker
                       defaultValue={[dayjs('2022-04-17'), dayjs('2022-04-21')]}
                     /> */}
@@ -1311,6 +1338,7 @@ function Dashboard() {
                       <MenuItem value="daily">Last 7 days</MenuItem>
                       <MenuItem value="last30">Last 30 days</MenuItem>
                       <MenuItem value="monthly">Last 12 months</MenuItem>
+                      <MenuItem value="custom">Custom</MenuItem>
                     </Select>
                     {/* <IconButton size="large" sx={{ padding: "0px" }} style={{
                       color: darkMode ? "white" : "black"

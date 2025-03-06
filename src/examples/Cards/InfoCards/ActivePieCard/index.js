@@ -40,6 +40,11 @@ const ActivePieCard = (chart) => {
     responsive: true,
     // cutout: "80%", // Controls the inner hole size
     cutout: "70%", // Controls the inner hole size
+    // animation: {
+    //   duration: 2000, // Set animation duration (1 second)
+    //   animateRotate: true, // Enable rotation animation
+    //   animateScale: true, // Enable scale animation
+    // },
     plugins: {
       legend: {
         display: false, // Hide legend inside chart
@@ -136,3 +141,117 @@ const ActivePieCard = (chart) => {
 };
 
 export default ActivePieCard;
+// import React, { useMemo } from "react";
+// import { Card, Box, Typography, Stack } from "@mui/material";
+// import { Doughnut } from "react-chartjs-2";
+// import { Chart, ArcElement, Tooltip, Legend } from "chart.js";
+// import MDTypography from "components/MDTypography";
+
+// // Register required Chart.js components
+// Chart.register(ArcElement, Tooltip, Legend);
+
+// const ActivePieCard = (chart) => {
+//   const datas = chart?.chart?.datasets?.data || [];
+//   const total = datas?.[0] + datas?.[1] || 0;
+//   const inUse = datas?.[0] || 0;
+//   const available = datas?.[1] || 0;
+
+//   // Memoized chart data
+//   const data = useMemo(() => ({
+//     labels: ["In Use", "Available"],
+//     datasets: [
+//       {
+//         data: [inUse, available],
+//         backgroundColor: ["rgba(145,202,255,0.7)", "rgba(174,255,120,0.7)"], 
+//         hoverBackgroundColor: ["rgba(145,202,255,1)", "rgba(174,255,120,1)"],
+//         borderWidth: 0,
+//         borderAlign: "inner",
+//         spacing: 0, 
+//       },
+//     ],
+//   }), [inUse, available]);
+
+//   // Memoized chart options
+//   const options = useMemo(() => ({
+//     responsive: true,
+//     cutout: "70%", 
+//     animation: {
+//       duration: 2000,
+//       animateRotate: true,
+//       animateScale: true,
+//     },
+//     plugins: {
+//       legend: {
+//         display: false, 
+//       },
+//       tooltip: {
+//         enabled: true,
+//       },
+//     },
+//   }), []);
+
+//   return (
+//     <Card
+//       sx={{
+//         width: { xs: "100%" },
+//         height: "400px",
+//         p: 2,
+//         borderRadius: 3,
+//         textAlign: "center",
+//         justifyContent: "space-between",
+//       }}
+//     >
+//       <MDTypography variant="h5" fontWeight="medium" textAlign="start" ml={1}>
+//         Active Charger
+//       </MDTypography>
+
+//       <Box sx={{ position: "relative", my: 2, mx: 8 }}>
+//         <Doughnut data={data} options={options} />
+//         <Typography
+//           variant="h4"
+//           fontWeight="bold"
+//           sx={{
+//             position: "absolute",
+//             top: "50%",
+//             left: "50%",
+//             transform: "translate(-50%, -50%)",
+//           }}
+//         >
+//           Total <br /> {total}
+//         </Typography>
+//       </Box>
+
+//       <Stack spacing={1} mt={1}>
+//         <Box display="flex" alignItems="center" justifyContent="space-between">
+//           <Box display="flex" alignItems="center">
+//             <Box
+//               sx={{ width: 12, height: 12, bgcolor: "rgba(174,255,120,0.7)", borderRadius: "2px", mr: 1 }}
+//             />
+//             <Typography variant="body2" color="textSecondary">
+//               Available
+//             </Typography>
+//           </Box>
+//           <Typography variant="body2" fontWeight="bold">
+//             {available}
+//           </Typography>
+//         </Box>
+
+//         <Box display="flex" alignItems="center" justifyContent="space-between">
+//           <Box display="flex" alignItems="center">
+//             <Box
+//               sx={{ width: 12, height: 12, bgcolor: "rgba(145,202,255,0.7)", borderRadius: "2px", mr: 1 }}
+//             />
+//             <Typography variant="body2" color="textSecondary">
+//               In Use
+//             </Typography>
+//           </Box>
+//           <Typography variant="body2" fontWeight="bold">
+//             {inUse}
+//           </Typography>
+//         </Box>
+//       </Stack>
+//     </Card>
+//   );
+// };
+
+// export default ActivePieCard;
