@@ -161,7 +161,7 @@ const DashboardCard = ({ color, colorcode, title, count, data1, labels, percenta
         boxShadow: "4px 6px 15px 0px rgba(0, 0, 0, 0.16)",
         // boxShadow: "4px 6px 15px 0px rgba(0, 0, 0, 0.16)",
         cursor: "pointer",
-        borderRadius: "20px 20px 0 0"
+        // borderRadius: "20px 20px 0 0"
     }}>
       {/* <CardContent> */}
       {/* <AccountCircle sx={{ fontSize: 30, color: "#90caf9" }} />
@@ -237,7 +237,8 @@ const DashboardCard = ({ color, colorcode, title, count, data1, labels, percenta
         // zIndex: "999",
         height: 90,
         //  position: "absolute", bottom: 10, left: 0, right: 0 
-        margin: "0rem"
+        margin: "0rem",
+        padding: "10px"
         // margin: "0rem 2px"
       }}>
         <Line ref={chartRef} data={chartData} options={chartOptions} />

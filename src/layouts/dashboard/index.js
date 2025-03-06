@@ -78,7 +78,9 @@ function Dashboard() {
   const [drawerTitle, setDrawerTitle] = useState("");
   const [drawerRowData, setDrawerRowData] = useState([]); // Store table data
   const [fromDate, setFromDate] = useState(null);
+  const [fromDate1, setFromDate1] = useState(null);
   const [toDate, setToDate] = useState(null);
+  const [toDate1, setToDate1] = useState(null);
 
   // const [animationData, setAnimationData] = useState(null);
 
@@ -497,7 +499,10 @@ function Dashboard() {
   }, []);
   useEffect(() => {
     fetchAllGraphData();
-  }, [timeRange1]);
+  }, [timeRange1, fromDate1, toDate1]);
+  useEffect(() => {
+    fetchAllGraphData1();
+  }, [timeRange, fromDate, toDate]);
   const fetchAllChargers = () => {
     // axios.post(process.env.REACT_APP_BASEURL + "charger-locations/dashboard/get-data", {
     //   headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
@@ -522,7 +527,7 @@ function Dashboard() {
   const fetchAllGraphData = () => {
     axios({
       method: "get",
-      url: process.env.REACT_APP_BASEURL + "graph/?filter=" + timeRange1,
+      url: process.env.REACT_APP_BASEURL + "graph/?filter=" + timeRange1 + '&start=' + fromDate1 + '&end=' + toDate1,
       headers: {
         "Authorization": `Bearer ${localStorage.getItem("token")}`
       },
@@ -530,9 +535,38 @@ function Dashboard() {
       .then((response) => {
         if (response.data.status) {
           setGraphData(response.data.data);
-          setSelectedTitle('User');
+          // setSelectedTitle('User');
+          // setSelectedLabels(response?.data?.data?.labels);
+          // setSelectedData(response?.data?.data?.users);
+        } else {
+          enqueueSnackbar(response?.data?.message, { variant: 'error' });
+        }
+      }).catch(error => {
+        console.error(error);
+      });
+  };
+  const fetchAllGraphData1 = () => {
+    axios({
+      method: "get",
+      url: process.env.REACT_APP_BASEURL + "graph/?filter=" + timeRange + '&start=' + fromDate + '&end=' + toDate,
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`
+      },
+    })
+      .then((response) => {
+        if (response.data.status) {
+          // setGraphData(response.data.data);
+          // setSelectedTitle('User');
           setSelectedLabels(response?.data?.data?.labels);
-          setSelectedData(response?.data?.data?.users);
+          if(selectedTitle === 'User'){
+            setSelectedData(response?.data?.data?.users);
+          } else if(selectedTitle === 'Sessions'){
+            setSelectedData(response?.data?.data?.sessions);
+          } else if(selectedTitle === 'Revenue'){
+            setSelectedData(response?.data?.data?.revenue);
+          } else{
+            setSelectedData(response?.data?.data?.energy);
+          }
         } else {
           enqueueSnackbar(response?.data?.message, { variant: 'error' });
         }
@@ -553,6 +587,7 @@ function Dashboard() {
 
   const handleCardClick = (title, labels, data) => {
     // console.log(data)
+    setTimeRange(timeRange1);
     setSelectedTitle(title);
     setSelectedLabels(labels);
     setSelectedData(data);
@@ -744,8 +779,8 @@ function Dashboard() {
                       // format="YYYY-MM-DD HH:mm:ss"
                       onChange={(value, dateString) => {
                         console.log('Formatted Selected Time: ', dateString);
-                        setFromDate(dateString[0]);
-                        setToDate(dateString[1]);
+                        setFromDate1(dateString[0]);
+                        setToDate1(dateString[1]);
                       }}
                     />
                     }
@@ -1311,7 +1346,7 @@ function Dashboard() {
                       defaultValue={dayjs(selectedDate, dateFormat)}
                     /> */}
                     {
-                      timeRange1 === "custom" && <RangePicker
+                      timeRange === "custom" && <RangePicker
                       size="medium"
                       format="YYYY-MM-DD"
                       // format="YYYY-MM-DD HH:mm:ss"
@@ -1326,8 +1361,8 @@ function Dashboard() {
                       defaultValue={[dayjs('2022-04-17'), dayjs('2022-04-21')]}
                     /> */}
                     <Select
-                      value={timeRange1}
-                      onChange={(e) => setTimeRange1(e.target.value)}
+                      value={timeRange}
+                      onChange={(e) => setTimeRange(e.target.value)}
                       size="large"
                       sx={{ mx: 1, height: "2rem" }}
                     >
