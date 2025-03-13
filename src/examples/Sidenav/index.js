@@ -40,8 +40,8 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
   const location = useLocation();
   const collapseName = location.pathname.replace("/", "");
   const [routes1,setRoutes1] = useState(routes);
-  console.log(routes1);
-  console.log(routes);
+  // console.log(routes1);
+  // console.log(routes);
 
   useEffect(() => {
     setRoutes1(routes);

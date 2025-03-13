@@ -200,7 +200,7 @@ const ViewLocation = () => {
         return {
           ...info,
           type: value,
-          subtype: value === "AC" ? "CCS" : "CC-T6",
+          subtype: value === "AC" ? "CCS2" : "Type6",
         };
       }
       return info;
@@ -216,7 +216,7 @@ const ViewLocation = () => {
         return {
           ...info,
           type: value,
-          subtype: value === "AC" ? "CCS" : "CC-T6",
+          subtype: value === "AC" ? "CCS2" : "Type6",
         };
       }
       return info;
@@ -1411,13 +1411,13 @@ const ViewLocation = () => {
                           message: 'Select something!',
                         },
                       ]}
-                        initialValue="CCS"
+                        initialValue="CCS2"
                       >
                         <Radio.Group>
-                          <Radio value="CCS"> CCS </Radio>
-                          <Radio value="CC-T6" disabled={form.getFieldValue(['chargerInfo', field.name, 'type']) === "AC"}> CC-T6 </Radio>
+                          <Radio value="CCS2"> CCS2 </Radio>
+                          <Radio value="Type6" disabled={form.getFieldValue(['chargerInfo', field.name, 'type']) === "AC"}> Type6 </Radio>
                           <Radio value="Type2" disabled={form.getFieldValue(['chargerInfo', field.name, 'type']) === "DC"}> Type2 </Radio>
-                          <Radio value="Ather" disabled={form.getFieldValue(['chargerInfo', field.name, 'type']) === "DC"}> Ather </Radio>
+                          <Radio value="Type7" disabled={form.getFieldValue(['chargerInfo', field.name, 'type']) === "AC"}> Type7 </Radio>
                         </Radio.Group>
                       </Form.Item>)}
                     </AntCard>
@@ -1635,13 +1635,13 @@ const ViewLocation = () => {
                             message: 'Select something!',
                           },
                         ]}
-                          initialValue="CCS"
+                          initialValue="CCS2"
                         >
                           <Radio.Group>
-                            <Radio value="CCS"> CCS </Radio>
-                            <Radio value="CC-T6" disabled={form.getFieldValue(['chargerInfo1', field.name, 'type']) === "AC"}> CC-T6 </Radio>
+                            <Radio value="CCS2"> CCS2 </Radio>
+                            <Radio value="Type6" disabled={form.getFieldValue(['chargerInfo1', field.name, 'type']) === "AC"}> Type6 </Radio>
                             <Radio value="Type2" disabled={form.getFieldValue(['chargerInfo1', field.name, 'type']) === "DC"}> Type2 </Radio>
-                            <Radio value="Ather" disabled={form.getFieldValue(['chargerInfo1', field.name, 'type']) === "DC"}> Ather </Radio>
+                            <Radio value="Type7" disabled={form.getFieldValue(['chargerInfo1', field.name, 'type']) === "AC"}> Type7 </Radio>
                           </Radio.Group>
                         </Form.Item>)
                       }

@@ -579,13 +579,15 @@ const ViewCharger = () => {
             <Grid item xs={12} sm={4} display="flex" justifyContent="flex-end">
               <Grid container spacing={3}>
                 <Grid item xs={12}>
-                  <Card style={{ padding: "0 4rem" }}>
+                  <Card style={{ padding: "3rem 0rem" }}>
+                  {/* <Card style={{ padding: "0 4rem" }}> */}
                     <CardMedia
                       component="img"
-                      height="600"
+                      height="460"
+                      // height="600"
                       // image={process.env.REACT_APP_PUBLICURL + "charger.png"}
-                      image={`${process.env.REACT_APP_AWS_BASEURL}cms-icons/chrger.png`}
-                      // image={"https://chrgup.s3.ap-south-1.amazonaws.com/cms-icons/chrger.png"}
+                      // image={`${process.env.REACT_APP_AWS_BASEURL}cms-icons/chrger.png`}
+                      image={`${process.env.REACT_APP_AWS_BASEURL}chargerImg/charger1.png`}
                       alt="Charger Image"
                       style={{ width: '100%', margin: 0, borderRadius: 0, objectFit: "fill" }}
                     />

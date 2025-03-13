@@ -173,6 +173,7 @@ import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import { Tag, Tooltip } from "antd";
 import { useMediaQuery } from "@mui/material";
+import { Empty } from 'antd';
 
 function LocationVisitsCard({ title, headers, items, type }) {
    // Responsive handling
@@ -217,7 +218,16 @@ function LocationVisitsCard({ title, headers, items, type }) {
 
       {/* List Items */}
       <MDBox>
-        {items.map((item, index) => (
+        {
+          items.length === 0 ? (
+            // <MDBox display="flex" justifyContent="center" py={2}>
+            //   <MDTypography variant="button" fontWeight="medium" color="text">
+            //     No data available
+            //   </MDTypography>
+            // </MDBox>
+            <Empty />
+          ) : (
+        items.map((item, index) => (
           <MDBox
             key={index}
             display="flex"
@@ -310,7 +320,7 @@ function LocationVisitsCard({ title, headers, items, type }) {
               <Tag color={item.color}>{item.visits}</Tag>
             </MDBox>
           </MDBox>
-        ))}
+        )))}
       </MDBox>
     </Card>
   );
