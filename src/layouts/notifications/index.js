@@ -94,13 +94,13 @@ function Notifications() {
       },
     })
       .then((response) => {
-        if (response.data.success === true) {
+        if (response.data.status === true) {
           // console.log(response);
           // setIsBackdrop(false);
           // setDialogMessage(response.data.message);
           // setIsDialog(true);
           // alert(response.data.message);
-          enqueueSnackbar(response.data.message, { variant: 'success' });
+          enqueueSnackbar(response?.data?.message, { variant: 'success' });
           window.location.reload();
         } else {
           console.log("status is false ");
@@ -121,6 +121,27 @@ function Notifications() {
       const timeZone = 'Asia/Kolkata'; // IST time zone
       const zonedDate = toZonedTime(new Date(utcDate), timeZone); // Convert UTC to IST
       return format(zonedDate, 'yyyy-MM-dd \u00A0\u00A0 HH:mm:ss'); // Format the date as desired
+    };
+    // Function to convert schedule cron time to normal time and format it
+    const convertSchedule = (utcDate) => {
+      if (!utcDate) return 'N/A';
+    
+      // Ensure it matches the cron format: "minute hour day month *"
+      const cronRegex = /^(\d{1,2}) (\d{1,2}) (\d{1,2}) (\d{1,2}) \*$/;
+      const match = utcDate.match(cronRegex);
+    
+      if (!match) return 'N/A'; // Return 'N/A' if format is incorrect
+    
+      const [_, minute, hour, day, month] = match.map(Number); // Extract values as numbers
+    
+      // Get current year
+      const year = new Date().getFullYear();
+    
+      // Construct a valid Date object in UTC
+      const date = new Date(Date.UTC(year, month - 1, day, hour, minute));
+    
+      // Convert to readable format
+      return format(date, "d'th' MMMM HH:mm"); // Example: "13th March 18:09"
     };
     const handleView = (row_data) => {
       // console.log(row_data);
@@ -336,6 +357,19 @@ function Notifications() {
       muiTableBodyCellProps: {
         align: 'center',
       }, accessorKey: "description", align: "center"
+    },
+    {
+      header: "Schedule Date", muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      }, 
+      accessorKey: "scheduleTime", 
+      align: "center",
+      Cell: ({ cell }) => {
+        return convertSchedule(cell.getValue());
+      },
     },
     {
       header: "Sent to", muiTableHeadCellProps: {

@@ -33,35 +33,35 @@ import '../user_service_maintenace_mgmt/Somecss.css';
 
 const services = [
     {
-      name: "Charger Mgmt",
-      id: 1
+        name: "Charger Mgmt",
+        id: 1
     },
     {
-      name: "User Mgmt",
-      id: 2
+        name: "User Mgmt",
+        id: 2
     },
     {
-      name: "Location Mgmt",
-      id: 3
+        name: "Location Mgmt",
+        id: 3
     },
     {
-      name: "Service & maintenance",
-      id: 4
+        name: "Service & maintenance",
+        id: 4
     },
     {
-      name: "Notifications",
-      id: 5
+        name: "Push Notifications",
+        id: 5
     },
     {
-      name: "Customer service",
-      id: 6
+        name: "Customer service",
+        id: 6
     },
     {
-      name: "Reports",
-      id: 7
+        name: "Reports",
+        id: 7
     },
-  ];
-  
+];
+
 
 function PopAddBasic1(props) {
     const [isDialogOpen, setIsDialogOpen] = useState(props.isDialog);
@@ -155,7 +155,7 @@ function PopAddBasic1(props) {
             <Completion
                 isDialog={isDisabled}
                 onClose={setIsDisabled}
-                // value={values}
+            // value={values}
             />
             <MDBackdrop isBackdrop={isBackdrop} />
             {/* <Dialog open={props.isDialog} onClose={handleClose} fullWidth maxWidth="md" > */}
@@ -236,9 +236,9 @@ function PopAddBasic1(props) {
                                         onChange={handleChange}
                                         input={<OutlinedInput label="Company" />}
                                     >
-                                        <MenuItem value="Esyasoft">Esyasoft</MenuItem>
-                                        <MenuItem value="Esyasoft1">Esyasoft1</MenuItem>
-                                        <MenuItem value="Esyasoft2">Esyasoft2</MenuItem>
+                                        <MenuItem value="Esyasoft Tech">Esyasoft Tech</MenuItem>
+                                        <MenuItem value="Esyasoft Mobility">Esyasoft Mobility</MenuItem>
+                                        <MenuItem value="Others">Others</MenuItem>
                                     </Select>
                                 </FormControl>
                             </MDBox>
@@ -256,9 +256,18 @@ function PopAddBasic1(props) {
                                         onChange={handleChange}
                                         input={<OutlinedInput label="Department" />}
                                     >
-                                        <MenuItem value="Chargeup">Chargeup</MenuItem>
-                                        <MenuItem value="Chargeup1">Chargeup1</MenuItem>
-                                        <MenuItem value="Chargeup2">Chargeup2</MenuItem>
+                                        <MenuItem value="Chrgup">Chrgup</MenuItem>
+                                        <MenuItem value="IT & Support">IT & Support</MenuItem>
+                                        <MenuItem value="Human Resources">Human Resources</MenuItem>
+                                        <MenuItem value="Finance & Accounting">Finance & Accounting</MenuItem>
+                                        <MenuItem value="Operations">Operations</MenuItem>
+                                        <MenuItem value="Sales & Marketing">Sales & Marketing</MenuItem>
+                                        <MenuItem value="Product Management">Product Management</MenuItem>
+                                        <MenuItem value="Engineering & Development">Engineering & Development</MenuItem>
+                                        <MenuItem value="Quality Assurance">Quality Assurance</MenuItem>
+                                        <MenuItem value="Legal & Compliance">Legal & Compliance</MenuItem>
+                                        <MenuItem value="Procurement & Vendor Management">Procurement & Vendor Management</MenuItem>
+                                        <MenuItem value="Others">Others</MenuItem>
                                     </Select>
                                 </FormControl>
                             </MDBox>
