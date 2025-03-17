@@ -6,7 +6,7 @@ import axios from "axios";
 // @mui material components
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
-
+import { Tooltip } from "@mui/material";
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
@@ -21,13 +21,19 @@ import { DatePicker } from "antd";
 import dayjs from "dayjs";
 import usergroup from '../../assets/images/icons/usergroup.svg';
 import usernotification from '../../assets/images/icons/usernotification.svg';
+import { format } from 'date-fns';
+import { toZonedTime } from 'date-fns-tz';
+import LaunchIcon from "@mui/icons-material/Launch";
+import DeleteIcon from '@mui/icons-material/Delete';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 // import Device from "react-device-frame";
 // import { Emulator } from "react-device-emulator";
 // import DeviceEmulator from 'react-device-emulator';
 // import 'react-device-emulator/lib/styles/style.css';
 
 
-import { TextField, Button, Typography, CardContent, Switch, FormControlLabel } from "@mui/material";
+import { TextField, Button, Typography, CardContent, Switch, FormControlLabel, Stack } from "@mui/material";
 import { AccessTime, CalendarToday, Opacity, Visibility } from "@mui/icons-material";
 // Material Dashboard 2 React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
@@ -48,12 +54,15 @@ function Notifications() {
   const [isLoading1, setIsLoading1] = useState(true);
   const [columns, setColumns] = useState([]);
   const { enqueueSnackbar } = useSnackbar();
+  const [selectedVal, setSelectedVal] = useState("allUser");
   const [title, setTitle] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [description, setDescription] = useState("");
   const [selectedDate, setSelectedDate] = useState(dayjs());
   // console.log(selectedDate)
   const dateFormat = 'YYYY-MM-DD HH:mm';
   const [preview, setPreview] = useState(false);
+  const [visibile, setVisibile] = useState(true);
   const [schedule, setSchedule] = useState(false);
   const [rows, setRows] = useState([]);
   const [rows1, setRows1] = useState([]);
@@ -63,10 +72,73 @@ function Notifications() {
   }, []);
   const statusList = [
     'Failed',
-    'Scheduled',
+    // 'Scheduled',
     'Sent',
-    'Pending'
+    // 'Pending'
   ];
+  const statusList1 = [
+    'Failed',
+    'Scheduled',
+    // 'Sent',
+    // 'Pending'
+  ];
+  const handleDelete = (row_data) => {
+    // const payload = { "id": row_data.app_user_pk };
+    axios({
+      method: "delete",
+      url: process.env.REACT_APP_BASEURL + "notification/" + row_data._id,
+      // data: payload, // JSON payload
+      headers: {
+        "Content-Type": "application/json", // Set the Content-Type header
+        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+      },
+    })
+      .then((response) => {
+        if (response.data.success === true) {
+          // console.log(response);
+          // setIsBackdrop(false);
+          // setDialogMessage(response.data.message);
+          // setIsDialog(true);
+          // alert(response.data.message);
+          enqueueSnackbar(response.data.message, { variant: 'success' });
+          window.location.reload();
+        } else {
+          console.log("status is false ");
+          enqueueSnackbar(response.data.message, { variant: 'error' });
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        enqueueSnackbar(error.response?.data?.message, { variant: 'error' });
+      });
+  };
+    // Function to convert UTC to IST and format it
+    const convertUTCtoIST = (utcDate) => {
+      // console.log(utcDate);
+      if (!utcDate || isNaN(new Date(utcDate).getTime())) {
+        return 'N/A'; // Return 'N/A' if the date is invalid or missing
+      }
+      const timeZone = 'Asia/Kolkata'; // IST time zone
+      const zonedDate = toZonedTime(new Date(utcDate), timeZone); // Convert UTC to IST
+      return format(zonedDate, 'yyyy-MM-dd \u00A0\u00A0 HH:mm:ss'); // Format the date as desired
+    };
+    const handleView = (row_data) => {
+      // console.log(row_data);
+      window.scrollTo({ top: 0, behavior: "smooth" }); 
+      if(visibile){
+        setPreview(true);
+        setTitle(row_data.title);
+        setPhoneNumber(row_data.phoneNumber);
+        setDescription(row_data.description);
+      }
+      else{
+        setTitle('');
+        setPhoneNumber('');
+        setDescription('');
+      }
+      setVisibile(!visibile);
+      // navigate("/location/view", { state: row_data?._id });
+    };
   const column = [
     {
       header: "Status",
@@ -128,12 +200,36 @@ function Notifications() {
       }, accessorKey: "type", align: "center"
     },
     {
-      header: "State", muiTableHeadCellProps: {
+      header: "Created By", muiTableHeadCellProps: {
         align: 'center',
       },
       muiTableBodyCellProps: {
         align: 'center',
-      }, accessorKey: "state", align: "center"
+      }, accessorKey: "userId.username", align: "center"
+    },
+    {
+      header: "Sent Date & Time", accessorKey: "updatedAt", align: "center",
+      muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      },
+      Cell: ({ cell }) => {
+        return convertUTCtoIST(cell.getValue());
+      },
+    },
+    {
+      header: "Created Date & Time", accessorKey: "createdAt", align: "center",
+      muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      },
+      Cell: ({ cell }) => {
+        return convertUTCtoIST(cell.getValue());
+      },
     },
     // {
     //   header: "Action",
@@ -160,7 +256,7 @@ function Notifications() {
     //         >
     //           <LaunchIcon />
     //         </MDButton>
-    //         <MDButton
+    //         {/* <MDButton
     //           sx={{
     //             marginLeft: 2,
     //           }}
@@ -183,11 +279,167 @@ function Notifications() {
     //           iconOnly
     //         >
     //           <DeleteIcon />
-    //         </MDButton>
+    //         </MDButton> */}
     //       </div>
     //     ) : null
     //   ),
     // },
+  ];
+  const column1 = [
+    {
+      header: "Status",
+      filterVariant: 'select',
+      filterSelectOptions: statusList1,
+      muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      }, accessorKey: "status",
+      align: "center",
+      fixed: "true",
+      // filterFn: (row, id, columnFilterValue) => {
+       
+      //   return row.original.status === columnFilterValue;
+      // },
+      Cell: (row) => (
+        <div>
+          {(row.row.original.status === "Failed") ?
+            <CircleIcon style={{ color: "#DA1E28" }} />
+            :
+            (row.row.original.status === "Pending") ?
+              <CircleIcon style={{ color: "#7B7B7B" }} />
+              :
+              (row.row.original.status === "Scheduled") ?
+                <CircleIcon style={{ color: "#F1C21B" }} />
+                :
+                (row.row.original.status === "Sent") ?
+                  <CircleIcon style={{ color: "#198038" }} />
+                  :
+                  <CircleIcon style={{ color: "#198038" }} />
+          }
+        </div>
+      ),
+    },
+    {
+      header: "Title", muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      }, accessorKey: "title", align: "center"
+    },
+    {
+      header: "Description", muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      }, accessorKey: "description", align: "center"
+    },
+    {
+      header: "Sent to", muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      }, accessorKey: "type", align: "center"
+    },
+    {
+      header: "Created By", muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      }, accessorKey: "userId.username", align: "center"
+    },
+    // {
+    //   header: "Scheduled Date & Time", accessorKey: "createdAt", align: "center",
+    //   muiTableHeadCellProps: {
+    //     align: 'center',
+    //   },
+    //   muiTableBodyCellProps: {
+    //     align: 'center',
+    //   },
+    //   Cell: ({ cell }) => {
+    //     return convertUTCtoIST(cell.getValue());
+    //   },
+    // },
+    {
+      header: "Created Date & Time", accessorKey: "createdAt", align: "center",
+      muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      },
+      Cell: ({ cell }) => {
+        return convertUTCtoIST(cell.getValue());
+      },
+    },
+    {
+      header: "Action",
+      enableColumnFilter: false,
+      muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      }, accessorKey: "action",
+      align: "center",
+      Cell: (row) => (
+        row.row.depth === 0 ? (
+          <div style={{
+            position: 'sticky',
+            right: '0',
+            zIndex: '111',
+          }}>
+            <Tooltip title={visibile ? "Show Preview" : "Hide Preview"} arrow>
+              <MDButton
+                onClick={(e) => handleView(row.row.original)}
+                variant="gradient"
+                color={visibile ? "info" : "success"}
+                iconOnly
+              >
+                {
+                  (visibile) ?
+                    <VisibilityIcon />
+                    :
+                    <VisibilityOffIcon />
+                }
+              </MDButton>
+            </Tooltip>
+            {/* <MDButton
+              sx={{
+                marginLeft: 2,
+              }}
+              onClick={(e) => handleEdit(row.row.original)}
+              variant="gradient"
+              color="info"
+              // color="secondary"
+              iconOnly
+            >
+              <EditIcon />
+            </MDButton>*/}
+            {/* Delete Button */}
+            <Tooltip title="Delete" arrow>
+              <MDButton
+                sx={{
+                  marginLeft: 2,
+                }}
+                onClick={(e) => handleDelete(row.row.original)}
+                variant="gradient"
+                color="error"
+                // color="secondary"
+                iconOnly
+              >
+                <DeleteIcon />
+              </MDButton>
+            </Tooltip>
+          </div>
+        ) : null
+      ),
+    },
   ];
   useEffect(() => {
     if (
@@ -240,7 +492,7 @@ function Notifications() {
         console.log(error);
       });
   }, []);
-  const createUser = (title, description) => {
+  const createUser = (title, description,phoneNumber) => {
     let payload;
     if(schedule){
       // Convert selected date to UTC
@@ -254,12 +506,14 @@ function Notifications() {
       payload = {
         "title": title,
         "message": description,
+        "phoneNumber": phoneNumber,
         "scheduleTime": scheduleDate
     };
     } else{
       payload = {
         "title": title,
         "message": description,
+        "phoneNumber": phoneNumber
     };
     }
     // console.log(selectedDate)
@@ -274,7 +528,7 @@ function Notifications() {
     axios({
         method: "post",
         // url: process.env.REACT_APP_BASEURL + "notification/" + {schedule ? "schedule-notification-to-all" : "send-notification-to-all"},
-        url: `${process.env.REACT_APP_BASEURL}notification/${schedule ? "schedule-notification-to-all" : "send-notification-to-all"}`,
+        url: `${process.env.REACT_APP_BASEURL}notification/${schedule ? "schedule-notification-to-all" : selectedVal === 'singleUser' ? "send-notification" : "send-notification-to-all"}`,
         data: payload, // JSON payload
         headers: {
             "Content-Type": "application/json", // Set the Content-Type header
@@ -285,6 +539,7 @@ function Notifications() {
             if (response.data.status === true) {
                 setTitle('');
                 setDescription('');
+                setPhoneNumber('');
                 enqueueSnackbar(response?.data?.message, { variant: 'success' });
                 // window.location.reload();
             } else {
@@ -303,7 +558,10 @@ function Notifications() {
     if (title === '' || description === '') {
         return enqueueSnackbar('All fields are necessary', { variant: 'error' });
     }
-   createUser(title,description);
+    if (selectedVal === 'singleUser' && phoneNumber === '') {
+        return enqueueSnackbar('All fields are necessary', { variant: 'error' });
+    }
+   createUser(title,description,phoneNumber);
 };
 
   return (
@@ -362,8 +620,24 @@ function Notifications() {
           value: 'singleUser',
         },
       ]}
+      onChange={(value) => {
+        // console.log(value); // string
+        setSelectedVal(value);
+      }}
     />
-
+                {
+                  selectedVal === 'singleUser' ?
+                    <TextField
+                      type="text"
+                      label="Mobile number"
+                      placeholder="Enter mobile number"
+                      value={phoneNumber}
+                      margin="normal"
+                      onChange={(e) => setPhoneNumber(e.target.value)}
+                    fullWidth={true}
+                    />
+                    : null
+                }
             <TextField
               fullWidth
               label="Title"
@@ -429,6 +703,12 @@ function Notifications() {
             <FormControlLabel
               control={<Switch checked={preview} onChange={() => setPreview(!preview)} />}
               label="Preview"
+              // label={
+              //   <Stack direction="row" alignItems="center" spacing={1}>
+              //     <VisibilityIcon fontSize="small" />
+              //     <Typography>Preview</Typography>
+              //   </Stack>
+              // }
               sx={{ mt: 2 }}
             />
 
@@ -666,7 +946,7 @@ function Notifications() {
               <Loader />
             ) : (<MaterialReactTable
               id="tble"
-              columns={columns}
+              columns={column1}
               data={rows}
               // enableExpanding={true}
               // getSubRows={(originalRow) => originalRow.chargerInfoRep}

@@ -527,6 +527,18 @@ function Charger_mgmt() {
       },
     },
     {
+      header: "Start Date & Time", accessorKey: "createdAt", align: "center",  
+      muiTableHeadCellProps: {
+        align: 'center',
+      },
+      muiTableBodyCellProps: {
+        align: 'center',
+      },
+      Cell: ({ cell }) => {
+        return convertUTCtoIST(cell.getValue());
+      },
+    },
+    {
       header: "Duration", accessorKey: "duration", align: "center", muiTableHeadCellProps: {
         align: 'center',
       },
