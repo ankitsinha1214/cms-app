@@ -6,6 +6,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 // import LocationOnIcon from '@mui/icons-material/LocationOn';
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
+import CustomMaterialTable from "../../components/custom/CustomMaterialTable";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 // import reportsLineChartData from "./components/reportsLineChartData";
 // import ReportsLineChart from "examples/Charts/LineCharts/ReportsLineChart/New";
@@ -580,7 +581,7 @@ const ViewCharger = () => {
               <Grid container spacing={3}>
                 <Grid item xs={12}>
                   <Card style={{ padding: "3rem 0rem" }}>
-                  {/* <Card style={{ padding: "0 4rem" }}> */}
+                    {/* <Card style={{ padding: "0 4rem" }}> */}
                     <CardMedia
                       component="img"
                       height="460"
@@ -601,109 +602,116 @@ const ViewCharger = () => {
               }}
             />
             <Grid item xs={12}>
-            <Card
-              style={{ marginTop: '2rem' }}
-            // style={{ marginTop: '4rem' }}
-            >
-              <MDBox mx={2} mt={-3} py={3} px={2} variant="gradient" bgColor="info" borderRadius="lg" coloredShadow="info">
-                <Grid container direction="row" justifyContent="space-between" alignItems="center">
-                  <MDTypography variant="h6" color="white">
-                    All Sessions of Chargers {content?.charger_id}
-                  </MDTypography>
-                  {/* <Button icon={<AddIcon />} iconPosition="start" variant="outlined" size="large" onClick={() => setOpenDialog(true)}>
+              <Card
+                style={{ marginTop: '2rem' }}
+              // style={{ marginTop: '4rem' }}
+              >
+                <MDBox mx={2} mt={-3} py={3} px={2} variant="gradient" bgColor="info" borderRadius="lg" coloredShadow="info">
+                  <Grid container direction="row" justifyContent="space-between" alignItems="center">
+                    <MDTypography variant="h6" color="white">
+                      All Sessions of Chargers {content?.charger_id}
+                    </MDTypography>
+                    {/* <Button icon={<AddIcon />} iconPosition="start" variant="outlined" size="large" onClick={() => setOpenDialog(true)}>
               Add Charger
             </Button> */}
-                </Grid>
-              </MDBox>
-              {isLoading1 ? (
-                <Loader />
-              ) : (<MaterialReactTable
-                id="tble"
-                columns={columns}
-                data={rows1}
-                initialState={{ showColumnFilters: true }}
-                muiTableContainerProps={{
-                  id: 'tble', // Attach the ID here to the container of the table
-                }}
-                muiTableProps={{
-                  sx: darkMode ?
-                    {
-                      backgroundColor: "#202940", color: "#ffffff",
-                      '& td': {
-                        fontFamily: "Montserrat",
-                        fontSize: "14px",
-                        fontWeight: "500",
-                        lineHeight: "17.07px",
-                        color: "#ffffff"
-                        // backgroundColor: '#f5f5f5',
-                      },
-                    } :
-                    {
-                      '& td': {
-                        fontFamily: "Montserrat",
-                        fontSize: "14px",
-                        fontWeight: "500",
-                        lineHeight: "17.07px",
-                        backgroundColor: '#f5f5f5',
-                      },
-                    },
-                }}
-                muiTopToolbarProps={{
-                  sx: darkMode ?
-                    {
-                      color: "#ffffff",
-                      '& svg': {
-                        fontFamily: "Montserrat",
-                        fontSize: "14px",
-                        fontWeight: "500",
-                        lineHeight: "17.07px",
-                        color: "#ffffff"
-                        // backgroundColor: '#f5f5f5',
-                      },
-                    } : {
-                      backgroundColor: '#f5f5f5',
-                    }
-                }}
-                muiTableHeadCellProps={{
-                  sx: darkMode ?
-                    {
-                      color: "#ffffff",
-                      '& svg': {
-                        fontFamily: "Montserrat",
-                        fontSize: "14px",
-                        fontWeight: "500",
-                        lineHeight: "17.07px",
-                        color: "#ffffff"
-                        // backgroundColor: '#f5f5f5',
-                      },
-                    } : {
-                      backgroundColor: '#f5f5f5',
-                    }
-                }}
-                muiBottomToolbarProps={{
-                  sx: darkMode ?
-                    {
-                      color: "#ffffff",
-                      '& p,button,div': {
-                        fontFamily: "Montserrat",
-                        // fontSize : "14px",
-                        fontWeight: "500",
-                        lineHeight: "17.07px",
-                        color: "#ffffff"
-                        // backgroundColor: '#f5f5f5',
-                      },
-                    } : {
-                      backgroundColor: '#f5f5f5',
-                    }
-                }}
-                muiTableBodyCellProps={{
-                  sx: {
-                    borderBottom: '2px solid #e0e0e0', //add a border between columns
+                  </Grid>
+                </MDBox>
+                {isLoading1 ? (
+                  <Loader />
+                ) : (
+                  <CustomMaterialTable
+                    columns={columns}
+                    data={rows1}
+                    darkMode={darkMode}
+                  />
+                  // <MaterialReactTable
+                  //   id="tble"
+                  //   columns={columns}
+                  //   data={rows1}
+                  //   initialState={{ showColumnFilters: true }}
+                  //   muiTableContainerProps={{
+                  //     id: 'tble', // Attach the ID here to the container of the table
+                  //   }}
+                  //   muiTableProps={{
+                  //     sx: darkMode ?
+                  //       {
+                  //         backgroundColor: "#202940", color: "#ffffff",
+                  //         '& td': {
+                  //           fontFamily: "Montserrat",
+                  //           fontSize: "14px",
+                  //           fontWeight: "500",
+                  //           lineHeight: "17.07px",
+                  //           color: "#ffffff"
+                  //           // backgroundColor: '#f5f5f5',
+                  //         },
+                  //       } :
+                  //       {
+                  //         '& td': {
+                  //           fontFamily: "Montserrat",
+                  //           fontSize: "14px",
+                  //           fontWeight: "500",
+                  //           lineHeight: "17.07px",
+                  //           backgroundColor: '#f5f5f5',
+                  //         },
+                  //       },
+                  //   }}
+                  //   muiTopToolbarProps={{
+                  //     sx: darkMode ?
+                  //       {
+                  //         color: "#ffffff",
+                  //         '& svg': {
+                  //           fontFamily: "Montserrat",
+                  //           fontSize: "14px",
+                  //           fontWeight: "500",
+                  //           lineHeight: "17.07px",
+                  //           color: "#ffffff"
+                  //           // backgroundColor: '#f5f5f5',
+                  //         },
+                  //       } : {
+                  //         backgroundColor: '#f5f5f5',
+                  //       }
+                  //   }}
+                  //   muiTableHeadCellProps={{
+                  //     sx: darkMode ?
+                  //       {
+                  //         color: "#ffffff",
+                  //         '& svg': {
+                  //           fontFamily: "Montserrat",
+                  //           fontSize: "14px",
+                  //           fontWeight: "500",
+                  //           lineHeight: "17.07px",
+                  //           color: "#ffffff"
+                  //           // backgroundColor: '#f5f5f5',
+                  //         },
+                  //       } : {
+                  //         backgroundColor: '#f5f5f5',
+                  //       }
+                  //   }}
+                  //   muiBottomToolbarProps={{
+                  //     sx: darkMode ?
+                  //       {
+                  //         color: "#ffffff",
+                  //         '& p,button,div': {
+                  //           fontFamily: "Montserrat",
+                  //           // fontSize : "14px",
+                  //           fontWeight: "500",
+                  //           lineHeight: "17.07px",
+                  //           color: "#ffffff"
+                  //           // backgroundColor: '#f5f5f5',
+                  //         },
+                  //       } : {
+                  //         backgroundColor: '#f5f5f5',
+                  //       }
+                  //   }}
+                  //   muiTableBodyCellProps={{
+                  //     sx: {
+                  //       borderBottom: '2px solid #e0e0e0', //add a border between columns
 
-                  },
-                }}
-              />)}
-            </Card>
+                  //     },
+                  //   }}
+                  // />
+                )}
+              </Card>
             </Grid>
             <Grid item xs={12} sm={8} sx={{ my: 4 }}>
               <Box sx={{ height: 300 }}>

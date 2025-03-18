@@ -72,6 +72,11 @@ const colors = {
     main: "#344767",
     focus: "#2c3c58",
   },
+  
+  purple: {
+    main: "#C5C0FF",
+    focus: "#C5C0FF",
+  },
 
   grey: {
     100: "#f8f9fa",
@@ -124,6 +129,12 @@ const colors = {
     dark: {
       main: "#323a54",
       state: "#1a2035",
+    },
+    purple: {
+      main: "#9F98FE",
+      state: "#9F98FE",
+      // main: "#C5C0FF",
+      // state: "#C5C0FF",
     },
   },
 

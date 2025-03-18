@@ -16,6 +16,7 @@ import MDBox from "components/MDBox";
 import { useMaterialUIController } from "context";
 import Completion from "./Completion";
 
+import CustomMaterialTable from "../../components/custom/CustomMaterialTable"; 
 import { format } from 'date-fns';
 import { toZonedTime } from 'date-fns-tz';
 // Material example components
@@ -48,7 +49,7 @@ function Admin() {
                     //     const excludedRoles = ['User', 'Manager']; 
                     //     return !excludedRoles.includes(user.role); // Filters out users with the specified roles
                     // });
-                    
+
                     // setRows(filteredUsers);
                     setRows(response.data.data);
                     setIsLoading(false);
@@ -62,8 +63,8 @@ function Admin() {
                 console.log(error);
             });
     }, []);
-  const [controller] = useMaterialUIController();
-  const { darkMode } = controller;
+    const [controller] = useMaterialUIController();
+    const { darkMode } = controller;
     const { auth } = useSelector(s => s.user.userData)
     const { enqueueSnackbar } = useSnackbar();
     const [rows, setRows] = useState([]);
@@ -101,12 +102,12 @@ function Admin() {
     const [openDialog, setOpenDialog] = useState(false);
     const [editLoading, setEditLoading] = useState(false);
     const [dialogEditData, setDialogEditData] = useState({ user_id: null, name: '' });
-  // Function to convert UTC to IST and format it
-  const convertUTCtoIST = (utcDate) => {
-    const timeZone = 'Asia/Kolkata'; // IST time zone
-    const zonedDate = toZonedTime(new Date(utcDate), timeZone); // Convert UTC to IST
-    return format(zonedDate, 'yyyy-MM-dd HH:mm:ss'); // Format the date as desired
-  };
+    // Function to convert UTC to IST and format it
+    const convertUTCtoIST = (utcDate) => {
+        const timeZone = 'Asia/Kolkata'; // IST time zone
+        const zonedDate = toZonedTime(new Date(utcDate), timeZone); // Convert UTC to IST
+        return format(zonedDate, 'yyyy-MM-dd HH:mm:ss'); // Format the date as desired
+    };
     const createTableRowData = (usersArr) => {
         const rowDataObjArr = [];
 
@@ -242,76 +243,76 @@ function Admin() {
         //   ),
         // },
         {
-          header: "Name", muiTableHeadCellProps: {
-            align: 'center',
-          },
-          muiTableBodyCellProps: {
-            align: 'center',
-          }, accessorKey: "name", align: "center"
+            header: "Name", muiTableHeadCellProps: {
+                align: 'center',
+            },
+            muiTableBodyCellProps: {
+                align: 'center',
+            }, accessorKey: "name", align: "center"
         },
         {
-          header: "Username", muiTableHeadCellProps: {
-            align: 'center',
-          },
-          muiTableBodyCellProps: {
-            align: 'center',
-          }, accessorKey: "username", align: "center"
+            header: "Username", muiTableHeadCellProps: {
+                align: 'center',
+            },
+            muiTableBodyCellProps: {
+                align: 'center',
+            }, accessorKey: "username", align: "center"
         },
         {
-          header: "Email", muiTableHeadCellProps: {
-            align: 'center',
-          },
-          muiTableBodyCellProps: {
-            align: 'center',
-          }, accessorKey: "email", align: "center"
+            header: "Email", muiTableHeadCellProps: {
+                align: 'center',
+            },
+            muiTableBodyCellProps: {
+                align: 'center',
+            }, accessorKey: "email", align: "center"
         },
         {
-          header: "Role", muiTableHeadCellProps: {
-            align: 'center',
-          },
-          muiTableBodyCellProps: {
-            align: 'center',
-          }, accessorKey: "role", align: "center"
+            header: "Role", muiTableHeadCellProps: {
+                align: 'center',
+            },
+            muiTableBodyCellProps: {
+                align: 'center',
+            }, accessorKey: "role", align: "center"
         },
         {
-          header: "Company", muiTableHeadCellProps: {
-            align: 'center',
-          },
-          muiTableBodyCellProps: {
-            align: 'center',
-          }, accessorKey: "company", align: "center"
+            header: "Company", muiTableHeadCellProps: {
+                align: 'center',
+            },
+            muiTableBodyCellProps: {
+                align: 'center',
+            }, accessorKey: "company", align: "center"
         },
         {
-          header: "Department", muiTableHeadCellProps: {
-            align: 'center',
-          },
-          muiTableBodyCellProps: {
-            align: 'center',
-          }, accessorKey: "department", align: "center"
+            header: "Department", muiTableHeadCellProps: {
+                align: 'center',
+            },
+            muiTableBodyCellProps: {
+                align: 'center',
+            }, accessorKey: "department", align: "center"
         },
         {
-          header: "Phone", align: "center", filterVariant: 'text',
-          muiTableHeadCellProps: {
-            align: 'center',
-          },
-          muiTableBodyCellProps: {
-            align: 'center',
-          },
-          Cell: (row) => (
-            <div>
-              {`${row.row.original.phone?.prefix} ${row.row.original.phone?.number}`}
-            </div>
-          ),
+            header: "Phone", align: "center", filterVariant: 'text',
+            muiTableHeadCellProps: {
+                align: 'center',
+            },
+            muiTableBodyCellProps: {
+                align: 'center',
+            },
+            Cell: (row) => (
+                <div>
+                    {`${row.row.original.phone?.prefix} ${row.row.original.phone?.number}`}
+                </div>
+            ),
         },
         {
-          header: "Created At",
-          muiTableHeadCellProps: { align: 'center' },
-          muiTableBodyCellProps: { align: 'center' },
-          accessorKey: "createdAt",
-          Cell: ({ cell }) => {
-            return convertUTCtoIST(cell.getValue());
-          },
-          align: "center",
+            header: "Created At",
+            muiTableHeadCellProps: { align: 'center' },
+            muiTableBodyCellProps: { align: 'center' },
+            accessorKey: "createdAt",
+            Cell: ({ cell }) => {
+                return convertUTCtoIST(cell.getValue());
+            },
+            align: "center",
         },
         // {
         //   header: "Action",
@@ -376,7 +377,7 @@ function Admin() {
         //     // ) : null
         //   ),
         // },
-      ];
+    ];
     // const columns = [
     //     { Header: "Name", accessor: "name", width: '30%' },
     //     { Header: "Email", accessor: "email" },
@@ -400,7 +401,7 @@ function Admin() {
     // ]
     useEffect(() => {
         setColumns(column);
-      }, []);
+    }, []);
     return (
         <DashboardLayout>
             {/* <Completion 
@@ -427,20 +428,22 @@ function Admin() {
                                 borderRadius="lg" coloredShadow="info"
                             >
                                 <Grid container direction="row" justifyContent="space-between" alignItems="center">
-                                    <MDTypography variant="h6" color="white" style={{width:"50%"}}>
+                                    <MDTypography variant="h6" color="white" style={{ width: "50%" }}>
                                         All Admins and Managers
                                     </MDTypography>
 
-                                    <MDBox className="admin_btnsHeaderCont" style={{display:"flex",
+                                    <MDBox className="admin_btnsHeaderCont" style={{
+                                        display: "flex",
                                         // width:"50%",
-                                        justifyContent:"space-between"}}>
+                                        justifyContent: "space-between"
+                                    }}>
                                         <MDButton
                                             // onClick={() => navigate('/admins/create')} 
                                             onClick={() => setIsDisabled1(!isDisabled1)}
                                             variant="outlined"
                                             color="white"
-                                            style={{marginRight: "1rem"}}
-                                            >
+                                            style={{ marginRight: "1rem" }}
+                                        >
                                             Add Manager
                                         </MDButton>
                                         <MDButton
@@ -468,88 +471,95 @@ function Admin() {
                             </MDBox> */}
                             {isLoading ? (
                                 <Loader />
-                            ) : (<MaterialReactTable
-                                columns={columns}
-                                data={rows}
-                                initialState={{ showColumnFilters: true }}
-                                muiTableProps={{
-                                    sx: darkMode ?
-                                        {
-                                            backgroundColor: "#202940", color: "#ffffff",
-                                            '& td': {
-                                                fontFamily: "Montserrat",
-                                                fontSize: "14px",
-                                                fontWeight: "500",
-                                                lineHeight: "17.07px",
-                                                color: "#ffffff"
-                                                // backgroundColor: '#f5f5f5',
-                                            },
-                                        } :
-                                        {
-                                            '& td': {
-                                                fontFamily: "Montserrat",
-                                                fontSize: "14px",
-                                                fontWeight: "500",
-                                                lineHeight: "17.07px",
-                                                backgroundColor: '#f5f5f5',
-                                            },
-                                        },
-                                }}
-                                muiTopToolbarProps={{
-                                    sx: darkMode ?
-                                        {
-                                            color: "#ffffff",
-                                            '& svg': {
-                                                fontFamily: "Montserrat",
-                                                fontSize: "14px",
-                                                fontWeight: "500",
-                                                lineHeight: "17.07px",
-                                                color: "#ffffff"
-                                                // backgroundColor: '#f5f5f5',
-                                            },
-                                        } : {
-                                            backgroundColor: '#f5f5f5',
-                                        }
-                                }}
-                                muiTableHeadCellProps={{
-                                    sx: darkMode ?
-                                        {
-                                            color: "#ffffff",
-                                            '& svg': {
-                                                fontFamily: "Montserrat",
-                                                fontSize: "14px",
-                                                fontWeight: "500",
-                                                lineHeight: "17.07px",
-                                                color: "#ffffff"
-                                                // backgroundColor: '#f5f5f5',
-                                            },
-                                        } : {
-                                            backgroundColor: '#f5f5f5',
-                                        }
-                                }}
-                                muiBottomToolbarProps={{
-                                    sx: darkMode ?
-                                        {
-                                            color: "#ffffff",
-                                            '& p,button,div': {
-                                                fontFamily: "Montserrat",
-                                                // fontSize : "14px",
-                                                fontWeight: "500",
-                                                lineHeight: "17.07px",
-                                                color: "#ffffff"
-                                                // backgroundColor: '#f5f5f5',
-                                            },
-                                        } : {
-                                            backgroundColor: '#f5f5f5',
-                                        }
-                                }}
-                                muiTableBodyCellProps={{
-                                    sx: {
-                                        borderBottom: '2px solid #e0e0e0', //add a border between columns
+                            ) : (
+                                <CustomMaterialTable
+                                    columns={columns}
+                                    data={rows}
+                                    darkMode={darkMode}
+                                />
+                                // <MaterialReactTable
+                                //     columns={columns}
+                                //     data={rows}
+                                //     initialState={{ showColumnFilters: true }}
+                                //     muiTableProps={{
+                                //         sx: darkMode ?
+                                //             {
+                                //                 backgroundColor: "#202940", color: "#ffffff",
+                                //                 '& td': {
+                                //                     fontFamily: "Montserrat",
+                                //                     fontSize: "14px",
+                                //                     fontWeight: "500",
+                                //                     lineHeight: "17.07px",
+                                //                     color: "#ffffff"
+                                //                     // backgroundColor: '#f5f5f5',
+                                //                 },
+                                //             } :
+                                //             {
+                                //                 '& td': {
+                                //                     fontFamily: "Montserrat",
+                                //                     fontSize: "14px",
+                                //                     fontWeight: "500",
+                                //                     lineHeight: "17.07px",
+                                //                     backgroundColor: '#f5f5f5',
+                                //                 },
+                                //             },
+                                //     }}
+                                //     muiTopToolbarProps={{
+                                //         sx: darkMode ?
+                                //             {
+                                //                 color: "#ffffff",
+                                //                 '& svg': {
+                                //                     fontFamily: "Montserrat",
+                                //                     fontSize: "14px",
+                                //                     fontWeight: "500",
+                                //                     lineHeight: "17.07px",
+                                //                     color: "#ffffff"
+                                //                     // backgroundColor: '#f5f5f5',
+                                //                 },
+                                //             } : {
+                                //                 backgroundColor: '#f5f5f5',
+                                //             }
+                                //     }}
+                                //     muiTableHeadCellProps={{
+                                //         sx: darkMode ?
+                                //             {
+                                //                 color: "#ffffff",
+                                //                 '& svg': {
+                                //                     fontFamily: "Montserrat",
+                                //                     fontSize: "14px",
+                                //                     fontWeight: "500",
+                                //                     lineHeight: "17.07px",
+                                //                     color: "#ffffff"
+                                //                     // backgroundColor: '#f5f5f5',
+                                //                 },
+                                //             } : {
+                                //                 backgroundColor: '#f5f5f5',
+                                //             }
+                                //     }}
+                                //     muiBottomToolbarProps={{
+                                //         sx: darkMode ?
+                                //             {
+                                //                 color: "#ffffff",
+                                //                 '& p,button,div': {
+                                //                     fontFamily: "Montserrat",
+                                //                     // fontSize : "14px",
+                                //                     fontWeight: "500",
+                                //                     lineHeight: "17.07px",
+                                //                     color: "#ffffff"
+                                //                     // backgroundColor: '#f5f5f5',
+                                //                 },
+                                //             } : {
+                                //                 backgroundColor: '#f5f5f5',
+                                //             }
+                                //     }}
+                                //     muiTableBodyCellProps={{
+                                //         sx: {
+                                //             borderBottom: '2px solid #e0e0e0', //add a border between columns
 
-                                    },
-                                }}
-                            />)}
+                                //         },
+                                //     }}
+                                // />
+                            )}
                         </Card>
                     </Grid>
                 </Grid>

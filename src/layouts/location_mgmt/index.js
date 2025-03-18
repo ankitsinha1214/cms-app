@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import Loader from "components/custom/Loader";
 // Material Dashboard 2 React examples
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
+import CustomMaterialTable from "../../components/custom/CustomMaterialTable";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import MDButton from "components/MDButton";
 // import { GoogleMap, Marker } from '@react-google-maps/api';
@@ -675,13 +676,13 @@ function Location_mgmt() {
           </Grid>
         </Grid>
       </Box> */}
-          {/* <Grid item xs={2}>
+      {/* <Grid item xs={2}>
           <Item>xs=4</Item>
         </Grid> */}
       <MDBox
         py={3}
         mt={0}
-        // mt={4}
+      // mt={4}
       >
         <Grid container
           // spacing={2} 
@@ -854,95 +855,102 @@ function Location_mgmt() {
             </MDBox>
             {isLoading ? (
               <Loader />
-            ) : (<MaterialReactTable
-              id="tble"
-              columns={columns}
-              data={rows}
-              enableExpanding={true}
-              getSubRows={(originalRow) => originalRow.chargerInfoRep}
-              SubComponent={({ row }) => <SubRow row={row} />}
-              initialState={{ showColumnFilters: true }}
-              muiTableContainerProps={{
-                id: 'tble', // Attach the ID here to the container of the table
-              }}
-              muiTableProps={{
-                sx: darkMode ?
-                  {
-                    backgroundColor: "#202940", color: "#ffffff",
-                    '& td': {
-                      fontFamily: "Montserrat",
-                      fontSize: "14px",
-                      fontWeight: "500",
-                      lineHeight: "17.07px",
-                      color: "#ffffff"
-                      // backgroundColor: '#f5f5f5',
+            ) : (
+              // <CustomMaterialTable
+              //   columns={columns}
+              //   data={rows}
+              //   darkMode={darkMode}
+              // />
+              <MaterialReactTable
+                id="tble"
+                columns={columns}
+                data={rows}
+                enableExpanding={true}
+                getSubRows={(originalRow) => originalRow.chargerInfoRep}
+                SubComponent={({ row }) => <SubRow row={row} />}
+                initialState={{ showColumnFilters: true }}
+                muiTableContainerProps={{
+                  id: 'tble', // Attach the ID here to the container of the table
+                }}
+                muiTableProps={{
+                  sx: darkMode ?
+                    {
+                      backgroundColor: "#202940", color: "#ffffff",
+                      '& td': {
+                        fontFamily: "Montserrat",
+                        fontSize: "14px",
+                        fontWeight: "500",
+                        lineHeight: "17.07px",
+                        color: "#ffffff"
+                        // backgroundColor: '#f5f5f5',
+                      },
+                    } :
+                    {
+                      '& td': {
+                        fontFamily: "Montserrat",
+                        fontSize: "14px",
+                        fontWeight: "500",
+                        lineHeight: "17.07px",
+                        backgroundColor: '#f5f5f5',
+                      },
                     },
-                  } :
-                  {
-                    '& td': {
-                      fontFamily: "Montserrat",
-                      fontSize: "14px",
-                      fontWeight: "500",
-                      lineHeight: "17.07px",
+                }}
+                muiTopToolbarProps={{
+                  sx: darkMode ?
+                    {
+                      color: "#ffffff",
+                      '& svg': {
+                        fontFamily: "Montserrat",
+                        fontSize: "14px",
+                        fontWeight: "500",
+                        lineHeight: "17.07px",
+                        color: "#ffffff"
+                        // backgroundColor: '#f5f5f5',
+                      },
+                    } : {
                       backgroundColor: '#f5f5f5',
-                    },
-                  },
-              }}
-              muiTopToolbarProps={{
-                sx: darkMode ?
-                  {
-                    color: "#ffffff",
-                    '& svg': {
-                      fontFamily: "Montserrat",
-                      fontSize: "14px",
-                      fontWeight: "500",
-                      lineHeight: "17.07px",
-                      color: "#ffffff"
-                      // backgroundColor: '#f5f5f5',
-                    },
-                  } : {
-                    backgroundColor: '#f5f5f5',
-                  }
-              }}
-              muiTableHeadCellProps={{
-                sx: darkMode ?
-                  {
-                    color: "#ffffff",
-                    '& svg': {
-                      fontFamily: "Montserrat",
-                      fontSize: "14px",
-                      fontWeight: "500",
-                      lineHeight: "17.07px",
-                      color: "#ffffff"
-                      // backgroundColor: '#f5f5f5',
-                    },
-                  } : {
-                    backgroundColor: '#f5f5f5',
-                  }
-              }}
-              muiBottomToolbarProps={{
-                sx: darkMode ?
-                  {
-                    color: "#ffffff",
-                    '& p,button,div': {
-                      fontFamily: "Montserrat",
-                      // fontSize : "14px",
-                      fontWeight: "500",
-                      lineHeight: "17.07px",
-                      color: "#ffffff"
-                      // backgroundColor: '#f5f5f5',
-                    },
-                  } : {
-                    backgroundColor: '#f5f5f5',
-                  }
-              }}
-              muiTableBodyCellProps={{
-                sx: {
-                  borderBottom: '2px solid #e0e0e0', //add a border between columns
+                    }
+                }}
+                muiTableHeadCellProps={{
+                  sx: darkMode ?
+                    {
+                      color: "#ffffff",
+                      '& svg': {
+                        fontFamily: "Montserrat",
+                        fontSize: "14px",
+                        fontWeight: "500",
+                        lineHeight: "17.07px",
+                        color: "#ffffff"
+                        // backgroundColor: '#f5f5f5',
+                      },
+                    } : {
+                      backgroundColor: '#f5f5f5',
+                    }
+                }}
+                muiBottomToolbarProps={{
+                  sx: darkMode ?
+                    {
+                      color: "#ffffff",
+                      '& p,button,div': {
+                        fontFamily: "Montserrat",
+                        // fontSize : "14px",
+                        fontWeight: "500",
+                        lineHeight: "17.07px",
+                        color: "#ffffff"
+                        // backgroundColor: '#f5f5f5',
+                      },
+                    } : {
+                      backgroundColor: '#f5f5f5',
+                    }
+                }}
+                muiTableBodyCellProps={{
+                  sx: {
+                    borderBottom: '2px solid #e0e0e0', //add a border between columns
 
-                },
-              }}
-            />)}
+                  },
+                }}
+              />
+            )}
           </Card>
         </MDBox>
       </MDBox>

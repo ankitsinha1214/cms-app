@@ -6,6 +6,7 @@ import "../SignIn/SignIn.css";
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
+import CustomMaterialTable from "../../components/custom/CustomMaterialTable";
 import './EnergyCard.css';
 import React, { useState, useEffect } from "react";
 import MDButton from "components/MDButton";
@@ -928,88 +929,94 @@ function Charger_mgmt() {
           </MDBox>
           {isLoading ? (
             <Loader />
-          ) : (<MaterialReactTable
-            columns={columns}
-            data={rows}
-            initialState={{ showColumnFilters: true }}
-            muiTableProps={{
-              sx: darkMode ?
-                {
-                  backgroundColor: "#202940", color: "#ffffff",
-                  '& td': {
-                    fontFamily: "Montserrat",
-                    fontSize: "14px",
-                    fontWeight: "500",
-                    lineHeight: "17.07px",
-                    color: "#ffffff"
-                    // backgroundColor: '#f5f5f5',
-                  },
-                } :
-                {
-                  '& td': {
-                    fontFamily: "Montserrat",
-                    fontSize: "14px",
-                    fontWeight: "500",
-                    lineHeight: "17.07px",
-                    backgroundColor: '#f5f5f5',
-                  },
-                },
-            }}
-            muiTopToolbarProps={{
-              sx: darkMode ?
-                {
-                  color: "#ffffff",
-                  '& svg': {
-                    fontFamily: "Montserrat",
-                    fontSize: "14px",
-                    fontWeight: "500",
-                    lineHeight: "17.07px",
-                    color: "#ffffff"
-                    // backgroundColor: '#f5f5f5',
-                  },
-                } : {
-                  backgroundColor: '#f5f5f5',
-                }
-            }}
-            muiTableHeadCellProps={{
-              sx: darkMode ?
-                {
-                  color: "#ffffff",
-                  '& svg': {
-                    fontFamily: "Montserrat",
-                    fontSize: "14px",
-                    fontWeight: "500",
-                    lineHeight: "17.07px",
-                    color: "#ffffff"
-                    // backgroundColor: '#f5f5f5',
-                  },
-                } : {
-                  backgroundColor: '#f5f5f5',
-                }
-            }}
-            muiBottomToolbarProps={{
-              sx: darkMode ?
-                {
-                  color: "#ffffff",
-                  '& p,button,div': {
-                    fontFamily: "Montserrat",
-                    // fontSize : "14px",
-                    fontWeight: "500",
-                    lineHeight: "17.07px",
-                    color: "#ffffff"
-                    // backgroundColor: '#f5f5f5',
-                  },
-                } : {
-                  backgroundColor: '#f5f5f5',
-                }
-            }}
-            muiTableBodyCellProps={{
-              sx: {
-                borderBottom: '2px solid #e0e0e0', //add a border between columns
+          ) : (
+            <CustomMaterialTable 
+      columns={columns} 
+      data={rows} 
+      darkMode={darkMode} 
+    />
+          // <MaterialReactTable
+          //   columns={columns}
+          //   data={rows}
+          //   initialState={{ showColumnFilters: true }}
+          //   muiTableProps={{
+          //     sx: darkMode ?
+          //       {
+          //         backgroundColor: "#202940", color: "#ffffff",
+          //         '& td': {
+          //           fontFamily: "Montserrat",
+          //           fontSize: "14px",
+          //           fontWeight: "500",
+          //           lineHeight: "17.07px",
+          //           color: "#ffffff"
+          //           // backgroundColor: '#f5f5f5',
+          //         },
+          //       } :
+          //       {
+          //         '& td': {
+          //           fontFamily: "Montserrat",
+          //           fontSize: "14px",
+          //           fontWeight: "500",
+          //           lineHeight: "17.07px",
+          //           backgroundColor: '#f5f5f5',
+          //         },
+          //       },
+          //   }}
+          //   muiTopToolbarProps={{
+          //     sx: darkMode ?
+          //       {
+          //         color: "#ffffff",
+          //         '& svg': {
+          //           fontFamily: "Montserrat",
+          //           fontSize: "14px",
+          //           fontWeight: "500",
+          //           lineHeight: "17.07px",
+          //           color: "#ffffff"
+          //           // backgroundColor: '#f5f5f5',
+          //         },
+          //       } : {
+          //         backgroundColor: '#f5f5f5',
+          //       }
+          //   }}
+          //   muiTableHeadCellProps={{
+          //     sx: darkMode ?
+          //       {
+          //         color: "#ffffff",
+          //         '& svg': {
+          //           fontFamily: "Montserrat",
+          //           fontSize: "14px",
+          //           fontWeight: "500",
+          //           lineHeight: "17.07px",
+          //           color: "#ffffff"
+          //           // backgroundColor: '#f5f5f5',
+          //         },
+          //       } : {
+          //         backgroundColor: '#f5f5f5',
+          //       }
+          //   }}
+          //   muiBottomToolbarProps={{
+          //     sx: darkMode ?
+          //       {
+          //         color: "#ffffff",
+          //         '& p,button,div': {
+          //           fontFamily: "Montserrat",
+          //           // fontSize : "14px",
+          //           fontWeight: "500",
+          //           lineHeight: "17.07px",
+          //           color: "#ffffff"
+          //           // backgroundColor: '#f5f5f5',
+          //         },
+          //       } : {
+          //         backgroundColor: '#f5f5f5',
+          //       }
+          //   }}
+          //   muiTableBodyCellProps={{
+          //     sx: {
+          //       borderBottom: '2px solid #e0e0e0', //add a border between columns
 
-              },
-            }}
-          />
+          //     },
+          //   }}
+          // />
           )}
         </Card>
       </MDBox>
