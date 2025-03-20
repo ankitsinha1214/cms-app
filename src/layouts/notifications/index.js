@@ -210,7 +210,7 @@ function Notifications() {
         align: 'center',
       },
       muiTableBodyCellProps: {
-        align: 'center',
+        align: 'justify',
       }, accessorKey: "description", align: "center"
     },
     {
@@ -356,8 +356,8 @@ function Notifications() {
         align: 'center',
       },
       muiTableBodyCellProps: {
-        align: 'center',
-      }, accessorKey: "description", align: "center"
+        align: 'justify',
+      }, accessorKey: "description", align: "center",
     },
     {
       header: "Schedule Date", muiTableHeadCellProps: {
@@ -984,6 +984,7 @@ function Notifications() {
               columns={column1} 
               data={rows} 
               darkMode={darkMode} 
+              toggleDensity={false}
             />
             // <MaterialReactTable
             //   id="tble"
@@ -1101,6 +1102,7 @@ function Notifications() {
       columns={columns} 
       data={rows1} 
       darkMode={darkMode} 
+      toggleDensity={false}
     />
             // <MaterialReactTable
             //   id="tble"

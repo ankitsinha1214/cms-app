@@ -224,6 +224,15 @@ function Dashboard() {
       headerRow.font = { bold: true, size: 14 };
       headerRow.alignment = { horizontal: "center", vertical: "middle" };
 
+      // Apply yellow background fill to headers
+      headerRow.eachCell((cell) => {
+        cell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "FFFF00" }, // Yellow highlight
+        };
+      });
+
       // Add data row
       const dataRow = sheet.addRow(["Data", ...data]);
 
@@ -274,6 +283,15 @@ function Dashboard() {
       const headerRow = sheet.addRow(["Labels", ...selectedLabels]);
       headerRow.font = { bold: true, size: 14 };
       headerRow.alignment = { horizontal: "center", vertical: "middle" };
+
+      // Apply yellow background fill to headers
+      headerRow.eachCell((cell) => {
+        cell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "FFFF00" }, // Yellow highlight
+        };
+      });
 
       // Add data row
       const dataRow = sheet.addRow(["Data", ...selectedData]);
@@ -558,13 +576,13 @@ function Dashboard() {
           // setGraphData(response.data.data);
           // setSelectedTitle('User');
           setSelectedLabels(response?.data?.data?.labels);
-          if(selectedTitle === 'User'){
+          if (selectedTitle === 'User') {
             setSelectedData(response?.data?.data?.users);
-          } else if(selectedTitle === 'Sessions'){
+          } else if (selectedTitle === 'Sessions') {
             setSelectedData(response?.data?.data?.sessions);
-          } else if(selectedTitle === 'Revenue'){
+          } else if (selectedTitle === 'Revenue') {
             setSelectedData(response?.data?.data?.revenue);
-          } else{
+          } else {
             setSelectedData(response?.data?.data?.energy);
           }
         } else {
@@ -773,17 +791,17 @@ function Dashboard() {
                       {/* <div className="flex items-center"> */}
                       {/* <DatePicker defaultValue={dayjs(selectedDate1, dateFormat)} /> */}
                       {
-                      timeRange1 === "custom" && <RangePicker
-                      size="medium"
-                      format="YYYY-MM-DD"
-                      // format="YYYY-MM-DD HH:mm:ss"
-                      onChange={(value, dateString) => {
-                        console.log('Formatted Selected Time: ', dateString);
-                        setFromDate1(dateString[0]);
-                        setToDate1(dateString[1]);
-                      }}
-                    />
-                    }
+                        timeRange1 === "custom" && <RangePicker
+                          size="medium"
+                          format="YYYY-MM-DD"
+                          // format="YYYY-MM-DD HH:mm:ss"
+                          onChange={(value, dateString) => {
+                            console.log('Formatted Selected Time: ', dateString);
+                            setFromDate1(dateString[0]);
+                            setToDate1(dateString[1]);
+                          }}
+                        />
+                      }
                       <Select
                         value={timeRange1}
                         onChange={(e) => setTimeRange1(e.target.value)}
@@ -1347,15 +1365,15 @@ function Dashboard() {
                     /> */}
                     {
                       timeRange === "custom" && <RangePicker
-                      size="medium"
-                      format="YYYY-MM-DD"
-                      // format="YYYY-MM-DD HH:mm:ss"
-                      onChange={(value, dateString) => {
-                        console.log('Formatted Selected Time: ', dateString);
-                        setFromDate(dateString[0]);
-                        setToDate(dateString[1]);
-                      }}
-                    />
+                        size="medium"
+                        format="YYYY-MM-DD"
+                        // format="YYYY-MM-DD HH:mm:ss"
+                        onChange={(value, dateString) => {
+                          console.log('Formatted Selected Time: ', dateString);
+                          setFromDate(dateString[0]);
+                          setToDate(dateString[1]);
+                        }}
+                      />
                     }
                     {/* <DateRangePicker
                       defaultValue={[dayjs('2022-04-17'), dayjs('2022-04-21')]}

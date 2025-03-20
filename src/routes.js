@@ -36,6 +36,7 @@ import UpdateUser from "layouts/user_mgmt/UpdateUser";
 import Notifications from "layouts/notifications";
 import CustomerService from "layouts/customer_service";
 import Profile from "layouts/profile";
+import PersonIcon from '@mui/icons-material/Person';
 
 // Custom Pages
 import Admin from "layouts/Admins/Admins";
@@ -313,14 +314,14 @@ export const superAdminRoutes = [
     route: "/reports",
     component: <Reports />,
   },
-  // {
-  //   type: "collapse",
-  //   name: "Reports",
-  //   key: "profile",
-  //   icon: <TextSnippetIcon />,
-  //   route: "/profile",
-  //   component: <Profile />,
-  // },
+  {
+    type: "collapse",
+    name: "Profile",
+    key: "profile",
+    icon: <PersonIcon />,
+    route: "/profile",
+    component: <Profile />,
+  },
   // {
   //   type: "collapse",
   //   name: "Sign Up",

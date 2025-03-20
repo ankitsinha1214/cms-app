@@ -5,7 +5,7 @@ import { useLocation, Link } from "react-router-dom";
 
 // prop-types is a library for typechecking of props.
 import PropTypes from "prop-types";
-
+import Avatar from "@mui/material/Avatar";
 // @material-ui core components
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
@@ -13,6 +13,8 @@ import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import Icon from "@mui/material/Icon";
 import LogoutIcon from '@mui/icons-material/Logout';
+
+import MDAvatar from "components/MDAvatar";
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
@@ -38,13 +40,17 @@ import {
   setMiniSidenav,
   setOpenConfigurator,
 } from "context";
+import MDTypography from "components/MDTypography";
+import { useNavigate } from "react-router-dom";
 
 function DashboardNavbar({ absolute, light, isMini, hidebreadcrumbTitle }) {
+  const navigate = useNavigate();
   const [navbarType, setNavbarType] = useState();
   const [controller, dispatch] = useMaterialUIController();
   const { miniSidenav, transparentNavbar, fixedNavbar, openConfigurator, darkMode } = controller;
   const [openMenu, setOpenMenu] = useState(false);
   const route = useLocation().pathname.split("/").slice(1);
+  const details = JSON.parse(localStorage.getItem("data"));
 
   useEffect(() => {
     // Setting the navbar type
@@ -76,9 +82,45 @@ function DashboardNavbar({ absolute, light, isMini, hidebreadcrumbTitle }) {
   const handleConfiguratorOpen = () => setOpenConfigurator(dispatch, !openConfigurator);
   const handleOpenMenu = (event) => setOpenMenu(event.currentTarget);
   const handleCloseMenu = () => setOpenMenu(false);
+  const handleSetting = () => {
+    handleCloseMenu();
+    handleConfiguratorOpen();
+  };
+  const handleProfile = () => {
+    handleCloseMenu();
+    navigate("/profile");
+  };
+  const handleSignout = () => {
+    handleCloseMenu();
+    localStorage.clear();
+    navigate("/sign-in");
+  };
 
   // Render the notifications menu
   const renderMenu = () => (
+    <Menu
+      anchorEl={openMenu}
+      anchorReference={null}
+      anchorOrigin={{
+        vertical: "bottom",
+        horizontal: "right",
+        // horizontal: "left",
+      }}
+      transformOrigin={{
+        vertical: "top",
+        horizontal: "right",
+      }}
+      open={Boolean(openMenu)}
+      onClose={handleCloseMenu}
+      sx={{ mt: 2 }}
+    >
+      <NotificationItem onClick={handleProfile} icon={<Icon>account_circle</Icon>} title="View Profile" />
+      <NotificationItem icon={<Icon>notifications</Icon>} title="Notifications" />
+      <NotificationItem onClick={handleSetting} icon={<Icon>settings</Icon>} title="Settings" />
+      <NotificationItem onClick={handleSignout} icon={<Icon>logout</Icon>} title="Sign Out" />
+    </Menu>
+  );
+  const renderMenu1 = () => (
     <Menu
       anchorEl={openMenu}
       anchorReference={null}
@@ -114,30 +156,30 @@ function DashboardNavbar({ absolute, light, isMini, hidebreadcrumbTitle }) {
       position={absolute ? "absolute" : navbarType}
       color="inherit"
       sx={(theme) => navbar(theme, { transparentNavbar, absolute, light, darkMode })}
-      style={{zIndex:"999"}}
+      style={{ zIndex: "999" }}
     >
       <Toolbar sx={(theme) => navbarContainer(theme)}>
         <MDBox color="inherit" mb={{ xs: 1, md: 0 }} sx={(theme) => navbarRow(theme, { isMini })}>
           <Breadcrumbs icon="home" title={route[route.length - 1]} route={route} light={light} hideTitle={hidebreadcrumbTitle} />
         </MDBox>
         {isMini ? null : (
-          <MDBox sx={(theme) => navbarRow(theme, { isMini })}>
+          <MDBox sx={(theme) => navbarRow(theme, { isMini })} display="flex" alignItems="center">
             {/* <MDBox pr={1}>
               <MDInput label="Search here" />
             </MDBox> */}
-            <MDBox color={light ? "white" : "inherit"}>
-              <IconButton
-                size="small"
-                disableRipple
-                color="inherit"
-                sx={navbarMobileMenu}
-                onClick={handleMiniSidenav}
-              >
-                <Icon sx={iconsStyle} fontSize="medium">
-                  {miniSidenav ? "menu_open" : "menu"}
-                </Icon>
-              </IconButton>
-              <IconButton
+            {/* <MDBox color={light ? "white" : "inherit"}> */}
+            <IconButton
+              size="small"
+              disableRipple
+              color="inherit"
+              sx={navbarMobileMenu}
+              onClick={handleMiniSidenav}
+            >
+              <Icon sx={iconsStyle} fontSize="medium">
+                {miniSidenav ? "menu_open" : "menu"}
+              </Icon>
+            </IconButton>
+            {/* <IconButton
                 size="small"
                 disableRipple
                 color="inherit"
@@ -145,14 +187,14 @@ function DashboardNavbar({ absolute, light, isMini, hidebreadcrumbTitle }) {
                 onClick={handleConfiguratorOpen}
               >
                 <Icon sx={iconsStyle}>settings</Icon>
-              </IconButton>
-              <Link to="/sign-in">
+              </IconButton> */}
+            {/* <Link to="/sign-in">
                 <IconButton sx={navbarIconButton} onClick={() => localStorage.clear()} size="medium" disableRipple>
-                  <LogoutIcon />
-                  {/* <Icon sx={iconsStyle} style={{fontSize : "2rem!important"}}>account_circle</Icon> */}
-                </IconButton>
-              </Link>
-              {/* <IconButton
+                  <LogoutIcon /> */}
+            {/* <Icon sx={iconsStyle} style={{fontSize : "2rem!important"}}>account_circle</Icon> */}
+            {/* </IconButton>
+              </Link> */}
+            {/* <IconButton
                 size="small"
                 disableRipple
                 color="inherit"
@@ -164,8 +206,37 @@ function DashboardNavbar({ absolute, light, isMini, hidebreadcrumbTitle }) {
               >
                 <Icon sx={iconsStyle}>notifications</Icon>
               </IconButton> */}
-              {renderMenu()}
+            <MDBox display="flex" alignItems="center" sx={{ cursor: "pointer" }} onClick={handleOpenMenu}>
+              {/* <MDBox textAlign="end" lineHeight="0.6rem"> */}
+              <MDBox display="flex" flexDirection="column" textAlign="right" lineHeight="0.6rem">
+                <MDTypography variant="h6" fontWeight="medium" sx={{ mr: 1 }}>
+                  {details?.username}
+                </MDTypography>
+                <MDTypography variant="button" color="text" fontWeight="regular" sx={{ mr: 1 }}>
+                  {details?.role}
+                </MDTypography>
+              </MDBox>
+              {/* <Avatar backgroundColor="green" alt={details?.username?.toUpperCase()} src="/path-to-avatar.jpg" /> */}
+              <MDAvatar
+                src="/path-to-avatar.jpg"
+                alt={details?.username?.toUpperCase()}
+                size="md"
+                shadow="md"
+                bgColor="success"
+              // sx={({ borders: { borderWidth }, palette: { white } }) => ({
+              //   border: `${borderWidth[2]} solid ${white.main}`,
+              //   cursor: "pointer",
+              //   position: "relative",
+              //   // ml: -1.25,
+
+              //   "&:hover, &:focus": {
+              //     zIndex: "10",
+              //   },
+              // })}
+              />
             </MDBox>
+            {renderMenu()}
+            {/* </MDBox> */}
           </MDBox>
         )}
       </Toolbar>

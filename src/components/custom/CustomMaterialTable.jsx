@@ -1,14 +1,18 @@
 import React from "react";
 import MaterialReactTable from "material-react-table";
 
-const CustomMaterialTable = ({ columns, data, darkMode, ...rest }) => {
+const CustomMaterialTable = ({ columns, data, darkMode, toggleDensity, ...rest }) => {
+  console.log(toggleDensity)
   return (
     <MaterialReactTable
+    // style={{
+    //   marginTop: "1rem"
+    // }}
       columns={columns}
       data={data}
       initialState={{
         showColumnFilters: true,
-        density: "compact", // Default to High Density
+        density: toggleDensity ? "compact" : null, // Default to High Density
       }}
       muiTableContainerProps={{
         id: "tble",
