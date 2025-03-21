@@ -308,6 +308,10 @@ const ViewCharger = () => {
         }
       }).catch(error => {
         console.error(error);
+        if(error?.response?.status === 401){
+          localStorage.clear();
+          navigate('/sign-in');
+        }
       });
   };
   console.log(isLoading1)

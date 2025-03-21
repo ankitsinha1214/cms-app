@@ -276,6 +276,10 @@ const ViewLocation = () => {
       .catch((error) => {
         // console.log(error);
         enqueueSnackbar("Error Occurred while Deleting Charger. Please try again later.", { variant: 'error' });
+        if(error?.response?.status === 401){
+          localStorage.clear();
+          navigate('/sign-in');
+        }
       });
   };
   const handleUpdateCharger = () => {
@@ -325,6 +329,10 @@ const ViewLocation = () => {
           .catch((error) => {
             console.log(error);
             enqueueSnackbar('Error Occurred while Adding Charger.', { variant: 'error' });
+            if(error?.response?.status === 401){
+              localStorage.clear();
+              navigate('/sign-in');
+            }
           });
 
         setOpenDialog(false);  // Close the dialog
@@ -382,6 +390,10 @@ const ViewLocation = () => {
           .catch((error) => {
             console.log(error);
             enqueueSnackbar('Error Occurred while Adding Charger.', { variant: 'error' });
+            if(error?.response?.status === 401){
+              localStorage.clear();
+              navigate('/sign-in');
+            }
           });
 
         setOpenDialog(false);  // Close the dialog
@@ -408,6 +420,10 @@ const ViewLocation = () => {
       }
     }).catch(error => {
       console.error(error);
+      if(error?.response?.status === 401){
+        localStorage.clear();
+        navigate('/sign-in');
+      }
     });
   };
   useEffect(() => {
@@ -444,6 +460,10 @@ const ViewLocation = () => {
       })
       .catch((error) => {
         console.log(error);
+        if(error?.response?.status === 401){
+          localStorage.clear();
+          navigate('/sign-in');
+        }
       });
     // setAdditionalImages(location.state.locationImage);
   }, []);

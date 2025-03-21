@@ -252,6 +252,10 @@ function Location_mgmt() {
       .catch((error) => {
         // console.log(error);
         enqueueSnackbar(error.message, { variant: 'error' });
+        if(error?.response?.status === 401){
+          localStorage.clear();
+          navigate('/sign-in');
+        }
       });
   };
   // const [viewState, setViewState] = useState({
@@ -358,6 +362,10 @@ function Location_mgmt() {
       })
       .catch((error) => {
         console.log(error);
+        if(error?.response?.status === 401){
+          localStorage.clear();
+          navigate('/sign-in');
+        }
       });
     handleLocationTypes();
   }, []);
@@ -596,6 +604,10 @@ function Location_mgmt() {
       .catch((error) => {
         // console.log(error);
         enqueueSnackbar(error?.message, { variant: 'error' });
+        if(error?.response?.status === 401){
+          localStorage.clear();
+          navigate('/sign-in');
+        }
       });
   };
   const Item = styled(Paper)(({ theme }) => ({

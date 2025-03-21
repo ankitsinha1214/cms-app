@@ -174,6 +174,10 @@ function Charger_mgmt() {
       })
       .catch((error) => {
         console.log(error);
+        if(error?.response?.status === 401){
+          localStorage.clear();
+          navigate('/sign-in');
+        }
       });
   }, []);
   const handleDropdownSelect = (selectedValue) => {
@@ -215,6 +219,10 @@ function Charger_mgmt() {
       }
     }).catch(error => {
       console.error(error);
+      if(error?.response?.status === 401){
+        localStorage.clear();
+        navigate('/sign-in');
+      }
     });
   };
 
@@ -293,6 +301,10 @@ function Charger_mgmt() {
       }
     }).catch(error => {
       console.error(error);
+      if(error?.response?.status === 401){
+        localStorage.clear();
+        navigate('/sign-in');
+      }
     });
   };
 
@@ -670,6 +682,10 @@ function Charger_mgmt() {
       .catch((error) => {
         // console.log(error);
         enqueueSnackbar("Error Occurred while Deleting Charger. Please try again later.", { variant: 'error' });
+        if(error?.response?.status === 401){
+          localStorage.clear();
+          navigate('/sign-in');
+        }
       });
   };
   // const handleDelete = (row_data) => {

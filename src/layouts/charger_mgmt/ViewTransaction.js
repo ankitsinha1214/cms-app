@@ -229,6 +229,10 @@ function ViewTransaction() {
             }
         }).catch(error => {
             console.error(error);
+            if(error?.response?.status === 401){
+              localStorage.clear();
+              navigate('/sign-in');
+            }
         });
     };
     useEffect(() => {

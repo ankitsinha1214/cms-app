@@ -61,6 +61,10 @@ function Admin() {
             })
             .catch((error) => {
                 console.log(error);
+                if(error?.response?.status === 401){
+                  localStorage.clear();
+                  navigate('/sign-in');
+                }
             });
     }, []);
     const [controller] = useMaterialUIController();
@@ -167,6 +171,10 @@ function Admin() {
                 console.log(err);
                 setDeleteLoading(false);
                 enqueueSnackbar('Error Deleting Admin !!!', { variant: 'error' })
+                if(err?.response?.status === 401){
+                  localStorage.clear();
+                  navigate('/sign-in');
+                }
             })
     }
 

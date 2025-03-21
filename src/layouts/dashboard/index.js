@@ -385,6 +385,10 @@ function Dashboard() {
         console.log(error);
         setIsLoading(false);
         setDrawerTitle(title);
+        if(error?.response?.status === 401){
+          localStorage.clear();
+          navigate('/sign-in');
+        }
       });
     // setIsLoading(false);
     // setDrawerTitle(title); // Set drawer title
@@ -511,6 +515,10 @@ function Dashboard() {
       })
       .catch((error) => {
         console.log(error);
+        if(error?.response?.status === 401){
+          localStorage.clear();
+          navigate('/sign-in');
+        }
       });
     fetchAllChargers();
     fetchAllGraphData();
@@ -540,6 +548,10 @@ function Dashboard() {
         }
       }).catch(error => {
         console.error(error);
+        if(error?.response?.status === 401){
+          localStorage.clear();
+          navigate('/sign-in');
+        }
       });
   };
   const fetchAllGraphData = () => {
@@ -561,6 +573,10 @@ function Dashboard() {
         }
       }).catch(error => {
         console.error(error);
+        if(error?.response?.status === 401){
+          localStorage.clear();
+          navigate('/sign-in');
+        }
       });
   };
   const fetchAllGraphData1 = () => {
@@ -590,6 +606,10 @@ function Dashboard() {
         }
       }).catch(error => {
         console.error(error);
+        if(error?.response?.status === 401){
+          localStorage.clear();
+          navigate('/sign-in');
+        }
       });
   };
 

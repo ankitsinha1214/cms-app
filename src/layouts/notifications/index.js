@@ -111,6 +111,10 @@ function Notifications() {
       .catch((error) => {
         console.log(error);
         enqueueSnackbar(error.response?.data?.message, { variant: 'error' });
+        if(error?.response?.status === 401){
+          localStorage.clear();
+          navigate('/sign-in');
+        }
       });
   };
     // Function to convert UTC to IST and format it
@@ -503,6 +507,10 @@ function Notifications() {
       })
       .catch((error) => {
         console.log(error);
+        if(error?.response?.status === 401){
+          localStorage.clear();
+          navigate('/sign-in');
+        }
       });
     axios({
       method: "get",
@@ -525,6 +533,10 @@ function Notifications() {
       })
       .catch((error) => {
         console.log(error);
+        if(error?.response?.status === 401){
+          localStorage.clear();
+          navigate('/sign-in');
+        }
       });
   }, []);
   const createUser = (title, description,phoneNumber) => {
@@ -586,6 +598,10 @@ function Notifications() {
         .catch((error) => {
             console.log(error);
             enqueueSnackbar(error, { variant: 'error' });
+            if(error?.response?.status === 401){
+              localStorage.clear();
+              navigate('/sign-in');
+            }
         });
 };
   const handleSubmit = (event) => {
