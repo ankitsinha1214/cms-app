@@ -1,8 +1,45 @@
-import React from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import MaterialReactTable from "material-react-table";
 
-const CustomMaterialTable = ({ columns, data, darkMode, toggleDensity, ...rest }) => {
-  console.log(toggleDensity)
+const CustomMaterialTable = ({ columns, data, darkMode, exportExcel, setVisibleColumns, setFilteredData, toggleDensity, ...rest }) => {
+  // const [columnVisibility, setColumnVisibility] = useState({});
+  const [columnVisibility, setColumnVisibility] = useState({});
+  const [globalFilter, setGlobalFilter] = useState("");
+  const [columnFilters, setColumnFilters] = useState([]);
+
+  // Compute filtered data
+  // const filteredRows = useMemo(() => {
+  //   return data.filter((row) => {
+  //     return columnFilters.every(({ id, value }) => {
+  //       return row[id]?.toString().toLowerCase().includes(value.toLowerCase());
+  //     });
+  //   });
+  // }, [data, columnFilters]);
+  const filteredRows = useMemo(() => {
+    return data.filter((row) => {
+      // Apply column filters
+      const columnMatch = columnFilters.every(({ id, value }) => {
+        return row[id]?.toString().toLowerCase().includes(value.toLowerCase());
+      });
+  
+      // Apply global filter
+      const globalMatch = globalFilter
+        ? Object.values(row).some((val) =>
+            val?.toString().toLowerCase().includes(globalFilter.toLowerCase())
+          )
+        : true; // If no global filter, match everything
+  
+      return columnMatch && globalMatch;
+    });
+  }, [data, columnFilters, globalFilter]);
+  
+
+  // Update parent with filtered data
+  useEffect(() => {
+    if(exportExcel){
+      setFilteredData(filteredRows);
+    }
+  }, [filteredRows]);
   return (
     <MaterialReactTable
     // style={{
@@ -92,6 +129,22 @@ const CustomMaterialTable = ({ columns, data, darkMode, toggleDensity, ...rest }
           borderBottom: "2px solid #e0e0e0", // Add a border between columns
         },
       }}
+      // state={{ columnVisibility }}
+      // onColumnVisibilityChange={(newState) => {
+      //   setColumnVisibility(newState);
+      //   setVisibleColumns(newState);
+      // }}
+      state={{
+        columnVisibility,
+        globalFilter,
+        columnFilters,
+      }}
+      onColumnVisibilityChange={(newState) => {
+        setColumnVisibility(newState);
+        setVisibleColumns(newState);
+      }}
+      onGlobalFilterChange={setGlobalFilter}
+      onColumnFiltersChange={setColumnFilters}
       {...rest} // Pass other props dynamically
     />
   );

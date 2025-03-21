@@ -6,6 +6,8 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import dayjs from 'dayjs';
 import InputLabel from '@mui/material/InputLabel';
+import ExcelJS from "exceljs";
+import { saveAs } from "file-saver";
 import Loader from "components/custom/Loader";
 import { useSnackbar } from "notistack";
 import FormControl from '@mui/material/FormControl';
@@ -28,13 +30,15 @@ const Reports = () => {
     const [fromDate, setFromDate] = useState(null);
     const [toDate, setToDate] = useState(null);
     const [isDisabled, setIsDisabled] = useState(false);
+    const [visibleColumns, setVisibleColumns] = useState({});
     const [isLoading, setIsLoading] = useState(false);
-    const [type, setType] = useState('sessions');
+    const [type, setType] = useState('Sessions');
     const { enqueueSnackbar } = useSnackbar();
     const [controller] = useMaterialUIController();
     const { darkMode } = controller;
     const [columns, setColumns] = useState([]);
     const [rows, setRows] = useState([]);
+    const [filteredData, setFilteredData] = useState(rows); 
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
     useEffect(() => {
@@ -160,7 +164,7 @@ const Reports = () => {
             setIsLoading(true);
             handleGetTable();
         }
-    }, [fromDate, toDate]);
+    }, [fromDate, toDate, type]);
 
     const handleGetTable = () => {
         // e.preventDefault();
@@ -212,7 +216,7 @@ const Reports = () => {
             })
             .catch((error) => {
                 console.log(error);
-                enqueueSnackbar(error, { variant: 'error' });
+                enqueueSnackbar(error?.response?.data?.message || error.message, { variant: 'error' });
                 // window.location.reload();
             });
     };
@@ -282,6 +286,92 @@ const Reports = () => {
     //         });
     // };
 
+    const exportToExcel = async () => {
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet("Report");
+    
+        // Filter visible columns
+        const filteredColumns = columns.filter(col => visibleColumns[col.accessorKey] !== false);
+    
+        // Add column headers
+        worksheet.addRow(filteredColumns.map(col => col.header));
+    
+        // Add filtered row data
+        filteredData.forEach(row => {
+          const rowData = filteredColumns.map(col => row[col.accessorKey] || "");
+          worksheet.addRow(rowData);
+        });
+    
+        // Style headers
+        worksheet.getRow(1).eachCell(cell => {
+          cell.font = { bold: true };
+          cell.alignment = { vertical: "middle", horizontal: "center" };
+          cell.fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "FFCCCCCC" },
+          };
+        });
+    
+        // Auto-adjust column widths
+        worksheet.columns.forEach(column => {
+          let maxLength = 0;
+          column.eachCell({ includeEmpty: true }, cell => {
+            const cellValue = cell.value ? cell.value.toString() : "";
+            maxLength = Math.max(maxLength, cellValue.length);
+          });
+          column.width = maxLength + 2;
+        });
+    
+        // Generate and download file
+        const buffer = await workbook.xlsx.writeBuffer();
+        const fileBlob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+        const fileName = `Report_${type}_${new Date().toISOString().replace(/[:.-]/g, "_")}.xlsx`;
+        saveAs(fileBlob, fileName);
+      };
+    // const exportToExcel = async () => {
+    //     const workbook = new ExcelJS.Workbook();
+    //     const worksheet = workbook.addWorksheet("Report");
+    
+    //     // Filter visible columns
+    //     const filteredColumns = columns.filter(col => visibleColumns[col.accessorKey] !== false);
+    
+    //     // Add column headers
+    //     worksheet.addRow(filteredColumns.map(col => col.header));
+    
+    //     // Add row data
+    //     rows.forEach(row => {
+    //       const rowData = filteredColumns.map(col => row[col.accessorKey] || "");
+    //       worksheet.addRow(rowData);
+    //     });
+    
+    //     // Style headers
+    //     worksheet.getRow(1).eachCell(cell => {
+    //       cell.font = { bold: true };
+    //       cell.alignment = { vertical: "middle", horizontal: "center" };
+    //       cell.fill = {
+    //         type: "pattern",
+    //         pattern: "solid",
+    //         fgColor: { argb: "FFCCCCCC" }, // Light Gray Background
+    //       };
+    //     });
+    
+    //     // Auto-adjust column widths
+    //     worksheet.columns.forEach(column => {
+    //       let maxLength = 0;
+    //       column.eachCell({ includeEmpty: true }, cell => {
+    //         const cellValue = cell.value ? cell.value.toString() : "";
+    //         maxLength = Math.max(maxLength, cellValue.length);
+    //       });
+    //       column.width = maxLength + 2;
+    //     });
+    
+    //     // Generate and download file
+    //     const buffer = await workbook.xlsx.writeBuffer();
+    //     const fileBlob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    //     saveAs(fileBlob, `Report_${type}.xlsx`);
+    //   };
+
     return (
         <DashboardLayout>
             <DashboardNavbar />
@@ -342,7 +432,7 @@ const Reports = () => {
                                         >Session</div>
                                     </div>
                                 ),
-                                value: 'sessions',
+                                value: 'Sessions',
                             },
                             // {
                             //     label: (
@@ -407,7 +497,7 @@ const Reports = () => {
                                         >User</div>
                                     </div>
                                 ),
-                                value: 'User',
+                                value: 'Users',
                             },
                             {
                                 label: (
@@ -438,7 +528,7 @@ const Reports = () => {
                                         >Location</div>
                                     </div>
                                 ),
-                                value: 'Location',
+                                value: 'Locations',
                             },
                             {
                                 label: (
@@ -504,7 +594,7 @@ const Reports = () => {
                                         </div>
                                     </div>
                                 ),
-                                value: 'Payment',
+                                value: 'Payments',
                             },
                         ]}
                         onChange={(value) => {
@@ -587,6 +677,7 @@ const Reports = () => {
                             </MDTypography>
                             <MDButton
                                 //   onClick={() => setIsDisabled(!isDisabled)}
+                                onClick={exportToExcel}
                                 variant="outlined"
                                 color="white"
                             >
@@ -601,6 +692,9 @@ const Reports = () => {
                             columns={columns}
                             data={rows}
                             darkMode={darkMode}
+                            exportExcel={true}
+                            setVisibleColumns={setVisibleColumns}
+                            setFilteredData={setFilteredData}
                         />
                     )}
                 </Card>
