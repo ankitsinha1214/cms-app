@@ -513,7 +513,7 @@ const Reports = () => {
                                     >
                                         <Avatar
                                             shape="square"
-                                            src={`${process.env.REACT_APP_AWS_BASEURL}cms-icons/revenue11.svg`}
+                                            src={`${process.env.REACT_APP_AWS_BASEURL}cms-icons/location11.svg`}
                                             style={{
                                                 // backgroundColor: '#87d068',
                                             }}
@@ -544,9 +544,11 @@ const Reports = () => {
                                     >
                                         <Avatar
                                             shape="square"
-                                            src={`${process.env.REACT_APP_AWS_BASEURL}cms-icons/activecharger1.svg`}
+                                            src={`${process.env.REACT_APP_AWS_BASEURL}cms-icons/charger11.svg`}
                                             style={{
                                                 // backgroundColor: '#87d068',
+                                                // height: "30px",
+                                                // width: "24px",
                                             }}
                                         // src={usernotification}
                                         // icon={<UserOutlined />}
@@ -561,7 +563,7 @@ const Reports = () => {
                                         </div>
                                     </div>
                                 ),
-                                value: 'Charger',
+                                value: 'Chargers',
                             },
                             {
                                 label: (
@@ -577,7 +579,7 @@ const Reports = () => {
                                     >
                                         <Avatar
                                             shape="square"
-                                            src={`${process.env.REACT_APP_AWS_BASEURL}cms-icons/inactivecharger1.svg`}
+                                            src={`${process.env.REACT_APP_AWS_BASEURL}cms-icons/payment11.svg`}
                                             style={{
                                                 // backgroundColor: '#87d068',
                                             }}
