@@ -33,8 +33,13 @@ function Service_and_maintenance_mgmt() {
   }, []);
   return (
     <DashboardLayout>
-      <DashboardNavbar absolute isMini />
-      <MDBox mt={8}>
+      <DashboardNavbar 
+      // absolute 
+      // isMini 
+      />
+      <MDBox 
+      // mt={8}
+      >
         <Row gutter={[16, 32]}>
           <Col xs={24} sm={12} md={8} lg={22/3}>
             <CardActionArea onClick={() => navigate('/service-maintenace/site-survey')}>

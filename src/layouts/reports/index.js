@@ -287,6 +287,9 @@ const Reports = () => {
     // };
 
     const exportToExcel = async () => {
+        if(!fromDate || !toDate){
+            return enqueueSnackbar("Please select a date range!", { variant: 'error' })
+        }
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet("Report");
     
