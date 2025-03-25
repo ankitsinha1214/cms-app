@@ -51,6 +51,10 @@ function Charger_mgmt() {
   const [isDisabled1, setIsDisabled1] = useState(false);
   const [selected, setSelected] = useState("All Chargers");
   const [total, setTotal] = useState(0);
+  const [activeAC, setActiveAC] = useState(0);
+  const [inactiveAC, setInactiveAC] = useState(0);
+  const [activeDC, setActiveDC] = useState(0);
+  const [inactiveDC, setInactiveDC] = useState(0);
   const [inactive, setInactive] = useState(0);
   const [columns, setColumns] = useState([]);
   const { enqueueSnackbar } = useSnackbar();
@@ -162,6 +166,11 @@ function Charger_mgmt() {
           setRows(transformedData);
           setTotal(transformedData.length);
           setInactive(transformedData?.filter(row => row.status === "Inactive").length);
+          // New states for active AC and DC chargers
+          setActiveAC(transformedData.filter(row => row.status !== "Inactive" && row.c_type === "AC").length);
+          setInactiveAC(transformedData.filter(row => row.status === "Inactive" && row.c_type === "AC").length);
+          setActiveDC(transformedData.filter(row => row.status !== "Inactive" && row.c_type === "DC").length);
+          setInactiveDC(transformedData.filter(row => row.status === "Inactive" && row.c_type === "DC").length);
           // setInactive(transformedData?.filter(row => row.status !== "Inactive").length);
           // setRows(response.data.data);
           setIsLoading(false);
@@ -174,7 +183,7 @@ function Charger_mgmt() {
       })
       .catch((error) => {
         console.log(error);
-        if(error?.response?.status === 401){
+        if (error?.response?.status === 401) {
           localStorage.clear();
           navigate('/sign-in');
         }
@@ -219,7 +228,7 @@ function Charger_mgmt() {
       }
     }).catch(error => {
       console.error(error);
-      if(error?.response?.status === 401){
+      if (error?.response?.status === 401) {
         localStorage.clear();
         navigate('/sign-in');
       }
@@ -301,7 +310,7 @@ function Charger_mgmt() {
       }
     }).catch(error => {
       console.error(error);
-      if(error?.response?.status === 401){
+      if (error?.response?.status === 401) {
         localStorage.clear();
         navigate('/sign-in');
       }
@@ -540,7 +549,7 @@ function Charger_mgmt() {
       },
     },
     {
-      header: "Start Date & Time", accessorKey: "createdAt", align: "center",  
+      header: "Start Date & Time", accessorKey: "createdAt", align: "center",
       muiTableHeadCellProps: {
         align: 'center',
       },
@@ -682,7 +691,7 @@ function Charger_mgmt() {
       .catch((error) => {
         // console.log(error);
         enqueueSnackbar("Error Occurred while Deleting Charger. Please try again later.", { variant: 'error' });
-        if(error?.response?.status === 401){
+        if (error?.response?.status === 401) {
           localStorage.clear();
           navigate('/sign-in');
         }
@@ -799,9 +808,12 @@ function Charger_mgmt() {
                 title1="Active"
                 imgicon={`${process.env.REACT_APP_AWS_BASEURL}cms-icons/4wac.png`}
                 title2="Inactive"
-                count="100"
-                count1={80}
-                count2={20}
+                count={activeAC + inactiveAC || 0}
+                count1={activeAC || 0} // Count of Available chargers
+                count2={inactiveAC || 0}
+                // count="100"
+                // count1={80}
+                // count2={20}
                 percentage={{
                   color: "success",
                   amount: "+3%",
@@ -819,9 +831,12 @@ function Charger_mgmt() {
                 imgicon={`${process.env.REACT_APP_AWS_BASEURL}cms-icons/4wdc.png`}
                 title1="Active"
                 title2="Inactive"
-                count="100"
-                count1={80}
-                count2={20}
+                count={inactiveDC + activeDC || 0}
+                count1={activeDC || 0} // Count of Available chargers
+                count2={inactiveDC || 0}
+                // count="100"
+                // count1={80}
+                // count2={20}
                 percentage={{
                   color: "success",
                   amount: "+1%",
@@ -839,9 +854,12 @@ function Charger_mgmt() {
                 imgicon={`${process.env.REACT_APP_AWS_BASEURL}cms-icons/2wdc.png`}
                 title1="Active"
                 title2="Inactive"
-                count="100"
-                count1={80}
-                count2={20}
+                count="0"
+                count1={0}
+                count2={0}
+                // count="100"
+                // count1={80}
+                // count2={20}
                 percentage={{
                   color: "success",
                   amount: "",
@@ -907,22 +925,22 @@ function Charger_mgmt() {
                 // width:"50%",
                 justifyContent: "space-between"
               }}>
-                 <MDButton
-                onClick={() => setIsDisabled1(!isDisabled1)}
-                variant="outlined"
-                color="white"
-                style={{ fontFamily: "Montserrat", fontWeight: "600", lineHeight: "19.5px" }}
-              >
-                Reset Charger
-              </MDButton>
-              <MDButton
-                onClick={() => setIsDisabled(!isDisabled)}
-                variant="outlined"
-                color="white"
-                style={{ fontFamily: "Montserrat", fontWeight: "600", lineHeight: "19.5px", marginLeft: "1rem"  }}
-              >
-                Start / Stop transaction
-              </MDButton>
+                <MDButton
+                  onClick={() => setIsDisabled1(!isDisabled1)}
+                  variant="outlined"
+                  color="white"
+                  style={{ fontFamily: "Montserrat", fontWeight: "600", lineHeight: "19.5px" }}
+                >
+                  Reset Charger
+                </MDButton>
+                <MDButton
+                  onClick={() => setIsDisabled(!isDisabled)}
+                  variant="outlined"
+                  color="white"
+                  style={{ fontFamily: "Montserrat", fontWeight: "600", lineHeight: "19.5px", marginLeft: "1rem" }}
+                >
+                  Start / Stop transaction
+                </MDButton>
               </MDBox>
 
               {/* <MDButton
@@ -946,93 +964,93 @@ function Charger_mgmt() {
           {isLoading ? (
             <Loader />
           ) : (
-            <CustomMaterialTable 
-      columns={columns} 
-      data={rows} 
-      darkMode={darkMode} 
-    />
-          // <MaterialReactTable
-          //   columns={columns}
-          //   data={rows}
-          //   initialState={{ showColumnFilters: true }}
-          //   muiTableProps={{
-          //     sx: darkMode ?
-          //       {
-          //         backgroundColor: "#202940", color: "#ffffff",
-          //         '& td': {
-          //           fontFamily: "Montserrat",
-          //           fontSize: "14px",
-          //           fontWeight: "500",
-          //           lineHeight: "17.07px",
-          //           color: "#ffffff"
-          //           // backgroundColor: '#f5f5f5',
-          //         },
-          //       } :
-          //       {
-          //         '& td': {
-          //           fontFamily: "Montserrat",
-          //           fontSize: "14px",
-          //           fontWeight: "500",
-          //           lineHeight: "17.07px",
-          //           backgroundColor: '#f5f5f5',
-          //         },
-          //       },
-          //   }}
-          //   muiTopToolbarProps={{
-          //     sx: darkMode ?
-          //       {
-          //         color: "#ffffff",
-          //         '& svg': {
-          //           fontFamily: "Montserrat",
-          //           fontSize: "14px",
-          //           fontWeight: "500",
-          //           lineHeight: "17.07px",
-          //           color: "#ffffff"
-          //           // backgroundColor: '#f5f5f5',
-          //         },
-          //       } : {
-          //         backgroundColor: '#f5f5f5',
-          //       }
-          //   }}
-          //   muiTableHeadCellProps={{
-          //     sx: darkMode ?
-          //       {
-          //         color: "#ffffff",
-          //         '& svg': {
-          //           fontFamily: "Montserrat",
-          //           fontSize: "14px",
-          //           fontWeight: "500",
-          //           lineHeight: "17.07px",
-          //           color: "#ffffff"
-          //           // backgroundColor: '#f5f5f5',
-          //         },
-          //       } : {
-          //         backgroundColor: '#f5f5f5',
-          //       }
-          //   }}
-          //   muiBottomToolbarProps={{
-          //     sx: darkMode ?
-          //       {
-          //         color: "#ffffff",
-          //         '& p,button,div': {
-          //           fontFamily: "Montserrat",
-          //           // fontSize : "14px",
-          //           fontWeight: "500",
-          //           lineHeight: "17.07px",
-          //           color: "#ffffff"
-          //           // backgroundColor: '#f5f5f5',
-          //         },
-          //       } : {
-          //         backgroundColor: '#f5f5f5',
-          //       }
-          //   }}
-          //   muiTableBodyCellProps={{
-          //     sx: {
-          //       borderBottom: '2px solid #e0e0e0', //add a border between columns
+            <CustomMaterialTable
+              columns={columns}
+              data={rows}
+              darkMode={darkMode}
+            />
+            // <MaterialReactTable
+            //   columns={columns}
+            //   data={rows}
+            //   initialState={{ showColumnFilters: true }}
+            //   muiTableProps={{
+            //     sx: darkMode ?
+            //       {
+            //         backgroundColor: "#202940", color: "#ffffff",
+            //         '& td': {
+            //           fontFamily: "Montserrat",
+            //           fontSize: "14px",
+            //           fontWeight: "500",
+            //           lineHeight: "17.07px",
+            //           color: "#ffffff"
+            //           // backgroundColor: '#f5f5f5',
+            //         },
+            //       } :
+            //       {
+            //         '& td': {
+            //           fontFamily: "Montserrat",
+            //           fontSize: "14px",
+            //           fontWeight: "500",
+            //           lineHeight: "17.07px",
+            //           backgroundColor: '#f5f5f5',
+            //         },
+            //       },
+            //   }}
+            //   muiTopToolbarProps={{
+            //     sx: darkMode ?
+            //       {
+            //         color: "#ffffff",
+            //         '& svg': {
+            //           fontFamily: "Montserrat",
+            //           fontSize: "14px",
+            //           fontWeight: "500",
+            //           lineHeight: "17.07px",
+            //           color: "#ffffff"
+            //           // backgroundColor: '#f5f5f5',
+            //         },
+            //       } : {
+            //         backgroundColor: '#f5f5f5',
+            //       }
+            //   }}
+            //   muiTableHeadCellProps={{
+            //     sx: darkMode ?
+            //       {
+            //         color: "#ffffff",
+            //         '& svg': {
+            //           fontFamily: "Montserrat",
+            //           fontSize: "14px",
+            //           fontWeight: "500",
+            //           lineHeight: "17.07px",
+            //           color: "#ffffff"
+            //           // backgroundColor: '#f5f5f5',
+            //         },
+            //       } : {
+            //         backgroundColor: '#f5f5f5',
+            //       }
+            //   }}
+            //   muiBottomToolbarProps={{
+            //     sx: darkMode ?
+            //       {
+            //         color: "#ffffff",
+            //         '& p,button,div': {
+            //           fontFamily: "Montserrat",
+            //           // fontSize : "14px",
+            //           fontWeight: "500",
+            //           lineHeight: "17.07px",
+            //           color: "#ffffff"
+            //           // backgroundColor: '#f5f5f5',
+            //         },
+            //       } : {
+            //         backgroundColor: '#f5f5f5',
+            //       }
+            //   }}
+            //   muiTableBodyCellProps={{
+            //     sx: {
+            //       borderBottom: '2px solid #e0e0e0', //add a border between columns
 
-          //     },
-          //   }}
-          // />
+            //     },
+            //   }}
+            // />
           )}
         </Card>
       </MDBox>

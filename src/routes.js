@@ -178,15 +178,15 @@ export const superAdminRoutes = [
     component: <UpdateLocation />,
   },
   // ...(userRole === "Manager" && serviceID.includes("1") ? [
-    (userRole === "Admin" || (userRole === "Manager" && serviceID.includes("4"))) &&
-    {
-    type: "collapse",
-    name: "Service & Maintenace",
-    key: "service-maintenace",
-    icon: <EvStationIcon />,
-    route: "/service-maintenace",
-    component: <Service_and_maintenance_mgmt />,
-  },
+  //   (userRole === "Admin" || (userRole === "Manager" && serviceID.includes("4"))) &&
+  //   {
+  //   type: "collapse",
+  //   name: "Service & Maintenace",
+  //   key: "service-maintenace",
+  //   icon: <EvStationIcon />,
+  //   route: "/service-maintenace",
+  //   component: <Service_and_maintenance_mgmt />,
+  // },
 // ] : []),
   (userRole === "Admin" || (userRole === "Manager" && serviceID.includes("4"))) &&
   {

@@ -85,7 +85,7 @@ const DashboardDrawer = ({ title, open, onClose, rowData: propRowData, isLoading
     //   ),
     // },
     {
-      header: "Charger Id", muiTableHeadCellProps: {
+      header: "Charger ID", muiTableHeadCellProps: {
         align: 'center',
       },
       muiTableBodyCellProps: {
@@ -109,7 +109,7 @@ const DashboardDrawer = ({ title, open, onClose, rowData: propRowData, isLoading
       }, accessorKey: "energyCons", align: "center"
     },
     {
-        header: "Last ping", accessorKey: "lastPing", align: "center",
+        header: "Last Ping", accessorKey: "lastPing", align: "center",
         muiTableHeadCellProps: {
           align: 'center',
         },

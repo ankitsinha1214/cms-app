@@ -1,6 +1,10 @@
+import { useState, useEffect } from "react";
+import axios from "axios";
 // @mui material components
 import Grid from "@mui/material/Grid";
-import Divider from "@mui/material/Divider";
+// import Divider from "@mui/material/Divider";
+
+import { Divider } from 'antd';
 
 // @mui icons
 import FacebookIcon from "@mui/icons-material/Facebook";
@@ -11,8 +15,8 @@ import InstagramIcon from "@mui/icons-material/Instagram";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 
-import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSnackbar } from "notistack";
 // Material Dashboard 2 React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
@@ -24,6 +28,9 @@ import DefaultProjectCard from "examples/Cards/ProjectCards/DefaultProjectCard";
 import Header from "layouts/profile/components/Header";
 import PlatformSettings from "layouts/profile/components/PlatformSettings";
 
+import DataCard from "components/custom/DataCard";
+import { format } from 'date-fns';
+import { toZonedTime } from 'date-fns-tz';
 // Data
 // import profilesListData from "layouts/profile/data/profilesListData";
 
@@ -39,24 +46,79 @@ import team4 from "assets/images/team-4.jpg";
 
 function Overview() {
   const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
+  const [isLoading, setIsLoading] = useState(false);
+  const [rows, setRows] = useState([]);
   useEffect(() => {
     if (
       localStorage.getItem("login_status") !== "true"
     ) {
       navigate("/sign-in");
     }
+    handleGetUserData();
   }, []);
+  const handleGetUserData = () => {
+    const details = JSON.parse(localStorage.getItem("data"));
+    axios({
+      method: "get",
+      url: process.env.REACT_APP_BASEURL + "user-service-and-maintenance/user/" + details?._id,
+      // data: payload, // JSON payload
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`
+      },
+    })
+      .then((response) => {
+        // console.log(response);
+        // Clean up after download
+        // if (response.data.success === true) {
+        if (response.data.success === true) { // Clean up after download
+          const { data } = response.data;
+          setRows(data);
+          setIsLoading(false);
+          // enqueueSnackbar(response.data.message, { variant: 'success' })
+
+        } else {
+          console.log(response.data);
+          // enqueueSnackbar(response.data.message, { variant: 'error' })
+          // window.location.reload();
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        enqueueSnackbar(error?.response?.data?.message || error.message, { variant: 'error' });
+        // window.location.reload();
+      });
+  };
+  // Function to convert UTC to IST and format it
+  const convertUTCtoIST = (utcDate) => {
+    // console.log(utcDate);
+    if (!utcDate || isNaN(new Date(utcDate).getTime())) {
+        return 'N/A'; // Return 'N/A' if the date is invalid or missing
+    }
+    const timeZone = 'Asia/Kolkata'; // IST time zone
+    const zonedDate = toZonedTime(new Date(utcDate), timeZone); // Convert UTC to IST
+    return format(zonedDate, 'yyyy-MM-dd HH:mm:ss'); // Format the date as desired
+    // return format(zonedDate, 'yyyy-MM-dd \u00A0 HH:mm:ss'); // Format the date as desired
+};
   return (
     <DashboardLayout>
       <DashboardNavbar />
       <MDBox mb={2} />
       <Header>
-        <MDBox mt={5} mb={3}>
-          <Grid container spacing={1}>
-            {/* <Grid item xs={12} md={6} xl={4}>
+        <MDBox
+          my={1}
+        // mt={5} 
+        // mb={3}
+        >
+          <Divider 
+          // orientation="vertical"
+          //  sx={{ ml: -2, mr: 1 }} 
+           />
+          {/* <Grid container spacing={1}> */}
+          {/* <Grid item xs={12} md={6} xl={4}>
               <PlatformSettings />
             </Grid> */}
-            {/* <Grid item xs={12} md={6} xl={4} sx={{ display: "flex" }}>
+          {/* <Grid item xs={12} md={6} xl={4} sx={{ display: "flex" }}>
               <Divider orientation="vertical" sx={{ ml: -2, mr: 1 }} />
               <ProfileInfoCard
                 title="profile information"
@@ -89,10 +151,21 @@ function Overview() {
               />
               <Divider orientation="vertical" sx={{ mx: 0 }} />
             </Grid> */}
-            <Grid item xs={12} xl={4}>
-              {/* <ProfilesList title="conversations" profiles={profilesListData} shadow={false} /> */}
-            </Grid>
+          {/* <Grid item xs={12} xl={4}> */}
+          <Grid container direction="row" p={2}>
+            {(<DataCard title="Username" value={rows?.username} count={3}  icon={`${process.env.REACT_APP_AWS_BASEURL}cms-icons/profile1.svg`} />)}
+            {/* {(<DataCard title="Username" value={rows?.username} count={3}  icon="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"  />)} */}
+            {(<DataCard title="Department" value={rows?.department} count={3} icon={`${process.env.REACT_APP_AWS_BASEURL}cms-icons/profile2.svg`} />)}
+            {(<DataCard title="Phone Number" value={rows?.phone_number || '-'} count={3} icon={`${process.env.REACT_APP_AWS_BASEURL}cms-icons/profile7.svg`} />)}
+            {/* <Divider /> */}
+            {(<DataCard title="Company" value={rows?.company} count={3} icon={`${process.env.REACT_APP_AWS_BASEURL}cms-icons/profile4.svg`} />)}
+            {(<DataCard title="Email ID" value={rows?.email  || '-'} count={3} icon={`${process.env.REACT_APP_AWS_BASEURL}cms-icons/profile5.svg`} />)}
+            {(<DataCard title="Created at" value={convertUTCtoIST(rows?.createdAt)} count={3} icon={`${process.env.REACT_APP_AWS_BASEURL}cms-icons/profile6.svg`} />)}
+            {/* {(<DataCard title="Created at" value={rows?.createdAt} count={3} />)} */}
           </Grid>
+          {/* <ProfilesList title="conversations" profiles={profilesListData} shadow={false} /> */}
+          {/* </Grid> */}
+          {/* </Grid> */}
         </MDBox>
         {/* <MDBox pt={2} px={2} lineHeight={1.25}>
           <MDTypography variant="h6" fontWeight="medium">
@@ -189,7 +262,7 @@ function Overview() {
           </Grid>
         </MDBox> */}
       </Header>
-       
+
     </DashboardLayout>
   );
 }

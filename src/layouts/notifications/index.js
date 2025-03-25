@@ -33,7 +33,8 @@ import CustomMaterialTable from "../../components/custom/CustomMaterialTable";
 // import DeviceEmulator from 'react-device-emulator';
 // import 'react-device-emulator/lib/styles/style.css';
 
-
+import { MenuItem, Select, FormControl, InputLabel } from "@mui/material";
+import OutlinedInput from "@mui/material/OutlinedInput";
 import { TextField, Button, Typography, CardContent, Switch, FormControlLabel, Stack } from "@mui/material";
 import { AccessTime, CalendarToday, Opacity, Visibility } from "@mui/icons-material";
 // Material Dashboard 2 React example components
@@ -58,6 +59,7 @@ function Notifications() {
   const [selectedVal, setSelectedVal] = useState("allUser");
   const [title, setTitle] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [selectedTemplate, setSelectedTemplate] = useState("");
   const [description, setDescription] = useState("");
   const [selectedDate, setSelectedDate] = useState(dayjs());
   // console.log(selectedDate)
@@ -68,6 +70,28 @@ function Notifications() {
   const [rows, setRows] = useState([]);
   const [rows1, setRows1] = useState([]);
   const navigate = useNavigate();
+    // Predefined Templates
+    const templates = [
+      { id: 0, label: "Custom",title: "", description: "" },
+      { id: 1, label: "Charger Offline", title: "🔌 Charger Offline", description: "The charger at your location is currently offline." },
+      { id: 2, label: "Maintenance Alert", title: "⚠️ Maintenance Alert ⚠️", description: "Scheduled maintenance is planned for your charger." },
+      { id: 3, label: "Payment Reminder", title: "💳 Payment Reminder", description: "Your charging session payment is due." },
+      { id: 4, label: "Charging Session Started", title: "⚡ Charging Started", description: "Your charging session has started successfully." },
+      { id: 5, label: "Charging Session Completed", title: "✅ Charging Completed", description: "Your vehicle has been fully charged." },
+      { id: 6, label: "Low Balance Alert", title: "💰 Low Balance Alert", description: "Your wallet balance is low. Please recharge to continue using charging services." },
+      { id: 7, label: "New Charger Installed", title: "🆕 New Charger Available", description: "A new charging station has been installed near your location." },
+      { id: 8, label: "Charger Unavailable", title: "🚫 Charger Unavailable", description: "The selected charger is temporarily unavailable. Please try again later." },
+      { id: 9, label: "Discount Offer", title: "🎉 Special Discount!", description: "Enjoy a limited-time discount on your next charging session!" },
+      { id: 10, label: "Peak Hour Alert", title: "⏳ Peak Hour Alert", description: "Charging prices may be higher during peak hours. Consider charging at off-peak times." },
+    ];
+  
+    // Handle template selection
+    const handleTemplateChange = (event) => {
+      const selected = templates.find(t => t.id === event.target.value);
+      setSelectedTemplate(event.target.value);
+      setTitle(selected.title);
+      setDescription(selected.description);
+    };
   useEffect(() => {
     setColumns(column);
   }, []);
@@ -633,6 +657,25 @@ function Notifications() {
             {/* <Button variant="contained" size="small" sx={{ mt: 1, mb: 2 }}>
               All User
             </Button> */}
+            {/* Template Selection */}
+          <FormControl fullWidth margin="normal">
+            <InputLabel>Select Notification Template</InputLabel>
+            <Select 
+            sx={{
+              height: 50,
+              marginBottom: "1.2rem"
+          }}
+            value={selectedTemplate} 
+            onChange={handleTemplateChange}
+            input={<OutlinedInput label="Select Notification Template" />}
+            >
+              {templates.map(template => (
+                <MenuItem key={template.id} value={template.id}>
+                  {template.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
             <Segmented
       options={[
         {
@@ -675,6 +718,10 @@ function Notifications() {
         // console.log(value); // string
         setSelectedVal(value);
       }}
+      style={{
+        // height: 50,
+        marginBottom: "1.2rem"
+    }}
     />
                 {
                   selectedVal === 'singleUser' ?

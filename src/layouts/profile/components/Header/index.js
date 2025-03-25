@@ -1,7 +1,5 @@
- 
-
 import { useState, useEffect } from "react";
-
+import axios from "axios";
 // prop-types is a library for typechecking of props.
 import PropTypes from "prop-types";
 
@@ -17,17 +15,24 @@ import Icon from "@mui/material/Icon";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDAvatar from "components/MDAvatar";
+import { useSnackbar } from "notistack";
+import { useNavigate } from "react-router-dom";
 
 // Material Dashboard 2 React base styles
 import breakpoints from "assets/theme/base/breakpoints";
 
 // Images
 import burceMars from "assets/images/bruce-mars.jpg";
-import backgroundImage from "assets/images/bg-profile.jpeg";
+// import backgroundImage from "assets/images/bg-profile.jpeg";
 
 function Header({ children }) {
+  const backgroundImage = `${process.env.REACT_APP_AWS_BASEURL}cms-main-img/profile_bg_img.png`;
   const [tabsOrientation, setTabsOrientation] = useState("horizontal");
   const [tabValue, setTabValue] = useState(0);
+  const { enqueueSnackbar } = useSnackbar();
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  const [rows, setRows] = useState([]);
 
   useEffect(() => {
     // A function that sets the orientation state of the tabs.
@@ -50,6 +55,46 @@ function Header({ children }) {
   }, [tabsOrientation]);
 
   const handleSetTabValue = (event, newValue) => setTabValue(newValue);
+  useEffect(() => {
+    if (
+      localStorage.getItem("login_status") !== "true"
+    ) {
+      navigate("/sign-in");
+    }
+    handleGetUserData();
+  }, []);
+  const handleGetUserData = () => {
+    const details = JSON.parse(localStorage.getItem("data"));
+    axios({
+        method: "get",
+        url: process.env.REACT_APP_BASEURL + "user-service-and-maintenance/user/" + details?._id,
+        // data: payload, // JSON payload
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("token")}`
+        },
+    })
+        .then((response) => {
+            // console.log(response);
+            // Clean up after download
+            // if (response.data.success === true) {
+            if (response.data.success === true) { // Clean up after download
+                const { data } = response.data;
+                setRows(data);
+                setIsLoading(false);
+                enqueueSnackbar(response.data.message, { variant: 'success' })
+
+            } else {
+                console.log(response.data);
+                enqueueSnackbar(response.data.message, { variant: 'error' })
+                // window.location.reload();
+            }
+        })
+        .catch((error) => {
+            console.log(error);
+            enqueueSnackbar(error?.response?.data?.message || error.message, { variant: 'error' });
+            // window.location.reload();
+        });
+};
 
   return (
     <MDBox position="relative" mb={5}>
@@ -60,11 +105,12 @@ function Header({ children }) {
         minHeight="18.75rem"
         borderRadius="xl"
         sx={{
-          backgroundImage: ({ functions: { rgba, linearGradient }, palette: { gradients } }) =>
-            `${linearGradient(
-              rgba(gradients.info.main, 0.6),
-              rgba(gradients.info.state, 0.6)
-            )}, url(${backgroundImage})`,
+          // backgroundImage: ({ functions: { rgba, linearGradient }, palette: { gradients } }) =>
+          //   `${linearGradient(
+          //     rgba(gradients.info.main, 0.6),
+          //     rgba(gradients.info.state, 0.6)
+          //   )}, url(${backgroundImage})`,
+            backgroundImage: ({ }) => `url(${backgroundImage})`,
           backgroundSize: "cover",
           backgroundPosition: "50%",
           overflow: "hidden",
@@ -86,10 +132,11 @@ function Header({ children }) {
           <Grid item>
             <MDBox height="100%" mt={0.5} lineHeight={1}>
               <MDTypography variant="h5" fontWeight="medium">
-                Richard Davis
+                {rows?.username}
               </MDTypography>
               <MDTypography variant="button" color="text" fontWeight="regular">
-                CEO / Co-Founder
+                {/* CEO / Co-Founder */}
+                {rows?.role}
               </MDTypography>
             </MDBox>
           </Grid>
