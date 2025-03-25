@@ -1,6 +1,10 @@
 import axios from "axios";
+import { jsPDF } from "jspdf";
+import "jspdf-autotable";
+import autoTable from "jspdf-autotable"; 
+import { addRobotoFont } from "./Roboto-Light"; 
 import React, { useState, useEffect } from "react";
-import { Grid, TextField, MenuItem, Button } from '@mui/material';
+import { Grid, TextField, Menu, MenuItem, Button } from '@mui/material';
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import OutlinedInput from "@mui/material/OutlinedInput";
@@ -38,9 +42,18 @@ const Reports = () => {
     const { darkMode } = controller;
     const [columns, setColumns] = useState([]);
     const [rows, setRows] = useState([]);
-    const [filteredData, setFilteredData] = useState(rows); 
+    const [filteredData, setFilteredData] = useState(rows);
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+    const [anchorEl, setAnchorEl] = useState(null);
+    const open = Boolean(anchorEl);
 
+    const handleMenuOpen = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleMenuClose = () => {
+        setAnchorEl(null);
+    };
     useEffect(() => {
         const handleResize = () => {
             setIsMobile(window.innerWidth < 768);
@@ -287,67 +300,166 @@ const Reports = () => {
     // };
 
     const exportToExcel = async () => {
-        if(!fromDate || !toDate){
+        if (!fromDate || !toDate) {
             return enqueueSnackbar("Please select a date range!", { variant: 'error' })
         }
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet("Report");
-    
+
         // Filter visible columns
         const filteredColumns = columns.filter(col => visibleColumns[col.accessorKey] !== false);
-    
+
         // Add column headers
         worksheet.addRow(filteredColumns.map(col => col.header));
-    
+
         // Add filtered row data
         filteredData.forEach(row => {
-          const rowData = filteredColumns.map(col => row[col.accessorKey] || "");
-          worksheet.addRow(rowData);
+            const rowData = filteredColumns.map(col => row[col.accessorKey] || "");
+            worksheet.addRow(rowData);
         });
-    
+
         // Style headers
         worksheet.getRow(1).eachCell(cell => {
-          cell.font = { bold: true };
-          cell.alignment = { vertical: "middle", horizontal: "center" };
-          cell.fill = {
-            type: "pattern",
-            pattern: "solid",
-            fgColor: { argb: "FFCCCCCC" },
-          };
+            cell.font = { bold: true };
+            cell.alignment = { vertical: "middle", horizontal: "center" };
+            cell.fill = {
+                type: "pattern",
+                pattern: "solid",
+                fgColor: { argb: "FFCCCCCC" },
+            };
         });
-    
+
         // Auto-adjust column widths
         worksheet.columns.forEach(column => {
-          let maxLength = 0;
-          column.eachCell({ includeEmpty: true }, cell => {
-            const cellValue = cell.value ? cell.value.toString() : "";
-            maxLength = Math.max(maxLength, cellValue.length);
-          });
-          column.width = maxLength + 2;
+            let maxLength = 0;
+            column.eachCell({ includeEmpty: true }, cell => {
+                const cellValue = cell.value ? cell.value.toString() : "";
+                maxLength = Math.max(maxLength, cellValue.length);
+            });
+            column.width = maxLength + 2;
         });
-    
+
         // Generate and download file
         const buffer = await workbook.xlsx.writeBuffer();
         const fileBlob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
         const fileName = `Report_${type}_${new Date().toISOString().replace(/[:.-]/g, "_")}.xlsx`;
         saveAs(fileBlob, fileName);
+    };
+    const exportToPDF = () => {
+        if (!fromDate || !toDate) {
+          return enqueueSnackbar("Please select a date range!", { variant: "error" });
+        }
+      
+        const doc = new jsPDF("p", "mm", "a4"); // Portrait mode, millimeters, A4 size
+        // ✅ Load custom Unicode font (Ensure NotoSans-Regular.js is available)
+        // doc.addFileToVFS("Roboto-Regular.ttf", addRobotoFont); 
+        // doc.addFont("Roboto-Regular.ttf", "Roboto", "normal"); 
+        // doc.setFont("Roboto"); 
+        addRobotoFont(doc);
+  doc.setFont("Roboto-Light");
+
+        // doc.setFont("courier"); // 'times', 'courier', or 'helvetica'
+        const pageWidth = doc.internal.pageSize.width - 20; // Total width minus margins
+        const filteredColumns = columns.filter(col => visibleColumns[col.accessorKey] !== false);
+        const columnCount = filteredColumns.length;
+        const equalColumnWidth = pageWidth / columnCount; // Distribute width equally
+      
+        // Title Styling
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(18);
+        doc.text(`Report of ${type}`, 14, 20);
+      
+        // Subtitle for Date Range
+        doc.setFontSize(12);
+        doc.setTextColor(100);
+        doc.text(`From: ${fromDate}  To: ${toDate}`, 14, 30);
+      
+        // Add some spacing before the table
+        const startY = 40;
+      
+        // Define table columns
+        const tableColumnHeaders = filteredColumns.map(col => col.header);
+        const tableRows = filteredData.map(row =>
+          filteredColumns.map(col => row[col.accessorKey] || "-") // Replace empty values with "-"
+        );
+      
+        // Apply autoTable
+        autoTable(doc, {
+          startY, // Ensures table starts at a proper position
+          head: [tableColumnHeaders],
+          body: tableRows,
+          theme: "striped", // Striped theme for better readability
+          styles: { fontSize: 10, cellPadding: 3, font: "courier" },
+          headStyles: {
+            fillColor: [52, 152, 219], // Blue header
+            textColor: 255,
+            fontStyle: "bold",
+            halign: "center",
+          },
+          bodyStyles: { textColor: 50 },
+          alternateRowStyles: { fillColor: [240, 240, 240] }, // Light gray alternating rows
+          margin: { top: 45, left: 10, right: 10 },
+          columnStyles: Object.fromEntries(
+            filteredColumns.map((_, index) => [index, { cellWidth: equalColumnWidth }])
+          ),
+          didDrawPage: function (data) {
+            doc.setFontSize(10);
+            doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, doc.internal.pageSize.height - 10);
+          },
+        });
+      
+        // Save the PDF
+        doc.save(`Report_${type}_${new Date().toISOString().replace(/[:.-]/g, "_")}.pdf`);
       };
+    // const exportToPDF = () => {
+    //     if (!fromDate || !toDate) {
+    //       return enqueueSnackbar("Please select a date range!", { variant: "error" });
+    //     }
+      
+    //     const doc = new jsPDF();
+      
+    //     // Add title
+    //     doc.setFontSize(18);
+    //     doc.text(`Report of ${type}`, 14, 20);
+      
+    //     // Define table columns
+    //     const filteredColumns = columns.filter(col => visibleColumns[col.accessorKey] !== false);
+    //     const tableColumnHeaders = filteredColumns.map(col => col.header);
+      
+    //     // Define table rows
+    //     const tableRows = filteredData.map(row =>
+    //       filteredColumns.map(col => row[col.accessorKey] || "-") // Replace empty values with "-"
+    //     );
+      
+    //     // Add table using autoTable
+    //     autoTable(doc, {
+    //       startY: 30, // Position the table below the title
+    //       head: [tableColumnHeaders],
+    //       body: tableRows,
+    //       theme: "striped", // Can be "grid" or "plain"
+    //       styles: { fontSize: 10 },
+    //       headStyles: { fillColor: [52, 152, 219] }, // Blue header
+    //     });
+      
+    //     // Save the PDF
+    //     doc.save(`Report_${type}_${new Date().toISOString().replace(/[:.-]/g, "_")}.pdf`);
+    //   };
     // const exportToExcel = async () => {
     //     const workbook = new ExcelJS.Workbook();
     //     const worksheet = workbook.addWorksheet("Report");
-    
+
     //     // Filter visible columns
     //     const filteredColumns = columns.filter(col => visibleColumns[col.accessorKey] !== false);
-    
+
     //     // Add column headers
     //     worksheet.addRow(filteredColumns.map(col => col.header));
-    
+
     //     // Add row data
     //     rows.forEach(row => {
     //       const rowData = filteredColumns.map(col => row[col.accessorKey] || "");
     //       worksheet.addRow(rowData);
     //     });
-    
+
     //     // Style headers
     //     worksheet.getRow(1).eachCell(cell => {
     //       cell.font = { bold: true };
@@ -358,7 +470,7 @@ const Reports = () => {
     //         fgColor: { argb: "FFCCCCCC" }, // Light Gray Background
     //       };
     //     });
-    
+
     //     // Auto-adjust column widths
     //     worksheet.columns.forEach(column => {
     //       let maxLength = 0;
@@ -368,7 +480,7 @@ const Reports = () => {
     //       });
     //       column.width = maxLength + 2;
     //     });
-    
+
     //     // Generate and download file
     //     const buffer = await workbook.xlsx.writeBuffer();
     //     const fileBlob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
@@ -612,36 +724,36 @@ const Reports = () => {
                         my={2}
                     // mx={4}
                     >
-                            <RangePicker
-                                // showTime={{ 
-                                // }}
-                                showTime={{
-                                    format: 'HH:mm:ss',
-                                    defaultValue: [dayjs().startOf('day'), dayjs().endOf('day')]
-                                }}
-                                size="large"
-                                format="YYYY-MM-DD HH:mm:ss"
-                                onChange={(value, dateString) => {
-                                    console.log('Formatted Selected Time: ', dateString);
-                                    setFromDate(dateString[0]);
-                                    setToDate(dateString[1]);
-                                }}
-                                locale={{
-                                    ...locale,
-                                    lang: {
-                                      ...locale.lang,
-                                      ok: "Set",
-                                    }
-                                  }}
-                            // onSelect={(value) => {
-                            //     if (value) {
-                            //         const formattedValues = value.map(date => date.format("YYYY-MM-DD HH:mm:ss"));
-                            //         setFromDate(formattedValues[0]);
-                            //         setToDate(formattedValues[1]);
-                            //     }
+                        <RangePicker
+                            // showTime={{ 
                             // }}
-                            // onOk={() => {}}
-                            />
+                            showTime={{
+                                format: 'HH:mm:ss',
+                                defaultValue: [dayjs().startOf('day'), dayjs().endOf('day')]
+                            }}
+                            size="large"
+                            format="YYYY-MM-DD HH:mm:ss"
+                            onChange={(value, dateString) => {
+                                console.log('Formatted Selected Time: ', dateString);
+                                setFromDate(dateString[0]);
+                                setToDate(dateString[1]);
+                            }}
+                            locale={{
+                                ...locale,
+                                lang: {
+                                    ...locale.lang,
+                                    ok: "Set",
+                                }
+                            }}
+                        // onSelect={(value) => {
+                        //     if (value) {
+                        //         const formattedValues = value.map(date => date.format("YYYY-MM-DD HH:mm:ss"));
+                        //         setFromDate(formattedValues[0]);
+                        //         setToDate(formattedValues[1]);
+                        //     }
+                        // }}
+                        // onOk={() => {}}
+                        />
 
                     </MDBox>
                     {/* <FormControl fullWidth>
@@ -682,12 +794,23 @@ const Reports = () => {
                             </MDTypography>
                             <MDButton
                                 //   onClick={() => setIsDisabled(!isDisabled)}
-                                onClick={exportToExcel}
+                                // onClick={exportToExcel}
+                                onClick={handleMenuOpen}
                                 variant="outlined"
                                 color="white"
                             >
-                                Download Data
+                                Download Report
+                                {/* Download Data */}
                             </MDButton>
+                            {/* Dropdown Menu */}
+                            <Menu anchorEl={anchorEl} open={open} onClose={handleMenuClose}>
+                                <MenuItem onClick={() => { handleMenuClose(); exportToExcel(); }}>
+                                    📊 Export as Excel
+                                </MenuItem>
+                                <MenuItem onClick={() => { handleMenuClose(); exportToPDF(); }}>
+                                    📄 Export as PDF
+                                </MenuItem>
+                            </Menu>
                         </Grid>
                     </MDBox>
                     {isLoading ? (
