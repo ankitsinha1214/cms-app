@@ -296,15 +296,15 @@ export const superAdminRoutes = [
     route: "/notifications",
     component: <Notifications />,
   },
-  // (userRole === "Admin" || (userRole === "Manager" && serviceID.includes("6"))) &&
-  // {
-  //   type: "collapse",
-  //   name: "Customer service",
-  //   key: "customer_service",
-  //   icon: <SupportAgentIcon />,
-  //   route: "/customer_service",
-  //   component: <CustomerService />,
-  // },
+  (userRole === "Admin" || (userRole === "Manager" && serviceID.includes("6"))) &&
+  {
+    type: "collapse",
+    name: "Customer Service",
+    key: "customer-service",
+    icon: <SupportAgentIcon />,
+    route: "/customer-service",
+    component: <CustomerService />,
+  },
   (userRole === "Admin" || (userRole === "Manager" && serviceID.includes("7"))) &&
   {
     type: "collapse",
