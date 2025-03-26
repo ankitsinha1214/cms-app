@@ -65,7 +65,8 @@ const { RangePicker } = DatePicker;
 function Dashboard() {
   const [anchorEl1, setAnchorEl1] = useState(null);
   const [selectedDate1, setSelectedDate1] = useState(dayjs());
-  const [timeRange1, setTimeRange1] = useState("hourly");
+  const [timeRange1, setTimeRange1] = useState("last30");
+  // const [timeRange1, setTimeRange1] = useState("hourly");
   const handleMenuOpen1 = (event) => setAnchorEl1(event.currentTarget);
   const handleMenuClose1 = () => setAnchorEl1(null);
   const handleDownload1 = () => {
@@ -101,7 +102,8 @@ function Dashboard() {
   const { darkMode } = controller;
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedDate, setSelectedDate] = useState(dayjs());
-  const [timeRange, setTimeRange] = useState("hourly");
+  const [timeRange, setTimeRange] = useState("last30");
+  // const [timeRange, setTimeRange] = useState("hourly");
   const dateFormat = 'YYYY-MM-DD';
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -740,14 +742,17 @@ function Dashboard() {
               style={{
                 //  height: (mapLoaded) && "100%",
                 height: (mapLoaded) && "80vh",
-                marginBottom: "40px"
+                marginBottom: "34px"
+                // marginBottom: "40px"
               }}>
               {/* Header Controls */}
               {(mapLoaded) &&
                 <Grid container spacing={2}
                   // mx={8} 
                   // px={8} 
-                  px={4}
+                  pl={4}
+                  pr={2}
+                  // px={4}
                   // p={2} 
                   sx={{
                     // position: "relative",
@@ -856,6 +861,7 @@ function Dashboard() {
                           justifyContent: "center",
                           backgroundColor: "#F6F6F6",
                           padding: "5px",
+                          // padding: "5px",
                           borderRadius: "4px",
                           transition: "background-color 0.3s ease", // Smooth transition effect
                           "&:hover": {
@@ -912,8 +918,8 @@ function Dashboard() {
                       xs: "none",
                       lg: "flex",
                     },
-                    bottom: "41%"
-                    // bottom:"53%"
+                    // bottom: "41%"
+                    bottom:"38%"
                   }}>
 
                   <Grid item xs={12}>
@@ -1340,7 +1346,10 @@ function Dashboard() {
         {/* } */}
 
         <Grid container spacing={3}>
-          <Grid item xs={12} md={12} lg={8} mb={4} >
+          <Grid item xs={12} md={12} lg={8} 
+          mb={3} 
+          // mb={4} 
+          >
             <Card sx={{ height: "100%" }}>
 
               <MDBox padding="1rem" >
@@ -1483,7 +1492,10 @@ function Dashboard() {
             </Card>
           </Grid>
           <Grid item xs={12} md={12} lg={4}>
-            <MDBox mb={4} >
+            <MDBox
+             mb={3} 
+            //  mb={4} 
+             >
               {/* <PieChart
                 // icon={{ color: "primary", component: "pie_chart" }}
                 title="Sales Distribution"
@@ -1555,7 +1567,9 @@ function Dashboard() {
         </MDBox> */}
         <Grid container spacing={3}>
           <Grid item xs={12} md={12} lg={4} >
-            <MDBox mb={1.5}
+            <MDBox 
+            // mb={1.5}
+            mb={3}
               sx={{
                 height: "340px",
                 // overflow: "scroll"
@@ -1581,9 +1595,11 @@ function Dashboard() {
             </MDBox>
           </Grid>
           <Grid item xs={12} md={12} lg={8} >
-            <MDBox mb={1.5}
+            <MDBox 
+            // mb={1.5}
               sx={{
-                height: "525px"
+                height: "539px"
+                // height: "525px"
               }}
             >
               <LocationVisitsCard

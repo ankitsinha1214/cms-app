@@ -126,7 +126,9 @@ const DashboardDrawer = ({ title, open, onClose, rowData: propRowData, isLoading
     <Drawer title={title} placement="right" closable 
     // onClose={onClose} 
     onClose={handleClose}
-    open={open} width={900}>
+    open={open} width={900}
+    // bodyStyle={{ padding: 0 }} 
+    >
       {/* <MaterialReactTable columns={columns} data={rowData} /> */}
       <Card>
           {/* <MDBox mx={2} mt={-3} py={3} px={2} variant="gradient" bgColor="info" borderRadius="lg" coloredShadow="info">
